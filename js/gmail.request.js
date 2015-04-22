@@ -10,8 +10,8 @@ gmail.prototype.setEmail = function(email) {
     this.email = email;
 }
 
-gmail.prototype.getNewThreadsRequest = function(lastDate, nextPageToken) {
-    if (nextPageToken && nextPageToken !== 'undefined') {
+gmail.prototype.getNewMessagesRequest = function(lastDate, nextPageToken) {
+    if (nextPageToken && nextPageToken !== undefined) {
         return gapi.client.gmail.users.messages.list({
             'userId': this.email,
             'pageToken': nextPageToken,
@@ -26,7 +26,7 @@ gmail.prototype.getNewThreadsRequest = function(lastDate, nextPageToken) {
 }
 
 gmail.prototype.getAllThreadsRequest = function(nextPageToken) {
-    if (nextPageToken === 'undefined') {
+    if (nextPageToken === undefined) {
         return gapi.client.gmail.users.threads.list({
             'userId': this.email,
             'q': '!in:chats'

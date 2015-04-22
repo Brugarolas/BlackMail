@@ -12,15 +12,12 @@ function storage() {
     this.threadIds = {};
 }
 
-storage.prototype.getPersonalData = function(scope) {
-    scope.apply
-    "use strict";
-
+storage.prototype.setEmail = function(email) {
+    this.email = email;
 }
 
 storage.prototype.setLastDate = function(email, date) {
     this.lastDate = new Date(date);
-    //this.lastDate.add(-1).days();
 
     localStorage.setItem(email + '_date', this.lastDate);
 }
@@ -58,14 +55,21 @@ storage.prototype.addNewThreadsToList = function(threads) {
     }
 }
 
+storage.prototype.mergeThreadList = function(messages) {
+    this.threadList = messages.concat(this.threadList);
+    this.threadIds = {};
+
+    for (i in this.threadList) {
+        this.threadIds[this.threadList[i]] = i;
+    }
+}
+
 storage.prototype.addMessagesToList = function(messages) {
     var threadsAux = [];
 
     for (i in messages) {
         if (this.threadIds[messages[i].threadId] === undefined) {
-
             threadsAux.push({id: messages[i].threadId});
-            //idsAux[threads[i].id] = threadsAux.length - 1;
         } else {
             var threadId = this.threadIds[messages[i].id];
 
@@ -79,6 +83,18 @@ storage.prototype.addMessagesToList = function(messages) {
     }
 
     return threadsAux;
+}
+
+storage.prototype.addPageThreads = function(result) {
+    var thread, actual, firstThreadId = this.getThreadByIndex(0).id;
+
+    for (i in result) {
+        setThreadMetadata(this.getThreadByIndex(i), result[i].result);
+
+        if (this.getThreadByIndex(i).id == firstThreadId) {
+            storage.setLastDate(this.email, this.getThreadByIndex(i).date);
+        }
+    }
 }
 
 storage.prototype.getNumOfThreads = function() {

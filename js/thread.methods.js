@@ -1,6 +1,16 @@
 /**
  * Created by Andrés on 07/04/2015.
  */
+function setThreadMetadata(thread, result) {
+    thread.subject = getThreadSubject(result);
+    thread.snippet = getThreadSnippet(result);
+    thread.unread = isThreadUnread(result);
+    thread.date = Date.parse(getThreadDate(result));
+    thread.sender = getSenderThread(result);
+    thread.numOfMsgs = getNumOfMessages(result);
+    thread.messages = [];
+}
+
 function getThreadSubject(response) {
     var headers = response.messages[0].payload.headers;
     for (i in headers) if (headers[i].name == "Subject") return headers[i].value;
@@ -92,7 +102,7 @@ function htmlspecialchars_decode(string, quote_style) {
     //        returns 2: '&quot;'
 
     var optTemp = 0, i = 0, noquotes = false;
-    if (typeof quote_style === 'undefined') quote_style = 2;
+    if (typeof quote_style === undefined) quote_style = 2;
 
     string = string.toString().replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#39;/g, "'");
 
