@@ -3,7 +3,6 @@ var apiKey = 'AIzaSyBWOyx1Ri2q5TkIwO-lMMzUovgUmunDryE';
 var scopes = ['https://www.googleapis.com/auth/plus.me', 'https://www.googleapis.com/auth/gmail.readonly',
 	'https://www.googleapis.com/auth/userinfo.email'];
 
-var storage = new storage();
 var app = angular.module("app", []);
 
 app.controller('GmailMainController', function($scope) {
@@ -87,22 +86,23 @@ app.controller('GmailMainController', function($scope) {
 		//Step 8: Assemble the API request
 		var request;
 		if (nextPageToken === 'undefined') {
-			request = gapi.client.gmail.users.threads.list({
+			request = gapi.client.gmail.users.messages.list({
 				'userId': $scope.data.personalEmail,
-				'q': '!in:chats'
+				'q': '!in:chats after:' + storage.getLastDate().toString('yyyy/MM/dd')
 			});
 		} else {
-			request = gapi.client.gmail.users.threads.list({
+			request = gapi.client.gmail.users.messages.list({
 				'userId': $scope.data.personalEmail,
 				'pageToken': nextPageToken,
-				'q': '!in:chats'
+				'q': '!in:chats after:' + storage.getLastDate().toString('yyyy/MM/dd')
 			});
 		}
 
 		//Step 9A: Execute API request and retrieve list of threads
 		request.execute(function(response) {
+			console.log(response);
 			//Step 9A: Execute API request and retrieve list of threads
-			var nuevos = storage.addAndCheckThreadsToList(response.threads);
+			var nuevos = storage.addMessagesToList(response.result.messages);
 
 			console.log(nuevos.length + " new threads.");
 			for (i in nuevos) console.log("\t" + nuevos[i].id);
@@ -192,8 +192,8 @@ app.controller('GmailMainController', function($scope) {
 
 		batchRequest.then(
 			function(response) {
+				var thread, result, firstThreadId = storage.getThreadByIndex(0).id;
 
-				var thread, result;
 				for (i in response.result) {
 					result = response.result[i].result;
 					thread = storage.getThreadByIndex(i);
@@ -205,6 +205,10 @@ app.controller('GmailMainController', function($scope) {
 					thread.sender = getSenderThread(result);
 					thread.numOfMsgs = getNumOfMessages(result);
 					thread.messages = [];
+
+                    if ($scope.data.currentPage == 0 && thread.id == firstThreadId) {
+                        storage.setLastDate($scope.data.personalEmail, thread.date);
+                    }
 				}
 
 				$scope.$apply(function() {

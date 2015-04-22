@@ -10,7 +10,7 @@
 
 	<!-- Bootstrap and AngularJS-->
 	<link rel="stylesheet" href="css/bootstrap.min.css" />
-	<script src="js/angular.min.js"></script>
+	<script src="js/libs/angular.min.js"></script>
 	<!-- script src="js/angular-sanitize.min.js"></script -->
 
 	<!-- Fonts and reset stylesheet -->
@@ -20,43 +20,43 @@
 	<!-- Custom stylesheet With Less -->
 	<link rel="stylesheet/less" type="text/css" href="less/mail_main_style.less"/>
 	<script src="js/less.config.js"></script>
-	<script src="js/less.min.js"></script>
+	<script src="js/libs/less.min.js"></script>
 	<link rel="stylesheet" href="css/floating-bars.css"/>
 	
 	<!-- Prefix Free plugin -->
-    <script src="js/prefixfree.min.js"></script>
+    <script src="js/libs/prefixfree.min.js"></script>
 
 	<!-- jQuery plugin -->
-	<script src='js/jquery.min.js'></script>
+	<script src='js/libs/jquery.min.js'></script>
 
 	<!-- Nano Scroller -->
-	<script src="js/jquery.nanoscroller.min.js"></script>
+	<script src="js/libs/jquery.nanoscroller.min.js"></script>
 	<link rel="stylesheet" href="css/nanoscroller.css" />
 
 	<!-- iFrame resizer -->
 	<!-- script src="js/iframeResizer.min.js"></script -->
 
 	<!-- Updated Date.js from https://github.com/abritinthebay/datejs -->
-	<script src="js/date-es-ES.min.js"></script>
+	<script src="js/libs/date-es-ES.min.js"></script>
 
 	<!-- Custom template plugin -->
 	<!-- script src="js/mail_main.js"></script -->
 	
 	<!-- Decode plugin -->
-	<script src="js/base64.min.js"></script>
-	<script src="js/lz-string.min.js"></script>
+	<script src="js/libs/base64.min.js"></script>
+	<script src="js/libs/lz-string.min.js"></script>
 
 	<!-- Bluebird promise library (Not necessary, at the moment)-->
 	<!-- script src="js/bluebird.min.js"></script -->
 
 	<!-- Our mail plugin -->
-	<script src="js/index_storage.js"></script>
-	<script src="js/index_mail.js"></script>
-	<script src="js/index_thread.js"></script>
+	<script src="js/storage.js"></script>
+	<script src="js/message.methods.js"></script>
+	<script src="js/thread.methods.js"></script>
 	<script src="js/index.js"></script>
 
 	<!-- JavaScript Google API client library -->
-	<script src="js/google.api.min.js"></script>
+	<script src="js/libs/google.api.min.js"></script>
 </head>
 <body id="mainBody" ng-controller="GmailMainController" ng-class="{'show-message': data.messageActive >= 0,
 	'show-main-overlay': data.showOverlay, 'show-sidebar': data.showSidebar }" onload="handleLoad()">

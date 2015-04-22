@@ -1,7 +1,6 @@
 /**
  * Created by Andrés on 19/04/2015.
  */
-
 function storage() {
     //Detect platform
     this.platform = (typeof process !== "undefined" && typeof require !== "undefined") ? "Node" : "Anything";
@@ -13,11 +12,20 @@ function storage() {
     this.threadIds = {};
 }
 
+storage.prototype.setLastDate = function(email, date) {
+    this.lastDate = new Date(date);
+    //this.lastDate.add(-1).days();
+
+    localStorage.setItem(email + '_date', this.lastDate);
+}
+
+storage.prototype.getLastDate = function() {
+    return this.lastDate;
+}
+
 storage.prototype.saveThreads = function(email) {
     var threads = { 'list': this.threadList, 'ids': this.threadIds }
 
-    //var string = JSON.stringify(threads);
-    //console.log("Size of sample is " + getSizeBytes(string.length * 16));
     var compressed = LZString.compress(JSON.stringify(threads));
     localStorage.setItem(email, compressed);
 
@@ -26,12 +34,15 @@ storage.prototype.saveThreads = function(email) {
 
 storage.prototype.retrieveThreads = function(email) {
     var item = localStorage.getItem(email);
-    if (item) {
-        item = JSON.parse(LZString.decompress(item));
-        this.threadList = item.list;
-        this.threadIds = item.ids;
-        return true;
-    } else return false;
+    if (!item) return false;
+
+    item = JSON.parse(LZString.decompress(item));
+    if (!item) return false;
+
+    this.threadList = item.list;
+    this.threadIds = item.ids;
+    this.lastDate = Date.parse(localStorage.getItem(email + '_date'));
+    return true;
 }
 
 storage.prototype.addNewThreadsToList = function(threads) {
@@ -41,26 +52,27 @@ storage.prototype.addNewThreadsToList = function(threads) {
     }
 }
 
-storage.prototype.addAndCheckThreadsToList = function(threads) {
+storage.prototype.addMessagesToList = function(messages) {
     var threadsAux = [];
 
-    for (i in threads) {
-        //console.log(threads[i].id);
+    for (i in messages) {
+        if (this.threadIds[messages[i].threadId] === undefined) {
 
-        if (this.threadIds[threads[i].id] === undefined) {
-            threadsAux.push({id: threads[i].id});
+            threadsAux.push({id: messages[i].threadId});
             //idsAux[threads[i].id] = threadsAux.length - 1;
         } else {
-            var threadId = this.threadIds[threads[i].id];
+            var threadId = this.threadIds[messages[i].id];
 
             if (threadId == 0) {
-                return threadsAux;
+                break;
             } else {
-                threadsAux.push({id: threads[i].id});
+                threadsAux.push({id: messages[i].id});
                 this.threads.splice(threadId, 1);
             }
         }
     }
+
+    return threadsAux;
 }
 
 storage.prototype.getNumOfThreads = function() {
@@ -78,3 +90,5 @@ storage.prototype.getThreadByIndex = function(index) {
 storage.prototype.getThreads = function(start, num) {
     return this.threadList.slice(start, start + num);
 }
+
+var storage = new storage();
