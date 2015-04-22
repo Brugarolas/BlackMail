@@ -18,10 +18,10 @@ app.controller('GmailMainController', function($scope) {
 
 	$scope.handleClientLoad = function() {
 		// Step 2A: Reference the API key
-		$scope.gapi.client.setApiKey(apiKey);
+		gapi.client.setApiKey(apiKey);
 
 		// Step 2B: Try to auth
-		$scope.gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: true}, $scope.handleAuthResult);
+		gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: true}, $scope.handleAuthResult);
 	}
 
 	$scope.handleAuthResult = function(authResult) {
@@ -64,6 +64,7 @@ app.controller('GmailMainController', function($scope) {
 					$scope.data.loadingMessage = "Displaying results on the screen...";
 					$scope.data.personalPhoto = image;
 					$scope.data.personalEmail = resp.result.emails[0].value;
+					gmail.setEmail($scope.data.personalEmail);
 					$scope.data.personalName = resp.result.displayName || $scope.data.personalEmail.substring(0, $scope.data.personalEmail.indexOf('@'));
 				});
 
@@ -84,19 +85,7 @@ app.controller('GmailMainController', function($scope) {
 		console.log("Getting list of new threads...");
 
 		//Step 8: Assemble the API request
-		var request;
-		if (nextPageToken === 'undefined') {
-			request = gapi.client.gmail.users.messages.list({
-				'userId': $scope.data.personalEmail,
-				'q': '!in:chats after:' + storage.getLastDate().toString('yyyy/MM/dd')
-			});
-		} else {
-			request = gapi.client.gmail.users.messages.list({
-				'userId': $scope.data.personalEmail,
-				'pageToken': nextPageToken,
-				'q': '!in:chats after:' + storage.getLastDate().toString('yyyy/MM/dd')
-			});
-		}
+		var request = gmail.getNewThreadsRequest(storage.getLastDate(), nextPageToken);
 
 		//Step 9A: Execute API request and retrieve list of threads
 		request.execute(function(response) {
@@ -131,19 +120,7 @@ app.controller('GmailMainController', function($scope) {
 	// Get list of threads
 	$scope.getListOfAllThreads = function(nextPageToken) {
 		//Step 8: Assemble the API request
-		var request;
-		if (nextPageToken === 'undefined') {
-			request = gapi.client.gmail.users.threads.list({
-				'userId': 'me',
-				'q': '!in:chats'
-			});
-		} else {
-			request = gapi.client.gmail.users.threads.list({
-				'userId': 'me',
-				'pageToken': nextPageToken,
-				'q': '!in:chats'
-			});
-		}
+		var request = gmail.getAllThreadsRequest(nextPageToken);
 
 		//Step 9A: Execute API request and retrieve list of threads
 		request.execute(function(response) {
@@ -173,22 +150,8 @@ app.controller('GmailMainController', function($scope) {
 
 	//Get threads
 	$scope.getPageThreads = function() {
-		var startingThread = $scope.data.currentPage * $scope.data.threadsPerPage;
-		var currentThread = startingThread;
-		var batchRequest = gapi.client.newBatch();
-
 		$scope.data.loadingMessage = "Loading messages...";
-		for (i = 0; i < $scope.data.threadsPerPage && currentThread < $scope.data.numOfThreads; i++) {
-			batchRequest.add(
-				gapi.client.gmail.users.threads.get({
-					'userId': 'me',
-					'id': storage.getThreadByIndex(currentThread).id,
-					'format': 'metadata'
-				}), {'id': currentThread}
-			);
-
-			currentThread = startingThread + (i + 1);
-		}
+		var batchRequest = gmail.getPageThreadsBatchRequest($scope.data.currentPage, $scope.data.threadsPerPage);
 
 		batchRequest.then(
 			function(response) {
@@ -212,13 +175,8 @@ app.controller('GmailMainController', function($scope) {
 				}
 
 				$scope.$apply(function() {
-					$scope.data.messageList = storage.getThreads(startingThread, $scope.data.threadsPerPage); //threads.slice(startingThread, startingThread + $scope.data.threadsPerPage);
+					$scope.data.messageList = storage.getThreads($scope.data.currentPage, $scope.data.threadsPerPage);
 					$scope.data.loading = false;
-
-					/*var string = JSON.stringify(threads);
-					console.log("Size of sample is " + getSizeBytes(string.length * 16));
-					var compressed = LZString.compress(string);
-					console.log("Size of compressed sample is " + getSizeBytes(compressed.length * 16));*/
 				});
 
 			}, function(reason) {
@@ -435,7 +393,6 @@ function handleLoad() {
 	// Get scope, set API and start client load
 	var scope = angular.element(document.querySelector('body')).scope();
 	scope.$apply(function(){
-		scope.gapi = gapi;
 		scope.handleClientLoad();
 	});
 }

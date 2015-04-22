@@ -12,6 +12,12 @@ function storage() {
     this.threadIds = {};
 }
 
+storage.prototype.getPersonalData = function(scope) {
+    scope.apply
+    "use strict";
+
+}
+
 storage.prototype.setLastDate = function(email, date) {
     this.lastDate = new Date(date);
     //this.lastDate.add(-1).days();
@@ -87,8 +93,9 @@ storage.prototype.getThreadByIndex = function(index) {
     return this.threadList[index];
 }
 
-storage.prototype.getThreads = function(start, num) {
-    return this.threadList.slice(start, start + num);
+storage.prototype.getThreads = function(page, num) {
+    var startingThread = page * num;
+    return this.threadList.slice(startingThread, startingThread + num);
 }
 
 var storage = new storage();
