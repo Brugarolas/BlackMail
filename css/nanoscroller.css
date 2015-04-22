@@ -1,0 +1,66 @@
+/** initial setup **/
+.nano {
+  position : relative;
+  width    : 100%;
+  height   : 100%;
+  overflow : hidden;
+}
+.nano > .nano-content {
+  position      : absolute;
+  overflow      : scroll;
+  overflow-x    : hidden;
+  top           : 0;
+  right         : 0;
+  bottom        : 0;
+  left          : 0;
+}
+.nano > .nano-content:focus {
+  outline: thin dotted;
+}
+.nano > .nano-content::-webkit-scrollbar {
+  display: none;
+}
+.has-scrollbar > .nano-content::-webkit-scrollbar {
+  display: block;
+}
+.nano > .nano-pane {
+  background : rgba(117, 117, 117, .25);
+  position   : absolute;
+  width      : 8px;
+  right      : 8px;
+  top        : 8px;
+  bottom     : 8px;
+  visibility : hidden\9; /* Target only IE7 and IE8 with this hack */
+  opacity    : .01;
+  -webkit-transition    : .3s;
+  -moz-transition       : .3s;
+  -o-transition         : .3s;
+  transition            : .3s;
+  -moz-border-radius    : 5px;
+  -webkit-border-radius : 5px;
+  border-radius         : 5px;
+}
+.nano > .nano-pane > .nano-slider {
+  background: #444;
+  background: rgba(0,0,0,.5);
+  position              : relative;
+  margin                : 0 1px;
+  -moz-border-radius    : 3px;
+  -webkit-border-radius : 3px;
+  border-radius         : 3px;
+  -webkit-transition    : .3s;
+  -moz-transition       : .3s;
+  -o-transition         : .3s;
+  transition            : .3s;
+  -webkit-transition-property    : background;
+  -moz-transition-property       : background;
+  -o-transition-property         : background;
+  transition-property            : background;
+}
+.nano > .nano-pane:hover > .nano-slider, .nano > .nano-pane.active > .nano-slider {
+  background: #A6A6A6;
+}
+.nano:hover > .nano-pane, .nano-pane.active, .nano-pane.flashed {
+  visibility : visible\9; /* Target only IE7 and IE8 with this hack */
+  opacity    : 0.99;
+}

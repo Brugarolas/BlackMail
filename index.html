@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+	<meta charset="UTF-8">
+	<title>Responsive Mail UI</title>
+	<meta name="viewport" content="width=device-width"/>
+
+	<!-- Icon -->
+	<link rel="shortcut icon" href="images/favicon.ico"/>
+
+	<!-- Bootstrap and AngularJS-->
+	<link rel="stylesheet" href="css/bootstrap.min.css" />
+	<script src="js/angular.min.js"></script>
+	<!-- script src="js/angular-sanitize.min.js"></script -->
+
+	<!-- Fonts and reset stylesheet -->
+	<link rel="stylesheet" href="css/roboto-fonts.css" />
+	<link rel="stylesheet" href="css/reset.css" />
+	
+	<!-- Custom stylesheet With Less -->
+	<link rel="stylesheet/less" type="text/css" href="less/mail_main_style.less"/>
+	<script src="js/less.config.js"></script>
+	<script src="js/less.min.js"></script>
+	<link rel="stylesheet" href="css/floating-bars.css"/>
+	
+	<!-- Prefix Free plugin -->
+    <script src="js/prefixfree.min.js"></script>
+
+	<!-- jQuery plugin -->
+	<script src='js/jquery.min.js'></script>
+
+	<!-- Nano Scroller -->
+	<script src="js/jquery.nanoscroller.min.js"></script>
+	<link rel="stylesheet" href="css/nanoscroller.css" />
+
+	<!-- iFrame resizer -->
+	<!-- script src="js/iframeResizer.min.js"></script -->
+
+	<!-- Updated Date.js from https://github.com/abritinthebay/datejs -->
+	<script src="js/date-es-ES.min.js"></script>
+
+	<!-- Custom template plugin -->
+	<!-- script src="js/mail_main.js"></script -->
+	
+	<!-- Decode plugin -->
+	<script src="js/base64.min.js"></script>
+	<script src="js/lz-string.min.js"></script>
+
+	<!-- Bluebird promise library (Not necessary, at the moment)-->
+	<!-- script src="js/bluebird.min.js"></script -->
+
+	<!-- Our mail plugin -->
+	<script src="js/index_storage.js"></script>
+	<script src="js/index_mail.js"></script>
+	<script src="js/index_thread.js"></script>
+	<script src="js/index.js"></script>
+
+	<!-- JavaScript Google API client library -->
+	<script src="js/google.api.min.js"></script>
+</head>
+<body id="mainBody" ng-controller="GmailMainController" ng-class="{'show-message': data.messageActive >= 0,
+	'show-main-overlay': data.showOverlay, 'show-sidebar': data.showSidebar }" onload="handleLoad()">
+
+	<!-- Left lateral bar -->
+	<aside id="sidebar" class="nano">
+	  <button id="authorize-button" style="visibility: hidden;">Authorize</button>
+		
+	  <div class="nano-content">
+		<div class="personal-container">
+			<img id ="personalPhoto" ng-src="{{data.personalPhoto}}"/>
+			<div id="personalName">{{data.personalName}}</div>
+		</div>
+		<div class="separator"></div>
+
+		<div class="logo-container">
+			<span class="logo glyphicon glyphicon-envelope"></span>Mail
+		</div>
+		<a class="compose-button">Compose</a>
+
+		<menu class="menu-segment">
+		  <ul>
+			<li class="active"><a>Inbox<span> (43)</span></a></li>
+			<li><a>Important</a></li>
+			<li><a>Sent</a></li>
+			<li><a>Drafts</a></li>
+			<li><a>Trash</a></li>
+		  </ul>
+		</menu>
+		<div class="separator"></div>
+		<div class="menu-segment">
+		  <ul class="labels">
+			<li class="title">Labels <span class="icon">+</span></li>
+			<li><a>Dribbble <span class="ball pink"></span></a></li>
+			<li><a>Roommates <span class="ball green"></span></a></li>
+			<li><a>Bills <span class="ball blue"></span></a></li>
+		  </ul>
+		</div>
+		<div class="separator"></div>
+		<div class="menu-segment">
+		  <ul class="chat">
+			<li class="title">Chat <span class="icon">+</span></li>
+			<li><a><span class="ball green"></span>Laura Turner</a></li>
+			<li><a><span class="ball green"></span>Kevin Jones</a></li>
+			<li><a><span class="ball blue"></span>John King</a></li>
+			<li><a><span class="ball blue"></span>Jenny Parker</a></li>
+			<li><a><span class="ball blue"></span>Paul Green</a></li>
+			<li><a class="italic-link">See offline list</a></li>
+		  </ul>
+		</div>
+		<div class="bottom-padding"></div>
+	  </div>
+	</aside>
+	
+	<!-- Main centered mail list -->
+	<main id="main">
+	  <div class="overlay" ng-click="clickOnOverlay()"></div>
+	  <header class="header">
+		<div class="search-box">
+		  <input placeholder="Search..."><span class="icon glyphicon glyphicon-search"></span>
+		</div>
+		<h1 class="page-title">
+			<a class="sidebar-toggle-btn" ng-click="clickOnToggleSidebar()">
+				<span class="line"></span>
+				<span class="line"></span>
+				<span class="line"></span>
+				<span class="line line-angle1"></span>
+				<span class="line line-angle2"></span>
+			</a>
+			Inbox
+			<a>
+				<span class="icon glyphicon glyphicon-chevron-down"></span>
+			</a>
+		</h1>
+	  </header>
+	  <div class="action-bar">
+		<ul>
+		  <li><a class="icon circle-icon glyphicon glyphicon-chevron-down"></a></li>
+		  <li><a class="icon circle-icon glyphicon glyphicon-refresh"></a></li>
+		  <li><a class="icon circle-icon glyphicon glyphicon-share-alt"></a></li>
+		  <li><a class="icon circle-icon red glyphicon glyphicon-remove"></a></li>
+		  <li><a class="icon circle-icon red glyphicon glyphicon-flag"></a></li>
+		</ul>
+
+		<div class="sequence" ng-show="data.loading">
+		  <div class="seq-preloader">
+			  <svg height="16" width="42" class="seq-preload-indicator">
+				  <circle class="seq-preload-circle seq-preload-circle-1" cx="4" cy="8" r="4">  </circle>
+				  <circle class="seq-preload-circle seq-preload-circle-2" cx="17" cy="8" r="6"> </circle>
+				  <circle class="seq-preload-circle seq-preload-circle-3" cx="34" cy="8" r="8">  </circle>
+			  </svg>
+			  <div class="seq-text-indicator">
+				  {{data.loadingMessage}}
+			  </div>
+		  </div>
+		</div>
+
+	  </div>
+	  <div id="main-nano-wrapper" class="nano">
+		<div class="nano-content">
+		  <ul class="message-list" ng-repeat="msg in data.messageList">
+			  <li class="green-dot" ng-class="{unread: msg.unread, active: data.messageActive == $index}" ng-click="clickOnThread($event, $index)">
+				  <div class="col col-1"><span class="dot"></span>
+					  <div class="checkbox-wrapper">
+						  <input type="checkbox" id="chk{{$index}}" ng-click="clickOnCheckbox($event, $index)">
+						  <label for="chk{{$index}}" class="toggle"></label>
+					  </div>
+					  <p class="title">{{msg.sender}} {{msg.numOfMsgs}}</p>
+					  <span class="star-toggle glyphicon glyphicon-star-empty"></span>
+				  </div>
+				  <div class="col col-2">
+					  <div class="subject">{{msg.subject}} &nbsp;&ndash;&nbsp; <span class="teaser">{{msg.snippet}}</span></div>
+					  <div class="date">{{formatDateShort(msg.date)}}</div>
+				  </div>
+			  </li>
+		  </ul>
+          <div class="load-more-link">
+          <a ng-click="clickPreviousPage()" ng-hide="data.currentPage == 0">Previous.</a>
+		  <a> Showing {{data.threadsPerPage}} out of {{data.numOfThreads}} messages (page {{data.currentPage + 1}} of {{data.numOfPages}}). </a>
+          <a ng-click="clickNextPage()" ng-hide="(data.currentPage + 1) == data.numOfPages">Next.</a>
+          </div>
+        </div>
+	  </div>
+	</main>
+	
+	<!-- Message right menu -->
+	<div id="message">
+	  <div class="header">
+		<div class="page-title">
+			<a class="icon circle-icon glyphicon glyphicon-chevron-left" ng-click="clickOnHideThread()"></a>
+			{{data.activeThread.subject}} <span class="grey">{{data.activeThread.numOfMsgs}}</span>
+		</div>
+		<p>From <a>You</a> to <a>Scott Waite</a>, started on <a>March 2, 2014</a> at 2:14 pm est.</p>
+	  </div>
+	  <div id="message-nano-wrapper" class="nano">
+		<div class="nano-content">
+		  <ul class="message-container" ng-repeat="msg in data.activeThread.messages">
+			  <li ng-class="{sent: $even, received: $odd}">
+				  <div class="details">
+					  <div class="left">You
+						  <div class="arrow"></div>Scott
+					  </div>
+					  <div class="right">March 6, 2014, 20:08 pm</div>
+				  </div>
+				  <div class="message">
+					  <iframe id="iframe{{$index}}" frameBorder="0" src="about:blank" scrolling="no" ng-email-iframe="{{msg.html}}" height="0"></iframe>
+					  <a ng-download-button="{{msg.html}}">Download</a>
+				  </div>
+				  <div class="tool-box"><a class="circle-icon small glyphicon glyphicon-share-alt"></a><a class="circle-icon small red-hover glyphicon glyphicon-remove"></a><a class="circle-icon small red-hover glyphicon glyphicon-flag"></a></div>
+			  </li>
+		  </ul>
+		</div>
+	  </div>
+	</div>
+</body>
+
+</html>
