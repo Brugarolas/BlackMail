@@ -75,7 +75,6 @@ app.controller('GmailMainController', function($scope) {
 
 	//Get list of new threads
 	$scope.getListOfNewMessages = function(nextPageToken, newThreads) {
-		console.log("Getting list of new threads...");
 		if (newThreads === undefined) newThreads = [];
 
 		//Step 8: Assemble the API request
@@ -83,7 +82,6 @@ app.controller('GmailMainController', function($scope) {
 
 		//Step 9A: Execute API request and retrieve list of threads
 		request.execute(function(response) {
-			console.log(response);
 			//Step 9A: Execute API request and retrieve list of threads
 			var nuevos = storage.addMessagesToList(response.result.messages);
 
@@ -93,8 +91,7 @@ app.controller('GmailMainController', function($scope) {
 			} else {
 				newThreads = newThreads.concat(nuevos);
 
-				console.log(newThreads.length + " new messages.");
-				for (i in newThreads) console.log("\t" + newThreads[i].id);
+				notificationSystem.newNotification(newThreads.length + " new messages.");
 			}
 
 			$scope.$apply(function() {
