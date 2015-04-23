@@ -30,7 +30,7 @@
 
 .seq-preload-indicator {
     overflow: visible;
-    position: relative;
+    position: absolute;
     top: 25%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -38,7 +38,7 @@
 
 .seq-text-indicator {
     overflow: visible;
-    position: relative;
+    position: absolute;
     text-align: center;
     font-size: 18px;
     font-weight: 200;
