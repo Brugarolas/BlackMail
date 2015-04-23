@@ -16,13 +16,13 @@ storage.prototype.setEmail = function(email) {
     this.email = email;
 }
 
-storage.prototype.setLastDate = function(email, date) {
-    this.lastDate = new Date(date);
-
-    localStorage.setItem(email + '_date', this.lastDate);
+storage.prototype.checkLastDate = function() {
+    this.lastDate = new Date(this.getThreadByIndex(0).date);
+    localStorage.setItem(this.email + '_date', this.lastDate);
 }
 
 storage.prototype.getLastDate = function() {
+
     return this.lastDate;
 }
 
@@ -60,7 +60,7 @@ storage.prototype.mergeThreadList = function(messages) {
     this.threadIds = {};
 
     for (i in this.threadList) {
-        this.threadIds[this.threadList[i]] = i;
+        this.threadIds[this.threadList[i].id] = i;
     }
 }
 
@@ -86,15 +86,7 @@ storage.prototype.addMessagesToList = function(messages) {
 }
 
 storage.prototype.addPageThreads = function(result) {
-    var thread, actual, firstThreadId = this.getThreadByIndex(0).id;
-
-    for (i in result) {
-        setThreadMetadata(this.getThreadByIndex(i), result[i].result);
-
-        if (this.getThreadByIndex(i).id == firstThreadId) {
-            storage.setLastDate(this.email, this.getThreadByIndex(i).date);
-        }
-    }
+    for (i in result) setThreadMetadata(this.getThreadByIndex(i), result[i].result);
 }
 
 storage.prototype.getNumOfThreads = function() {

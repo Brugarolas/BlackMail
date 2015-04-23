@@ -27,21 +27,13 @@ app.controller('GmailMainController', function($scope) {
 	$scope.handleAuthResult = function(authResult) {
 		$scope.data.loadingMessage = "Handling authorization...";
 
-		var authorizeButton = document.getElementById('authorize-button');
 		if (authResult && !authResult.error) {
 			//Step 2C: If we auth, make API call
-			authorizeButton.style.visibility = 'hidden';
 			$scope.makeApiCall();
 		} else {
-			//Step 2D: If we can't auth, make authorize button visible
-			$scope.gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: false}, $scope.handleAuthResult);
+			// Step 3: Get authorization to use private data
+			gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: false}, $scope.handleAuthResult);
 		}
-	}
-
-	$scope.handleAuthClick = function(event) {
-		// Step 3: Get authorization to use private data
-		$scope.gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: false}, $scope.handleAuthResult);
-		return false;
 	}
 
 	// Load the API and make an API call.  Display the results on the screen.
@@ -100,30 +92,17 @@ app.controller('GmailMainController', function($scope) {
 				$scope.getListOfNewMessages(response.nextPageToken, newThreads.concat(nuevos));
 			} else {
 				newThreads = newThreads.concat(nuevos);
-				storage.mergeThreadList(newThreads);
+
 				console.log(newThreads.length + " new messages.");
 				for (i in newThreads) console.log("\t" + newThreads[i].id);
 			}
 
-
-			//console.log(nuevos.length + " new messages.");
-			//for (i in nuevos) console.log("\t" + nuevos[i].id);
-
-			//Step 9C: If we have more pages with threads, request them
-			//if (response.nextPageToken) {
-			//	$scope.$apply(function() {
-			//		$scope.data.loadingMessage = "Loading threads (" + storage.getNumOfThreads() + " threads loaded)...";
-			//	});
-			//	$scope.getListOfAllThreads(response.nextPageToken);
-			//} else {
-				//Step 9D: If we do not, start loading particular threads
-				$scope.$apply(function() {
-					$scope.data.numOfThreads = storage.getNumOfThreads();
-					$scope.data.loadingMessage = storage.saveThreads($scope.data.personalEmail);
-					$scope.data.numOfPages = Math.ceil($scope.data.numOfThreads / $scope.data.threadsPerPage);
-				});
-				$scope.getPageThreads();
-			//}
+			$scope.$apply(function() {
+				$scope.data.numOfThreads = storage.getNumOfThreads();
+				$scope.data.loadingMessage = storage.saveThreads($scope.data.personalEmail);
+				$scope.data.numOfPages = Math.ceil($scope.data.numOfThreads / $scope.data.threadsPerPage);
+			});
+			$scope.getPageThreads();
 		}, function(reason) {
 			//Some error happened
 			console.error(reason.result.error.message);
@@ -168,27 +147,9 @@ app.controller('GmailMainController', function($scope) {
 
 		batchRequest.then(
 			function(response) {
-				/*var thread, result, firstThreadId = storage.getThreadByIndex(0).id;
-
-				for (i in response.result) {
-					result = response.result[i].result;
-					thread = storage.getThreadByIndex(i);
-
-					thread.subject = getThreadSubject(result);
-					thread.snippet = getThreadSnippet(result);
-					thread.unread = isThreadUnread(result);
-					thread.date = Date.parse(getThreadDate(result));
-					thread.sender = getSenderThread(result);
-					thread.numOfMsgs = getNumOfMessages(result);
-					thread.messages = [];
-
-                    if ($scope.data.currentPage == 0 && thread.id == firstThreadId) {
-                        storage.setLastDate($scope.data.personalEmail, thread.date);
-                    }
-				}*/
-
 				storage.addPageThreads(response.result);
 
+				if ($scope.data.currentPage == 0) storage.checkLastDate();
 				$scope.$apply(function() {
 					$scope.data.messageList = storage.getThreads($scope.data.currentPage, $scope.data.threadsPerPage);
 					$scope.data.loading = false;

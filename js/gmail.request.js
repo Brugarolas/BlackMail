@@ -10,6 +10,10 @@ gmail.prototype.setEmail = function(email) {
     this.email = email;
 }
 
+gmail.prototype.getEmail = function() {
+    return this.email;
+}
+
 gmail.prototype.getNewMessagesRequest = function(lastDate, nextPageToken) {
     if (nextPageToken && nextPageToken !== undefined) {
         return gapi.client.gmail.users.messages.list({
