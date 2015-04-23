@@ -10,6 +10,7 @@ function storage() {
 
     this.threadList = [];
     this.threadIds = {};
+    this.labels = {};
 }
 
 storage.prototype.setEmail = function(email) {
@@ -18,11 +19,12 @@ storage.prototype.setEmail = function(email) {
 
 storage.prototype.checkLastDate = function() {
     this.lastDate = new Date(this.getThreadByIndex(0).date);
+    this.lastDate.add(-1).days();
+
     localStorage.setItem(this.email + '_date', this.lastDate);
 }
 
 storage.prototype.getLastDate = function() {
-
     return this.lastDate;
 }
 
@@ -33,6 +35,10 @@ storage.prototype.saveThreads = function(email) {
     localStorage.setItem(email, compressed);
 
     return "Saving " + getSizeBytes(compressed.length * 16) + " of data...";
+}
+
+storage.prototype.saveLabels = function(labels) {
+    //TODO Guardar
 }
 
 storage.prototype.retrieveThreads = function(email) {

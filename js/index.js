@@ -11,7 +11,7 @@ app.controller('GmailMainController', function($scope) {
 		loadingMessage: "Loading API...",
 		messageActive: -1,
 		currentPage: 0,
-		threadsPerPage: 20,
+		threadsPerPage: 100,
 		showOverlay: false,
 		showSidebar: false
 	};
@@ -63,6 +63,10 @@ app.controller('GmailMainController', function($scope) {
 
 				//Step 7: Load the Gmail API and get list of threads
 				gapi.client.load('gmail', 'v1', function() {
+					$scope.data.loadingMessage = "Retrieving stored data...";
+
+					$scope.getListOfLabels();
+
 					if (storage.retrieveThreads($scope.data.personalEmail)) $scope.getListOfNewMessages();
 					else $scope.getListOfAllThreads();
 				});
@@ -70,6 +74,14 @@ app.controller('GmailMainController', function($scope) {
 				//Some error happened
 				console.error(reason.result.error.message);
 			});
+		});
+	}
+
+	$scope.getListOfLabels = function() {
+		var request = gmail.getLabelListRequest();
+
+		request.execute(function(response) {
+			storage.saveLabels(response.result.labels);
 		});
 	}
 
@@ -82,16 +94,20 @@ app.controller('GmailMainController', function($scope) {
 
 		//Step 9A: Execute API request and retrieve list of threads
 		request.execute(function(response) {
-			//Step 9A: Execute API request and retrieve list of threads
-			var nuevos = storage.addMessagesToList(response.result.messages);
+			$scope.data.loadingMessage = "Getting new emails...";
 
-			//Step 9C: If we have more pages with threads, request them
-			if (nuevos.length == response.result.messages.length && response.nextPageToken) {
-				$scope.getListOfNewMessages(response.nextPageToken, newThreads.concat(nuevos));
-			} else {
-				newThreads = newThreads.concat(nuevos);
+			if (response.resultSizeEstimate != 0) {
+				//Step 9A: Execute API request and retrieve list of threads
+				var nuevos = storage.addMessagesToList(response.result.messages);
 
-				notificationSystem.newNotification(newThreads.length + " new messages.");
+				//Step 9C: If we have more pages with threads, request them
+				if (nuevos.length == response.result.messages.length && response.nextPageToken) {
+					$scope.getListOfNewMessages(response.nextPageToken, newThreads.concat(nuevos));
+				} else {
+					newThreads = newThreads.concat(nuevos);
+
+					notificationSystem.newNotification(newThreads.length + " new messages.");
+				}
 			}
 
 			$scope.$apply(function() {
@@ -144,6 +160,8 @@ app.controller('GmailMainController', function($scope) {
 
 		batchRequest.then(
 			function(response) {
+				console.log(response.result);
+
 				storage.addPageThreads(response.result);
 
 				if ($scope.data.currentPage == 0) storage.checkLastDate();
@@ -154,7 +172,7 @@ app.controller('GmailMainController', function($scope) {
 
 			}, function(reason) {
 				//Some error happened
-				console.log(reason);
+				console.error(reason.result.error.message);
 			}
 		);
 	}
