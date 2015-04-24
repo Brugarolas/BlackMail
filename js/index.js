@@ -380,13 +380,13 @@ app.controller('GmailMainController', function($scope) {
     }
 
 	$scope.clickPreviousPage = function() {
-		if ($scope.data.currentPage > 0) $scope.data.currentPage--;
-		$scope.data.messageList = storage.getThreads($scope.data.currentPage, $scope.data.threadsPerPage);
+		if ($scope.data.currentPage > 0)
+			$scope.data.messageList = storage.getThreads(--$scope.data.currentPage, $scope.data.threadsPerPage);
 	}
 
 	$scope.clickNextPage = function() {
-		if ($scope.data.currentPage < $scope.data.numOfPages - 1) $scope.data.currentPage++;
-		$scope.data.messageList = storage.getThreads($scope.data.currentPage, $scope.data.threadsPerPage);
+		if ($scope.data.currentPage < $scope.data.numOfPages - 1)
+			$scope.data.messageList = storage.getThreads(++$scope.data.currentPage, $scope.data.threadsPerPage);
 	}
 });
 
