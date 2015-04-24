@@ -74,16 +74,18 @@ storage.prototype.addMessagesToList = function(messages) {
     var threadsAux = [];
 
     for (i in messages) {
+        console.log(messages[i]);
+
         if (this.threadIds[messages[i].threadId] === undefined) {
             threadsAux.push({id: messages[i].threadId});
         } else {
-            var threadId = this.threadIds[messages[i].id];
+            var threadIndex = this.threadIds[messages[i].threadId];
 
-            if (threadId == 0) {
+            if (threadIndex == 0) {
                 break;
             } else {
-                threadsAux.push({id: messages[i].id});
-                this.threads.splice(threadId, 1);
+                threadsAux.push({id: messages[i].threadId});
+                this.threadList.splice(threadIndex, 1);
             }
         }
     }

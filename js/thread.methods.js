@@ -8,6 +8,7 @@ function setThreadMetadata(thread, result) {
     thread.date = Date.parse(getThreadDate(result));
     thread.sender = getSenderThread(result);
     thread.numOfMsgs = getNumOfMessages(result);
+    thread.labels = getLabels(result);
     thread.messages = [];
 }
 
@@ -38,6 +39,20 @@ function getSenderThread(response) {
     var headers = response.messages[response.messages.length - 1].payload.headers;
     for (i in headers) if (headers[i].name == "From") return formatSender(headers[i].value);
     return "(No sender)";
+}
+
+function getLabels(response) {
+    var message, label, labels = [];
+    for (i in response.messages) {
+        message = response.messages[i];
+
+        for (n in message.labelIds) {
+            label = message.labelIds[n];
+
+            if (labels.indexOf(label) == -1) labels.push(label);
+        }
+    }
+    return labels;
 }
 
 function getNumOfMessages(response) {

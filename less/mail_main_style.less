@@ -530,6 +530,11 @@ a {
 
 				.star-toggle {
 					font-size: 18px;
+				  	margin-top: 15px;
+				}
+
+			  	.important {
+				  	color: #D4AF37;
 				}
 
 				.dot {
@@ -545,10 +550,6 @@ a {
 				.checkbox-wrapper {
 					margin-top: 15px;
 					margin-right: 10px;
-				}
-				
-				.star-toggle {
-					margin-top: 15px;
 				}
 
 				.title {
@@ -746,6 +747,19 @@ a {
 
 				p:last-child {
 					margin-bottom: 0;
+				}
+
+			  	a {
+				  	color: @color-orange;
+				  	border-radius: 10px;
+				  	border: 1px solid @color-orange;
+				  	padding: 5px;
+				}
+
+				a:hover {
+				 	 color: darken(@color-orange, 10%);
+				 	 border: 1px solid darken(@color-orange, 10%);
+				  	 font-weight: bold;
 				}
 			}
 

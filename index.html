@@ -22,9 +22,6 @@
 	<script src="js/less.config.js"></script>
 	<script src="js/libs/less.min.js"></script>
 	<link rel="stylesheet" href="css/floating-bars.css"/>
-	
-	<!-- Prefix Free plugin -->
-    <script src="js/libs/prefixfree.min.js"></script>
 
 	<!-- jQuery plugin -->
 	<script src='js/libs/jquery.min.js'></script>
@@ -48,6 +45,9 @@
 
 	<!-- Bluebird promise library (Not necessary, at the moment)-->
 	<!-- script src="js/bluebird.min.js"></script -->
+
+	<!-- Prefix Free plugin -->
+	<script src="js/libs/prefixfree.min.js"></script>
 
 	<!-- Our mail plugin -->
 	<script src="js/storage.js"></script>
@@ -152,7 +152,7 @@
 						  <label for="chk{{$index}}" class="toggle"></label>
 					  </div>
 					  <p class="title">{{msg.sender}} {{msg.numOfMsgs}}</p>
-					  <span class="star-toggle glyphicon glyphicon-star-empty"></span>
+					  <span class="star-toggle glyphicon" ng-class="{'glyphicon-star-empty': !isImportant(msg.labels), 'important glyphicon-star': isImportant(msg.labels)}"></span>
 				  </div>
 				  <div class="col col-2">
 					  <div class="subject">{{msg.subject}} &nbsp;&ndash;&nbsp; <span class="teaser">{{msg.snippet}}</span></div>
@@ -161,9 +161,9 @@
 			  </li>
 		  </ul>
           <div class="load-more-link">
-          <a ng-click="clickPreviousPage()" ng-hide="data.currentPage == 0">Previous.</a>
-		  <a> Showing {{data.threadsPerPage}} out of {{data.numOfThreads}} messages (page {{data.currentPage + 1}} of {{data.numOfPages}}). </a>
-          <a ng-click="clickNextPage()" ng-hide="(data.currentPage + 1) == data.numOfPages">Next.</a>
+          	<a ng-click="clickPreviousPage()" ng-hide="data.currentPage == 0">Previous.</a>
+		  	<a> Showing {{getNumShowingThreads()}} out of {{data.numOfThreads}} messages (page {{data.currentPage + 1}} of {{data.numOfPages}}). </a>
+          	<a ng-click="clickNextPage()" ng-hide="(data.currentPage + 1) == data.numOfPages">Next.</a>
           </div>
         </div>
 	  </div>
@@ -190,9 +190,13 @@
 				  </div>
 				  <div class="message">
 					  <iframe id="iframe{{$index}}" frameBorder="0" src="about:blank" scrolling="no" ng-email-iframe="{{msg.html}}" height="0"></iframe>
-					  <a ng-download-button="{{msg.html}}">Download</a>
+					  <a ng-download-button="{{msg.html}}">Download Email</a>
 				  </div>
-				  <div class="tool-box"><a class="circle-icon small glyphicon glyphicon-share-alt"></a><a class="circle-icon small red-hover glyphicon glyphicon-remove"></a><a class="circle-icon small red-hover glyphicon glyphicon-flag"></a></div>
+				  <div class="tool-box">
+					  <a class="circle-icon small glyphicon glyphicon-share-alt"></a>
+					  <a class="circle-icon small red-hover glyphicon glyphicon-remove"></a>
+					  <a class="circle-icon small red-hover glyphicon glyphicon-flag"></a>
+				  </div>
 			  </li>
 		  </ul>
 		</div>
@@ -200,8 +204,9 @@
 	</div>
 
 	<!-- Loading -->
-	<div class="sequence" ng-show="data.loading">
+	<div id="loading-page" ng-show="data.loading">
 		<div class="seq-preloader">
+			<div id="loader"></div>
 			<svg height="16" width="42" class="seq-preload-indicator">
 				<circle class="seq-preload-circle seq-preload-circle-1" cx="4" cy="8" r="4">  </circle>
 				<circle class="seq-preload-circle seq-preload-circle-2" cx="17" cy="8" r="6"> </circle>

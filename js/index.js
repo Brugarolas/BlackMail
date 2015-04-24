@@ -343,6 +343,17 @@ app.controller('GmailMainController', function($scope) {
 		}
 	}
 
+	$scope.getNumShowingThreads = function() {
+		return Math.min($scope.data.numOfThreads, $scope.data.threadsPerPage);
+	}
+
+	$scope.isImportant = function(labels) {
+		for (i in labels) {
+			if (labels[i] === "IMPORTANT") return true;
+		}
+		return false;
+	}
+
 	$scope.clickOnHideThread = function() {
 		$scope.data.messageActive = -1;
 		$scope.data.showOverlay = false;
