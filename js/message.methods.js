@@ -8,7 +8,7 @@ function obtainMainHTML(content) {
     //html = html.replace(/([^-]|^)(width: *\d*px;?)/igm, "$1");
 
     return html.replace("<head>", "<head> \n\t<base target='_blank'>");
-    //return html.replace("<head>", "<head> \n\t<base target='_blank'> \n\t<script src='js/iframeResizer.contentWindow.min.js'></script>");
+    //return html.replace("<head>", "<head> \n\t<base target='_blank'> \n\t<script src='js/libs/iframeResizer.contentWindow.min.js'></script>");
 }
 
 function createMainHTML(content) {

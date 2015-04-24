@@ -160,14 +160,19 @@ app.controller('GmailMainController', function($scope) {
 
 		batchRequest.then(
 			function(response) {
-				console.log(response.result);
-
 				storage.addPageThreads(response.result);
 
 				if ($scope.data.currentPage == 0) storage.checkLastDate();
 				$scope.$apply(function() {
-					$scope.data.messageList = storage.getThreads($scope.data.currentPage, $scope.data.threadsPerPage);
-					$scope.data.loading = false;
+					if ($scope.data.currentPage < $scope.data.numOfPages - 1) {
+						$scope.data.currentPage += 1;
+						$scope.getPageThreads();
+					} else {
+						$scope.data.currentPage = 0;
+						$scope.data.messageList = storage.getThreads($scope.data.currentPage, $scope.data.threadsPerPage);
+						$scope.data.loadingMessage = storage.saveThreads($scope.data.personalEmail);
+						$scope.data.loading = false;
+					}
 				});
 
 			}, function(reason) {
@@ -326,16 +331,16 @@ app.controller('GmailMainController', function($scope) {
 			enablePublicMethods: true
 		});*/
 
-		/*iframe.onload = function() {
-			$('#' + id).iFrameResize({
-				checkOrigin: false,
-				enablePublicMethods: true
-			});
-		}*/
-
 		setTimeout(function(){
 			if (!loaded) iframe.height = (iframe.contentWindow.document.body.scrollHeight / 2) - 50;
 		}, 32);
+
+		/*iframe.onload = function() {
+			 $('#' + id).iFrameResize({
+				 checkOrigin: false,
+				 enablePublicMethods: true
+			 });
+		}*/
 
 		iframe.onload = function() {
 			loaded = true;
@@ -376,14 +381,12 @@ app.controller('GmailMainController', function($scope) {
 
 	$scope.clickPreviousPage = function() {
 		if ($scope.data.currentPage > 0) $scope.data.currentPage--;
-		$scope.data.loading = true;
-		$scope.getPageThreads();
+		$scope.data.messageList = storage.getThreads($scope.data.currentPage, $scope.data.threadsPerPage);
 	}
 
 	$scope.clickNextPage = function() {
 		if ($scope.data.currentPage < $scope.data.numOfPages - 1) $scope.data.currentPage++;
-		$scope.data.loading = true;
-		$scope.getPageThreads();
+		$scope.data.messageList = storage.getThreads($scope.data.currentPage, $scope.data.threadsPerPage);
 	}
 });
 
