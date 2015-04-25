@@ -2,46 +2,71 @@
  * Created by Andrés on 07/04/2015.
  */
 function setThreadMetadata(thread, result) {
-    thread.subject = getThreadSubject(result);
-    thread.snippet = getThreadSnippet(result);
-    thread.unread = isThreadUnread(result);
-    thread.date = Date.parse(getThreadDate(result));
-    thread.sender = getSenderThread(result);
+    var firstMessage = result.messages[0];
+    var lastMessage = result.messages[result.messages.length - 1];
+
+    thread.subject = getMessageSubject(firstMessage);
+    thread.snippet = getMessageSnippet(lastMessage);
+    thread.date = Date.parse(getMessageDate(lastMessage));
+    thread.unread = isMessageUnread(lastMessage);
+    thread.sender = getMessageSender(lastMessage);
+    thread.labels = getThreadLabels(result);
+
     thread.numOfMsgs = getNumOfMessages(result);
-    thread.labels = getLabels(result);
     thread.messages = [];
 }
 
-function getThreadSubject(response) {
-    var headers = response.messages[0].payload.headers;
+function updateThreadMetadata(thread, message) {
+    if (!thread.subject) thread.subject = getMessageSubject(message);
+    thread.snippet = getMessageSnippet(message);
+    thread.date = Date.parse(getMessageDate(message));
+    thread.unread = isMessageUnread(message);
+    thread.sender = getMessageSender(message);
+
+    if (!thread.labels) {
+        thread.labels = message.labelIds;
+    } else {
+        for (i in message.labelIds) {
+            label = message.labelIds[i];
+
+            if (thread.labels.indexOf(label) == -1) thread.labels.push(label);
+        }
+    }
+
+    if (!thread.numOfMsgs) thread.numOfMsgs = 1;
+    else thread.numOfMsgs += 1;
+}
+
+function getMessageSubject(message) {
+    var headers = message.payload.headers;
     for (i in headers) if (headers[i].name == "Subject") return headers[i].value;
     return "(No subject)";
 }
 
-function getThreadSnippet(response) {
-    var snippet = response.messages[response.messages.length - 1].snippet;
+function getMessageSnippet(message) {
+    var snippet = message.snippet;
     return (snippet) ? htmlspecialchars_decode(snippet, 1): "(No snippet)";
 }
 
-function getThreadDate(response) {
-    var headers = response.messages[response.messages.length - 1].payload.headers;
+function getMessageDate(message) {
+    var headers = message.payload.headers;
     for (i in headers) if (headers[i].name == "Date") return formatDate(headers[i].value);
     return "(No date)";
 }
 
-function isThreadUnread(response) {
-    var labelIds = response.messages[response.messages.length - 1].labelIds;
+function isMessageUnread(message) {
+    var labelIds = message.labelIds;
     for (i in labelIds) if (labelIds[i] == "UNREAD") return true;
     return false;
 }
 
-function getSenderThread(response) {
-    var headers = response.messages[response.messages.length - 1].payload.headers;
+function getMessageSender(message) {
+    var headers = message.payload.headers;
     for (i in headers) if (headers[i].name == "From") return formatSender(headers[i].value);
     return "(No sender)";
 }
 
-function getLabels(response) {
+function getThreadLabels(response) {
     var message, label, labels = [];
     for (i in response.messages) {
         message = response.messages[i];

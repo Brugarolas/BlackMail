@@ -68,6 +68,8 @@ storage.prototype.mergeThreadList = function(messages) {
     for (i in this.threadList) {
         this.threadIds[this.threadList[i].id] = i;
     }
+
+    notificationSystem.newNotification(messages.length + " new messages.");
 }
 
 storage.prototype.addMessagesToList = function(messages) {
@@ -95,6 +97,11 @@ storage.prototype.addMessagesToList = function(messages) {
 
 storage.prototype.addPageThreads = function(result) {
     for (i in result) setThreadMetadata(this.getThreadByIndex(i), result[i].result);
+}
+
+storage.prototype.addMessageToThread = function(message) {
+    var thread = this.threadList[this.threadIds[message.threadId]];
+    updateThreadMetadata(thread, message);
 }
 
 storage.prototype.getNumOfThreads = function() {

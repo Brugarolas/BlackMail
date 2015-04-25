@@ -62,6 +62,22 @@ gmail.prototype.getPageThreadsBatchRequest = function(currentPage, threadsPerPag
     return batchRequest;
 }
 
+gmail.prototype.getNewMessagesBatchRequest = function(newMessages) {
+    var batchRequest = gapi.client.newBatch();
+
+    for (i in newMessages) {
+        batchRequest.add(
+            gapi.client.gmail.users.messages.get({
+                'userId': this.email,
+                'id': newMessages[i].id,
+                'format': 'metadata'
+            }), {'id': newMessages[i].id}
+        );
+    }
+
+    return batchRequest;
+}
+
 gmail.prototype.getLabelListRequest = function() {
     return gapi.client.gmail.users.labels.list({
         'userId': this.email
