@@ -34,6 +34,10 @@ storage.prototype.saveThreads = function(email) {
     var compressed = LZString.compress(JSON.stringify(threads));
     localStorage.setItem(email, compressed);
 
+    for (i in this.threadList) {
+        this.threadList[i].date = Date.parse(this.threadList[i].date);
+    }
+
     return "Saving " + getSizeBytes(compressed.length * 16) + " of data...";
 }
 

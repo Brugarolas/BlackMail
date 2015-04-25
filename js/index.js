@@ -11,7 +11,7 @@ app.controller('GmailMainController', function($scope) {
 		loadingMessage: "Loading API...",
 		messageActive: -1,
 		currentPage: 0,
-		threadsPerPage: 100,
+		threadsPerPage: 20,
 		showOverlay: false,
 		showSidebar: false
 	};
@@ -156,7 +156,7 @@ app.controller('GmailMainController', function($scope) {
 			//Step 9C: If we have more pages with threads, request them
 			if (response.nextPageToken) {
 				$scope.$apply(function() {
-					$scope.data.loadingMessage = "Loading threads (" + storage.getNumOfThreads() + " threads loaded)...";
+					$scope.data.loadingMessage = "Indexing threads (" + storage.getNumOfThreads() + " threads indexed)...";
 				});
 				$scope.getListOfAllThreads(response.nextPageToken);
 			} else {
@@ -174,26 +174,28 @@ app.controller('GmailMainController', function($scope) {
 	}
 
 	//Get threads
-	$scope.getPageThreads = function() {
-		$scope.data.loadingMessage = "Loading messages...";
-		var batchRequest = gmail.getPageThreadsBatchRequest($scope.data.currentPage, $scope.data.threadsPerPage);
+	$scope.getPageThreads = function(page) {
+		if (!page) page = 0;
+		var pagesToLoad = 100, numOfPages = Math.ceil($scope.data.numOfThreads / 100);
+		var batchRequest = gmail.getPageThreadsBatchRequest(page, pagesToLoad);
 
 		batchRequest.then(
 			function(response) {
 				storage.addPageThreads(response.result);
 
-				if ($scope.data.currentPage == 0) storage.checkLastDate();
-				$scope.$apply(function() {
-					if ($scope.data.currentPage < $scope.data.numOfPages - 1) {
-						$scope.data.currentPage += 1;
-						$scope.getPageThreads();
-					} else {
-						$scope.data.currentPage = 0;
-						$scope.data.messageList = storage.getThreads($scope.data.currentPage, $scope.data.threadsPerPage);
+				if (page == 0) storage.checkLastDate();
+				if (page < numOfPages - 1) {
+					$scope.$apply(function() {
+						$scope.data.loadingMessage = "Loading threads (" + (pagesToLoad * (page + 1)) + "/" + $scope.data.numOfThreads + " threads loaded)...";
+					});
+					$scope.getPageThreads(page + 1);
+				} else {
+					$scope.$apply(function() {
 						$scope.data.loadingMessage = storage.saveThreads($scope.data.personalEmail);
+						$scope.data.messageList = storage.getThreads($scope.data.currentPage, $scope.data.threadsPerPage);
 						$scope.data.loading = false;
-					}
-				});
+					});
+				}
 
 			}, function(reason) {
 				//Some error happened
@@ -241,14 +243,15 @@ app.controller('GmailMainController', function($scope) {
 	}
 
 	$scope.showThread = function(index) {
-		var startingThread = $scope.data.currentPage * $scope.data.threadsPerPage;
-		var thread = storage.getThreadByIndex(startingThread + index);
+		var thread = storage.getThreadByIndex($scope.data.currentPage * $scope.data.threadsPerPage + index);
 
 		//If thread is currently in memory, we don't have to make a new API request
 		if (thread.messages.length > 0) {
-			$scope.data.activeThread = thread;
-			$scope.data.messageActive = index;
-			$scope.data.showOverlay = true;
+			$scope.$apply(function () {
+				$scope.data.activeThread = thread;
+				$scope.data.messageActive = index;
+				$scope.data.showOverlay = true;
+			});
 			return;
 		}
 
@@ -412,14 +415,11 @@ app.controller('GmailMainController', function($scope) {
 
 //Step 1: Start here
 function handleLoad() {
-	// Enable sexy scrollbars
-	$('.nano').nanoScroller();
+	$('.nano').nanoScroller(); // Enable sexy scrollbars
 
 	// Get scope, set API and start client load
 	var scope = angular.element(document.querySelector('body')).scope();
-	scope.$apply(function(){
-		scope.handleClientLoad();
-	});
+	scope.handleClientLoad();
 }
 
 app.directive('ngEmailIframe', function($compile) {
