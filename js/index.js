@@ -443,12 +443,12 @@ app.controller('GmailMainController', function($scope) {
 
 	$scope.clickPreviousPage = function() {
 		if ($scope.data.currentPage > 0)
-			$scope.data.messageList = storage.getThreads(--$scope.data.currentPage, $scope.data.threadsPerPage);
+			$scope.data.messageList = storage.getThreads(--$scope.data.currentPage, $scope.data.threadsPerPage, $scope.data.selectedLabel.id);
 	}
 
 	$scope.clickNextPage = function() {
 		if ($scope.data.currentPage < $scope.data.numOfPages - 1)
-			$scope.data.messageList = storage.getThreads(++$scope.data.currentPage, $scope.data.threadsPerPage);
+			$scope.data.messageList = storage.getThreads(++$scope.data.currentPage, $scope.data.threadsPerPage, $scope.data.selectedLabel.id);
 	}
 
 	$scope.clickShowMenu = function() {
