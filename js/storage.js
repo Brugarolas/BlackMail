@@ -17,15 +17,8 @@ storage.prototype.setEmail = function(email) {
     this.email = email;
 }
 
-storage.prototype.checkLastDate = function() {
-    this.lastDate = new Date(this.getThreadByIndex(0).date);
-    this.lastDate.add(-1).days();
-
-    localStorage.setItem(this.email + '_date', this.lastDate);
-}
-
 storage.prototype.getLastDate = function() {
-    return this.lastDate;
+    return new Date(this.getThreadByIndex(0).date).add(-1).days();
 }
 
 storage.prototype.saveThreads = function(email) {
@@ -54,7 +47,6 @@ storage.prototype.retrieveThreads = function(email) {
 
     this.threadList = item.list;
     this.threadIds = item.ids;
-    this.lastDate = Date.parse(localStorage.getItem(email + '_date'));
     return true;
 }
 
@@ -73,7 +65,7 @@ storage.prototype.mergeThreadList = function(messages) {
         this.threadIds[this.threadList[i].id] = i;
     }
 
-    notificationSystem.newNotification(messages.length + " new messages.");
+    if (messages.length > 0) notificationSystem.newNotification(messages.length + " new messages.");
 }
 
 storage.prototype.addMessagesToList = function(messages) {

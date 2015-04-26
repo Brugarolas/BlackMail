@@ -73,14 +73,15 @@ function getLink(find) {
     return "<a href=http://" + find + ">" + find + "</a>";*/
 }
 
-function getSizeBytes(size, multiple) {
+function getSizeBytes(size) {
     var metrics = ['bytes', 'kilobytes', 'megabytes', 'gigabytes', 'terabytes',
-                    'petabytes', 'exabytes', 'zettabytes', 'yottabytes'];
+                    'petabytes', 'exabytes', 'zettabytes'];
 
-    if (multiple === undefined) multiple = 0;
-
-    if (size < 1024) return size + ' ' + metrics[multiple];
-    else return getSizeBytes(Math.round((size / 1024) * 100) / 100, multiple + 1);
+    for (i in metrics) {
+        if (size < 1024) return roundToTwo(size) + ' ' + metrics[i];
+        size = size / 1024;
+    }
+    return roundToTwo(size) + ' yottabytes';
 }
 
 function parsePayload(email, payload) {
@@ -145,5 +146,13 @@ function getImageSrcToReplace(image) {
         return "cid:" + value.substring(1, value.length - 1);
     }
     return false;
+}
+
+function roundToTwo(num) {
+    return +(Math.round(num + "e+2")  + "e-2");
+}
+
+function roundToPorc(num) {
+    return +(Math.round(num + "e+4")  + "e-2");
 }
 
