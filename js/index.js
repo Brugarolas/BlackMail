@@ -13,7 +13,8 @@ app.controller('GmailMainController', function($scope) {
 		currentPage: 0,
 		threadsPerPage: 20,
 		showOverlay: false,
-		showSidebar: false
+		showSidebar: false,
+		showMenu: false
 	};
 
 	$scope.handleClientLoad = function() {
@@ -431,6 +432,10 @@ app.controller('GmailMainController', function($scope) {
 	$scope.clickNextPage = function() {
 		if ($scope.data.currentPage < $scope.data.numOfPages - 1)
 			$scope.data.messageList = storage.getThreads(++$scope.data.currentPage, $scope.data.threadsPerPage);
+	}
+
+	$scope.clickShowMenu = function() {
+		$scope.data.showMenu = !$scope.data.showMenu;
 	}
 });
 

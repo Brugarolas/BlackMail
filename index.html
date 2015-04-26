@@ -128,8 +128,8 @@
 			</a>
 			Inbox
 			<span class="menu">
-				<a><span class="icon selectable-menu glyphicon glyphicon-chevron-down"></span></a>
-				<ul class="sub-menu">
+				<a ng-click="clickShowMenu()"><span class="icon selectable-menu glyphicon" ng-class="{'glyphicon-chevron-down': !data.showMenu, 'glyphicon-chevron-up': data.showMenu}"></span></a>
+				<ul class="sub-menu" ng-class="{'show-menu': data.showMenu}">
 					<li>Social</li>
 					<li>Forums</li>
 					<li>Promotions</li>
