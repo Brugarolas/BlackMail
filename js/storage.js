@@ -10,7 +10,8 @@ function storage() {
 
     this.threadList = [];
     this.threadIds = {};
-    this.labels = {};
+    this.threadLabels = {};
+    this.labels = [];
 }
 
 storage.prototype.setEmail = function(email) {
@@ -35,7 +36,25 @@ storage.prototype.saveThreads = function(email) {
 }
 
 storage.prototype.saveLabels = function(labels) {
-    //TODO Guardar
+    for (i in labels) {
+        this.labels.push(labels[i]);
+    }
+}
+
+storage.prototype.getLabels = function() {
+    return this.labels;
+}
+
+storage.prototype.getCategories = function() {
+   var labels = [], id, category = "CATEGORY_";
+   for (i in this.labels) {
+       id = this.labels[i].id;
+       if (id.indexOf(category) == 0) {
+           id = id.substring(category.length);
+           labels.push({'id': this.labels[i].id, 'name': id.charAt(0) + id.slice(1).toLocaleLowerCase() });
+       }
+   }
+   return labels;
 }
 
 storage.prototype.retrieveThreads = function(email) {
@@ -48,6 +67,21 @@ storage.prototype.retrieveThreads = function(email) {
     this.threadList = item.list;
     this.threadIds = item.ids;
     return true;
+}
+
+storage.prototype.classifyThreads = function() {
+    for (i in this.labels) {
+        this.threadLabels[this.labels[i].id] = [];
+    }
+
+    var thread;
+    for (i in this.threadList) {
+        thread = this.threadList[i];
+
+        for (n in thread.labels) {
+            this.threadLabels[thread.labels[n]].push(i);
+        }
+    }
 }
 
 storage.prototype.addNewThreadsToList = function(threads) {
@@ -100,21 +134,30 @@ storage.prototype.addMessageToThread = function(message) {
     updateThreadMetadata(thread, message);
 }
 
-storage.prototype.getNumOfThreads = function() {
-    return this.threadList.length;
+storage.prototype.getNumOfThreads = function(labelId) {
+    if (!labelId) return this.threadList.length;
+    else return this.threadLabels[labelId].length;
 }
 
 storage.prototype.getThread = function(id) {
     return this.threadList[this.threadIds[id]];
 }
 
-storage.prototype.getThreadByIndex = function(index) {
-    return this.threadList[index];
+storage.prototype.getThreadByIndex = function(index, labelId) {
+    if (!labelId) return this.threadList[index];
+    else return this.threadList[this.threadLabels[labelId][index]];
 }
 
-storage.prototype.getThreads = function(page, num) {
+storage.prototype.getThreads = function(page, num, labelId) {
     var startingThread = page * num;
-    return this.threadList.slice(startingThread, startingThread + num);
+    if (!labelId) return this.threadList.slice(startingThread, startingThread + num);
+    else {
+        var threads = [], threadLabels = this.threadLabels[labelId].slice(startingThread, startingThread + num);
+        for (i in threadLabels) {
+            threads.push(this.threadList[threadLabels[i]]);
+        }
+        return threads;
+    }
 }
 
 var storage = new storage();

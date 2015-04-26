@@ -1,6 +1,6 @@
 jQuery(document).ready(function($) {
 
-	var cols = {},	messageIsOpen = false, menuIsShown = false;
+	var cols = {},	messageIsOpen = false, menuIsShown = false, mobile = checkMobile();
 
 	cols.showOverlay = function() {
 		$('body').addClass('show-main-overlay');
@@ -108,8 +108,10 @@ jQuery(document).ready(function($) {
 	});
 
 	$('.selectable-menu').on('click', function(e) {
-		if (!menuIsShown) cols.showMenu();
-		else cols.hideMenu();
+		if (!mobile) {
+			if (!menuIsShown) cols.showMenu();
+			else cols.hideMenu();
+		}
 	});
 
 	// Search box responsive stuff
@@ -119,3 +121,10 @@ jQuery(document).ready(function($) {
 		}
 	});
 });
+
+function checkMobile() {
+	var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+	if (userAgent.match(/iPad/i) || userAgent.match(/iPhone/i) || userAgent.match(/iPod/i))	return true;
+	else if (userAgent.match(/Android/i)) return 'Android';
+	return false;
+}

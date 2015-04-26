@@ -126,14 +126,11 @@
 				<span class="line line-angle1"></span>
 				<span class="line line-angle2"></span>
 			</a>
-			Inbox
+			{{data.selectedLabel.name}}
 			<span class="menu">
 				<a ng-click="clickShowMenu()"><span class="icon selectable-menu glyphicon" ng-class="{'glyphicon-chevron-down': !data.showMenu, 'glyphicon-chevron-up': data.showMenu}"></span></a>
-				<ul class="sub-menu" ng-class="{'show-menu': data.showMenu}">
-					<li>Social</li>
-					<li>Forums</li>
-					<li>Promotions</li>
-					<li>Groups</li>
+				<ul class="sub-menu" ng-class="{'show-menu': data.showMenu}" >
+					<li ng-repeat="category in data.categories" ng-click="setCategory(category)">{{category.name}}</li>
 				</ul>
 			</span>
 		</h1>
@@ -150,8 +147,8 @@
 	  </div>
 	  <div id="main-nano-wrapper" class="nano">
 		<div class="nano-content">
-		  <ul class="message-list" ng-repeat="msg in data.messageList">
-			  <li class="green-dot" ng-class="{unread: isUnread(msg.labels), active: data.messageActive == $index}" ng-click="clickOnThread($event, $index)">
+		  <ul class="message-list">
+			  <li class="green-dot" ng-repeat="msg in data.messageList" ng-class="{unread: isUnread(msg.labels), active: data.messageActive == $index}" ng-click="clickOnThread($event, $index)">
 				  <div class="col col-1"><span class="dot"></span>
 					  <div class="checkbox-wrapper">
 						  <input type="checkbox" id="chk{{$index}}" ng-click="clickOnCheckbox($event, $index)">
@@ -186,8 +183,8 @@
 	  </div>
 	  <div id="message-nano-wrapper" class="nano">
 		<div class="nano-content">
-		  <ul class="message-container" ng-repeat="msg in data.activeThread.messages">
-			  <li ng-class="{sent: $even, received: $odd}">
+		  <ul class="message-container">
+			  <li ng-repeat="msg in data.activeThread.messages" ng-class="{sent: $even, received: $odd}">
 				  <div class="details">
 					  <div class="left">You
 						  <div class="arrow"></div>Scott
