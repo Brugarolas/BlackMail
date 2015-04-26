@@ -8,7 +8,6 @@ function setThreadMetadata(thread, result) {
     thread.subject = getMessageSubject(firstMessage);
     thread.snippet = getMessageSnippet(lastMessage);
     thread.date = Date.parse(getMessageDate(lastMessage));
-    thread.unread = isMessageUnread(lastMessage);
     thread.sender = getMessageSender(lastMessage);
     thread.labels = getThreadLabels(result);
 
@@ -20,7 +19,6 @@ function updateThreadMetadata(thread, message) {
     if (!thread.subject) thread.subject = getMessageSubject(message);
     thread.snippet = getMessageSnippet(message);
     thread.date = Date.parse(getMessageDate(message));
-    thread.unread = isMessageUnread(message);
     thread.sender = getMessageSender(message);
 
     if (!thread.labels) {
@@ -52,12 +50,6 @@ function getMessageDate(message) {
     var headers = message.payload.headers;
     for (i in headers) if (headers[i].name == "Date") return formatDate(headers[i].value);
     return "(No date)";
-}
-
-function isMessageUnread(message) {
-    var labelIds = message.labelIds;
-    for (i in labelIds) if (labelIds[i] == "UNREAD") return true;
-    return false;
 }
 
 function getMessageSender(message) {

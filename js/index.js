@@ -396,6 +396,13 @@ app.controller('GmailMainController', function($scope) {
 		return false;
 	}
 
+	$scope.isUnread = function(labels) {
+		for (i in labels) {
+			if (labels[i] === "UNREAD") return true;
+		}
+		return false;
+	}
+
 	$scope.clickOnHideThread = function() {
 		$scope.data.messageActive = -1;
 		$scope.data.showOverlay = false;

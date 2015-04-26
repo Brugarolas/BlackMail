@@ -145,7 +145,7 @@
 	  <div id="main-nano-wrapper" class="nano">
 		<div class="nano-content">
 		  <ul class="message-list" ng-repeat="msg in data.messageList">
-			  <li class="green-dot" ng-class="{unread: msg.unread, active: data.messageActive == $index}" ng-click="clickOnThread($event, $index)">
+			  <li class="green-dot" ng-class="{unread: isUnread(msg.labels), active: data.messageActive == $index}" ng-click="clickOnThread($event, $index)">
 				  <div class="col col-1"><span class="dot"></span>
 					  <div class="checkbox-wrapper">
 						  <input type="checkbox" id="chk{{$index}}" ng-click="clickOnCheckbox($event, $index)">
