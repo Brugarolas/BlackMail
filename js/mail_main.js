@@ -1,6 +1,6 @@
 jQuery(document).ready(function($) {
 
-	var cols = {},	messageIsOpen = false;
+	var cols = {},	messageIsOpen = false, menuIsShown = false;
 
 	cols.showOverlay = function() {
 		$('body').addClass('show-main-overlay');
@@ -25,6 +25,21 @@ jQuery(document).ready(function($) {
 	cols.hideSidebar = function() {
 		$('body').removeClass('show-sidebar');
 	};
+
+	cols.showMenu = function() {
+		var selectable = $('.selectable-menu');
+		selectable.removeClass('glyphicon-chevron-down');
+		selectable.addClass('glyphicon-chevron-up');
+		$('.sub-menu').addClass('show-menu');
+		menuIsShown = true;
+	};
+	cols.hideMenu = function() {
+		var selectable = $('.selectable-menu');
+		selectable.removeClass('glyphicon-chevron-up');
+		selectable.addClass('glyphicon-chevron-down');
+		$('.sub-menu').removeClass('show-menu');
+		menuIsShown = false;
+	}
 
 	// Show sidebar when trigger is clicked
 	/* HECHO CON ANGULARJS */
@@ -90,6 +105,11 @@ jQuery(document).ready(function($) {
 	// Disable links
 	$('a').on('click', function(e) {
 		e.preventDefault();
+	});
+
+	$('.selectable-menu').on('click', function(e) {
+		if (!menuIsShown) cols.showMenu();
+		else cols.hideMenu();
 	});
 
 	// Search box responsive stuff

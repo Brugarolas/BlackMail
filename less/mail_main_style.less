@@ -394,13 +394,54 @@ a {
 				}
 			}
 
-			.icon {
-				font-size: 15px;
-				margin-left: 20px;
-				position: relative;
-				top: -5px;
-				cursor: pointer;
+			.menu {
+				position: absolute;
+			  	cursor: pointer;
+
+				.icon {
+					font-size: 15px;
+					margin-left: 20px;
+					position: relative;
+					top: -5px;
+				}
+
+			    .sub-menu {
+				  	position: relative;
+				  	display: none;
+				  	clear: both;
+
+				  	font-size: 24px;
+				  	margin-top: 12px;
+				  	right: 125px;
+				  	background: #FFF;
+					z-index: 2;
+
+				 	border: 1px solid @color-light-grey;
+				  	color: @accent-color;
+				  	transition-duration: .30s;
+				  	box-shadow: 3px 3px 12px 0 rgba(50, 50, 50, 0.75);
+				  	overflow: hidden;
+
+				  	li {
+					  	padding: 10px 32px;
+					}
+
+					li:hover {
+					  	background: @color-light-grey;
+					  	color: darken(@accent-color, 20%);
+					  	transition-duration: .05s;
+					}
+				}
+
+			  	.show-menu {
+				  	display: block;
+				}
 			}
+
+			.menu:hover .sub-menu {
+			  	display: block;
+			}
+
 		}
 
 		.search-box {
