@@ -17,8 +17,9 @@
 	<link rel="stylesheet" href="css/roboto-fonts.css" />
 
 	<!-- Perfect scrollbar -->
-	<link rel='stylesheet' href='css/perfect-scrollbar.css' />
-	<script src='js/libs/perfect-scrollbar.js'></script>
+	<link rel='stylesheet' href='css/perfect-scrollbar.min.css' />
+	<link rel="stylesheet" href="css/nanoscroller.css" />
+	<script src='js/libs/perfect-scrollbar.min.js'></script>
 	<script src='js/angular.perfectscrollbar.js'></script>
 	
 	<!-- Custom stylesheet With Less -->
@@ -27,21 +28,11 @@
 	<script src="js/libs/less.min.js"></script>
 	<link rel="stylesheet" href="css/floating-bars.css"/>
 
-	<!-- jQuery plugin -->
-	<script src='js/libs/jquery.min.js'></script>
-
-	<!-- Nano Scroller -->
-	<script src="js/libs/jquery.nanoscroller.min.js"></script>
-	<link rel="stylesheet" href="css/nanoscroller.css" />
-
 	<!-- iFrame resizer -->
 	<!-- script src="js/libs/iframeResizer.min.js"></script -->
 
 	<!-- Updated Date.js from https://github.com/abritinthebay/datejs -->
 	<script src="js/libs/date-es-ES.min.js"></script>
-
-	<!-- Custom template plugin -->
-	<!-- script src="js/mail_main.js"></script -->
 	
 	<!-- Decode plugin -->
 	<script src="js/libs/base64.min.js"></script>
@@ -148,7 +139,7 @@
 		  <li><a class="icon circle-icon red glyphicon glyphicon-flag"></a></li>
 		</ul>
 	  </div>
-	  <div class="nano">
+	  <div id="main-nano-wrapper" class="nano">
 		<div class="nano-content" perfect-scrollbar>
 		  <ul class="message-list">
 			  <li class="green-dot" ng-repeat="msg in data.messageList" ng-class="{unread: isUnread(msg.labels), active: data.messageActive == $index}" ng-click="clickOnThread($event, $index)">
@@ -184,7 +175,7 @@
 		</div>
 		<p>From <a>You</a> to <a>Scott Waite</a>, started on <a>March 2, 2014</a> at 2:14 pm est.</p>
 	  </div>
-	  <div class="nano">
+	  <div id="message-nano-wrapper" class="nano">
 		<div class="nano-content" perfect-scrollbar>
 		  <ul class="message-container">
 			  <li ng-repeat="msg in data.activeThread.messages" ng-class="{sent: $even, received: $odd}">

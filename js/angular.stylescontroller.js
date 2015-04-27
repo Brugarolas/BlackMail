@@ -5,7 +5,7 @@
 angular.module("styles", ['scrollbar'])
     .controller('StylesController', function ($scope) {
         $scope.data = {
-            messageActive: 2,
+            messageActive: -1,
             showOverlay: false,
             showSidebar: false,
             showMenu: false

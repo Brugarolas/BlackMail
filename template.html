@@ -20,17 +20,11 @@
 	<script src="js/less.config.js"></script>
 	<script src="js/libs/less.min.js"></script>
 
-	<!-- jQuery plugin -->
-	<!-- script src='js/libs/jquery.min.js'></script -->
-
-	<!-- Nano Scroller -->
-	<!-- script src="js/libs/jquery.nanoscroller.min.js"></script>
-	<link rel="stylesheet" href="css/nanoscroller.css" / -->
-
 	<!-- Perfect scroller -->
 	<script src="js/libs/angular.min.js"></script>
-	<link rel='stylesheet' href='css/perfect-scrollbar.css' />
-	<script src='js/libs/perfect-scrollbar.js'></script>
+	<link rel='stylesheet' href='css/perfect-scrollbar.min.css' />
+	<link rel="stylesheet" href="css/nanoscroller.css" />
+	<script src='js/libs/perfect-scrollbar.min.js'></script>
 	<script src='js/angular.perfectscrollbar.js'></script>
 	<script src='js/angular.stylescontroller.js'></script>
 
@@ -114,7 +108,7 @@
 		  <li><a class="icon circle-icon red glyphicon glyphicon-flag"></a></li>
 		</ul>
 	  </div>
-	  <div class="nano">
+	  <div id="main-nano-wrapper" class="nano">
 		<div class="nano-content" perfect-scrollbar>
 		  	<ul class="message-list">
 			<li ng-class="{unread: isUnread(['UNREAD']), active: data.messageActive == 0}" ng-click="clickOnThread($event, 0)">
@@ -390,7 +384,7 @@
 		<h1 class="page-title"><a class="icon circle-icon glyphicon glyphicon-chevron-left trigger-message-close" ng-click="clickOnHideThread()"></a>Process<span class="grey">(6)</span></h1>
 		<p>From <a href="#">You</a> to <a href="#">Scott Waite</a>, started on <a href="#">March 2, 2014</a> at 2:14 pm est.</p>
 	  </div>
-	  <div class="nano">
+	  <div id="message-nano-wrapper" class="nano">
 		<div class="nano-content" perfect-scrollbar>
 		  <ul class="message-container">
 			<li class="sent">
