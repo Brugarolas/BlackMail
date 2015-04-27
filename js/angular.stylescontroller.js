@@ -69,7 +69,7 @@ angular.module("styles", ['scrollbar'])
             event.stopImmediatePropagation();
         }
 
-        $scope.clickShowMenu = function () {
+        $scope.clickShowMenu = function() {
             $scope.data.showMenu = !$scope.data.showMenu;
         }
     });

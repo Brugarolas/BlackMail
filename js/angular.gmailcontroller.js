@@ -3,19 +3,16 @@ var apiKey = 'AIzaSyBWOyx1Ri2q5TkIwO-lMMzUovgUmunDryE';
 var scopes = ['https://www.googleapis.com/auth/plus.me', 'https://www.googleapis.com/auth/gmail.readonly',
 	'https://www.googleapis.com/auth/userinfo.email'];
 
-var app = angular.module("app", ["scrollbar"]);
+var app = angular.module("app", ["styles"]);
 
-app.controller('GmailMainController', function($scope) {
+app.controller('GmailMainController', function($scope, $controller) {
+	$controller('StylesController', {$scope: $scope});
 	$scope.data = {
 		loading: true,
 		loadingMessage: "Loading API...",
-		messageActive: -1,
 		currentPage: 0,
 		threadsPerPage: 25,
-		showOverlay: false,
-		showSidebar: false,
-		selectedLabel: {'id': "CATEGORY_PERSONAL", 'name': "Personal" },
-		showMenu: false
+		selectedLabel: {'id': "CATEGORY_PERSONAL", 'name': "Personal" }
 	};
 
 	$scope.handleClientLoad = function() {
@@ -414,33 +411,6 @@ app.controller('GmailMainController', function($scope) {
 		return false;
 	}
 
-	$scope.isUnread = function(labels) {
-		for (i in labels) {
-			if (labels[i] === "UNREAD") return true;
-		}
-		return false;
-	}
-
-	$scope.clickOnHideThread = function() {
-		$scope.data.messageActive = -1;
-		$scope.data.showOverlay = false;
-	}
-
-    $scope.clickOnToggleSidebar = function() {
-        $scope.data.showOverlay = true;
-        $scope.data.showSidebar = true;
-    }
-
-    $scope.clickOnOverlay = function() {
-        $scope.data.showOverlay = false;
-        $scope.data.messageActive = -1;
-        $scope.data.showSidebar = false;
-    }
-
-    $scope.clickOnCheckbox = function(event, index) {
-        event.stopImmediatePropagation();
-    }
-
 	$scope.clickPreviousPage = function() {
 		if ($scope.data.currentPage > 0)
 			$scope.data.messageList = storage.getThreads(--$scope.data.currentPage, $scope.data.threadsPerPage, $scope.data.selectedLabel.id);
@@ -449,10 +419,6 @@ app.controller('GmailMainController', function($scope) {
 	$scope.clickNextPage = function() {
 		if ($scope.data.currentPage < $scope.data.numOfPages - 1)
 			$scope.data.messageList = storage.getThreads(++$scope.data.currentPage, $scope.data.threadsPerPage, $scope.data.selectedLabel.id);
-	}
-
-	$scope.clickShowMenu = function() {
-		$scope.data.showMenu = !$scope.data.showMenu;
 	}
 });
 

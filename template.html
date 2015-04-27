@@ -30,9 +30,6 @@
 
 	<!-- Prefix Free plugin -->
 	<script src="js/libs/prefixfree.min.js"></script>
-
-	<!-- Custom plugin -->
-	<!-- script src="js/mail_main.js"></script -->
 </head>
 <body id="mainBody" ng-controller="StylesController" ng-class="{'show-message': data.messageActive >= 0, 'show-main-overlay': data.showOverlay, 'show-sidebar': data.showSidebar }">
 
@@ -89,8 +86,8 @@
 			</a>
 			Inbox
 			<span class="menu">
-				<a><span class="icon selectable-menu glyphicon" ng-class="{'glyphicon-chevron-down': !data.showMenu, 'glyphicon-chevron-up': data.showMenu}"></span></a>
-				<ul class="sub-menu">
+				<a ng-click="clickShowMenu()"><span class="icon selectable-menu glyphicon" ng-class="{'glyphicon-chevron-down': !data.showMenu, 'glyphicon-chevron-up': data.showMenu}"></span></a>
+				<ul class="sub-menu" ng-class="{'show-menu': data.showMenu}">
 					<li>Social</li>
 					<li>Forums</li>
 					<li>Promotions</li>
