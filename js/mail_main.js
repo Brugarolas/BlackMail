@@ -100,7 +100,7 @@ jQuery(document).ready(function($) {
 
 	// Enable sexy scrollbars
     /* HECHO CON ANGULARJS */
-	$('.nano').nanoScroller();
+	//$('.nano').nanoScroller();
 
 	// Disable links
 	$('a').on('click', function(e) {

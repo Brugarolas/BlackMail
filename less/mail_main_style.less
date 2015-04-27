@@ -423,7 +423,6 @@ a {
 				  	overflow: hidden;
 
 				  	li {
-					  	padding: 10px 36px;
 					}
 
 					li:hover {
@@ -511,130 +510,129 @@ a {
 		}
 	}
 
-	
-	// Ugly hack because i can't get the damn thing to work!
-	#main-nano-wrapper {
+  	.nano {
 		position: absolute;
 		top: 214px;
 		bottom: 0;
 		height: auto;
-	}
 
-	.message-list {
-		display: block;
-
-		li {
-			position: relative;
+		.message-list {
 			display: block;
-			height: 50px;
-			line-height: 50px;
-			cursor: default;
-			transition-duration: .3s;
-			
-			&:hover, &.active, &.selected {
-				background: @color-light-grey;
-				transition-duration: .05s;
-			}
 
-			&.active, &.active:hover {
-				box-shadow: inset 5px 0 0 @accent-color;
-			}
-
-			&.unread {
-				font-weight: 600;
-        		color: #555;
-			}
-
-			.col {
-				float: left;
+			li {
 				position: relative;
-			}
+				display: block;
+				height: 50px;
+				line-height: 50px;
+				cursor: default;
+				transition-duration: .3s;
 
-			&.blue-dot .col-1 .dot {
-				border-color: @color-blue;
-			}
-			&.orange-dot .col-1 .dot {
-				border-color: @color-orange;
-			}
-			&.green-dot .col-1 .dot {
-				border-color: @color-green;
-			}
-			
-			.col-1 {
-				width: 365px;
+				&:hover, &.active, &.selected {
+					background: @color-light-grey;
+					transition-duration: .05s;
+				}
 
-				.star-toggle, .checkbox-wrapper, .dot {
-					display: block;
+				&.active, &.active:hover {
+					box-shadow: inset 5px 0 0 @accent-color;
+				}
+
+				&.unread {
+					font-weight: 600;
+					color: #555;
+				}
+
+				.col {
 					float: left;
+					position: relative;
 				}
 
-				.star-toggle {
-					font-size: 18px;
-				  	margin-top: 15px;
+				&.blue-dot .col-1 .dot {
+					border-color: @color-blue;
+				}
+				&.orange-dot .col-1 .dot {
+					border-color: @color-orange;
+				}
+				&.green-dot .col-1 .dot {
+					border-color: @color-green;
 				}
 
-			  	.important {
-				  	color: #D4AF37;
-				}
+				.col-1 {
+					width: 365px;
 
-				.dot {
-					border: 4px solid transparent;
-					border-radius: 100px;
-					margin: 22px 12px 0;
-					height: 0;
-					width: 0;
-					line-height: 0;
-					font-size: 0;
-				}
+					.star-toggle, .checkbox-wrapper, .dot {
+						display: block;
+						float: left;
+					}
 
-				.checkbox-wrapper {
-					margin-top: 15px;
-					margin-right: 10px;
-				}
+					.star-toggle {
+						font-size: 18px;
+						margin-top: 15px;
+					}
 
-				.title {
-					position: absolute;
-					top: 0;
-					left: 105px;
-					right: 0;
+					.important {
+						color: #D4AF37;
+					}
 
-					text-overflow: ellipsis;
-					overflow: hidden;
-					white-space: nowrap;
-				}
-			}
-			.col-2 {
-				position: absolute;
-				top: 0;
-				left: 365px;
-				right: 0;
-				bottom: 0;
+					.dot {
+						border: 4px solid transparent;
+						border-radius: 100px;
+						margin: 22px 12px 0;
+						height: 0;
+						width: 0;
+						line-height: 0;
+						font-size: 0;
+					}
 
-				.subject, .date {
-					position: absolute;
-					top: 0;
-				}
+					.checkbox-wrapper {
+						margin-top: 15px;
+						margin-right: 10px;
+					}
 
-				.subject {
-					left: 0;
-					right: 200px;
-					text-overflow: ellipsis;
-					overflow: hidden;
-					white-space: nowrap;
+					.title {
+						position: absolute;
+						top: 0;
+						left: 105px;
+						right: 0;
 
-				  	.teaser {
-					  	font-weight: 400;
-					  	color: #AAA;
+						text-overflow: ellipsis;
+						overflow: hidden;
+						white-space: nowrap;
 					}
 				}
-
-				.date {
+				.col-2 {
+					position: absolute;
+					top: 0;
+					left: 365px;
 					right: 0;
-					width: 200px;
-					padding-left: 100px;
+					bottom: 0;
+
+					.subject, .date {
+						position: absolute;
+						top: 0;
+					}
+
+					.subject {
+						left: 0;
+						right: 200px;
+						text-overflow: ellipsis;
+						overflow: hidden;
+						white-space: nowrap;
+
+						.teaser {
+							font-weight: 400;
+							color: #AAA;
+						}
+					}
+
+					.date {
+						right: 0;
+						width: 200px;
+						padding-left: 100px;
+					}
 				}
 			}
 		}
+
 	}
 
 	.load-more-link {
@@ -691,10 +689,8 @@ a {
 			color: #999;
 		}
 	}
-	
 
-	// Ugly hack because i (again) can't get nanoscroll to work correctly
-	#message-nano-wrapper {
+	.nano {
 		position: absolute;
 		top: 150px;
 		bottom: 0;
@@ -702,137 +698,136 @@ a {
 		left: 0;
 		right: 0;
 		width: auto;
-	}
 
-	.message-container {
-		padding: 0 30px;
+		.message-container {
+		  padding: 0 30px;
 
-		li {
+		  li {
 			padding: 25px;
-			border: 1px solid rgba(0,0,0,.15);
+			border: 1px solid rgba(0, 0, 0, .15);
 			background: #FFF;
 			margin: 0 0 30px 0;
 			position: relative;
 
 			&:hover .details .left {
 
-				.arrow {
-					background: @accent-color;
-					border: 0 solid @accent-color;
+			  .arrow {
+				background: @accent-color;
+				border: 0 solid @accent-color;
 
-					&.orange {
-						background: @color-orange;
-						border: 0 solid @color-orange;
-					}
+				&.orange {
+				  background: @color-orange;
+				  border: 0 solid @color-orange;
 				}
+			  }
 			}
 
 			.details {
-				padding-bottom: 20px;
-				border-bottom: 1px solid rgba(0,0,0,.1);
-				margin-bottom: 30px;
-				overflow: hidden;
+			  padding-bottom: 20px;
+			  border-bottom: 1px solid rgba(0, 0, 0, .1);
+			  margin-bottom: 30px;
+			  overflow: hidden;
 
-				.left {
-					float: left;
-					font-weight: 600;
-					color: @color-dark-grey;
-					transition-duration: .3s;
+			  .left {
+				float: left;
+				font-weight: 600;
+				color: @color-dark-grey;
+				transition-duration: .3s;
 
-					.arrow {
-						display: inline-block;
-						position: relative;
-						height: 2px;
-						width: 20px;
-						background: rgba(0,0,0,.15);
-						vertical-align: top;
-						margin: 12px 20px 0 15px;
-						border: 0 solid rgba(0,0,0,.15);
-						transition-duration: .3s;
+				.arrow {
+				  display: inline-block;
+				  position: relative;
+				  height: 2px;
+				  width: 20px;
+				  background: rgba(0, 0, 0, .15);
+				  vertical-align: top;
+				  margin: 12px 20px 0 15px;
+				  border: 0 solid rgba(0, 0, 0, .15);
+				  transition-duration: .3s;
 
-						&:after {
-						  position: absolute;
-						  top: -4px;
-						  left: 100%;
-						  height: 0;
-						  width: 0;
-						  border: inherit;
-						  border-width: 7px;
-						  border-style: solid;
-						  content: '';
-						  border-right: 0;
-						  border-top-color: transparent;
-						  border-bottom-color: transparent;
-						  border-top-width: 5px;
-						  border-bottom-width: 5px;
-						}
-					}
+				  &:after {
+					position: absolute;
+					top: -4px;
+					left: 100%;
+					height: 0;
+					width: 0;
+					border: inherit;
+					border-width: 7px;
+					border-style: solid;
+					content: '';
+					border-right: 0;
+					border-top-color: transparent;
+					border-bottom-color: transparent;
+					border-top-width: 5px;
+					border-bottom-width: 5px;
+				  }
 				}
+			  }
 
-				.right {
-					float: right;
-					color: #999;
-				}
+			  .right {
+				float: right;
+				color: #999;
+			  }
 			}
 
-
 			.message {
-				margin-bottom: 25px;
-			  	text-align: center;
+			  margin-bottom: 25px;
+			  text-align: center;
 
-				iframe {
-				  	display: block;
-					width: 100%;
-				}
+			  iframe {
+				display: block;
+				width: 100%;
+			  }
 
-				p:last-child {
-					margin-bottom: 0;
-				}
+			  p:last-child {
+				margin-bottom: 0;
+			  }
 
-			  	a {
-				  	color: @color-orange;
-				  	border-radius: 10px;
-				  	border: 1px solid @color-orange;
-				  	padding: 5px;
-				}
+			  a {
+				color: @color-orange;
+				border-radius: 10px;
+				border: 1px solid @color-orange;
+				padding: 5px;
+			  }
 
-				a:hover {
-				 	 color: darken(@color-orange, 10%);
-				 	 border: 1px solid darken(@color-orange, 10%);
-				  	 font-weight: bold;
-				}
+			  a:hover {
+				color: darken(@color-orange, 10%);
+				border: 1px solid darken(@color-orange, 10%);
+				font-weight: bold;
+			  }
 			}
 
 			&:hover .tool-box {
-				.red-hover {
-					color: @color-red;
-					border-color: @color-red;
+			  .red-hover {
+				color: @color-red;
+				border-color: @color-red;
 
-					&:hover {
-						color: #791C1E;
-						border-color: #791C1E;
-					}
+				&:hover {
+				  color: #791C1E;
+				  border-color: #791C1E;
 				}
+			  }
 			}
 
 			.tool-box {
-				position: absolute;
-				bottom: 0;
-				right: 0;
-				border: 0 solid #DDDFE1;
-				border-top-width: 1px;
-				border-left-width: 1px;
-				padding: 8px 10px;
-				transition-duration: .3s;
+			  position: absolute;
+			  bottom: 0;
+			  right: 0;
+			  border: 0 solid #DDDFE1;
+			  border-top-width: 1px;
+			  border-left-width: 1px;
+			  padding: 8px 10px;
+			  transition-duration: .3s;
 
-				a {
-					margin-right: 10px;
+			  a {
+				margin-right: 10px;
 
-					&:last-child {
-						margin-right: 0;
-					}
+				&:last-child {
+				  margin-right: 0;
 				}
+			  }
 			}
+		  }
 		}
 	}
 }
@@ -863,7 +858,7 @@ a {
 		  	left: @sidebar-width;
 			width: 100%;
 
-			#message-nano-wrapper {
+			.nano {
 			  	margin-right: @sidebar-width;
 			}
 		}
@@ -906,7 +901,7 @@ a {
 			left: 0;
 			width: 100%;
 
-			#message-nano-wrapper {
+			.nano {
 			  	margin-right: 0;
 			}
 		}
@@ -933,7 +928,7 @@ a {
 		}
 	}
 
-	#main #main-nano-wrapper {
+	#main .nano {
 		position: absolute;
 		top: 260px;
 		bottom: 0;

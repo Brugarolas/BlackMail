@@ -11,11 +11,15 @@
 	<!-- Bootstrap and AngularJS-->
 	<link rel="stylesheet" href="css/bootstrap.min.css" />
 	<script src="js/libs/angular.min.js"></script>
-	<!-- script src="js/angular-sanitize.min.js"></script -->
 
 	<!-- Fonts and reset stylesheet -->
-	<link rel="stylesheet" href="css/roboto-fonts.css" />
 	<link rel="stylesheet" href="css/reset.css" />
+	<link rel="stylesheet" href="css/roboto-fonts.css" />
+
+	<!-- Perfect scrollbar -->
+	<link rel='stylesheet' href='css/perfect-scrollbar.css' />
+	<script src='js/libs/perfect-scrollbar.js'></script>
+	<script src='js/angular.perfectscrollbar.js'></script>
 	
 	<!-- Custom stylesheet With Less -->
 	<link rel="stylesheet/less" type="text/css" href="less/mail_main_style.less"/>
@@ -65,7 +69,7 @@
 
 	<!-- Left lateral bar -->
 	<aside id="sidebar" class="nano">
-	  <div class="nano-content">
+	  <div class="nano-content" perfect-scrollbar>
 		<div class="personal-container">
 			<img id ="personalPhoto" ng-src="{{data.personalPhoto}}"/>
 			<div id="personalName">{{data.personalName}}</div>
@@ -143,10 +147,9 @@
 		  <li><a class="icon circle-icon red glyphicon glyphicon-remove"></a></li>
 		  <li><a class="icon circle-icon red glyphicon glyphicon-flag"></a></li>
 		</ul>
-
 	  </div>
-	  <div id="main-nano-wrapper" class="nano">
-		<div class="nano-content">
+	  <div class="nano">
+		<div class="nano-content" perfect-scrollbar>
 		  <ul class="message-list">
 			  <li class="green-dot" ng-repeat="msg in data.messageList" ng-class="{unread: isUnread(msg.labels), active: data.messageActive == $index}" ng-click="clickOnThread($event, $index)">
 				  <div class="col col-1"><span class="dot"></span>
@@ -181,13 +184,13 @@
 		</div>
 		<p>From <a>You</a> to <a>Scott Waite</a>, started on <a>March 2, 2014</a> at 2:14 pm est.</p>
 	  </div>
-	  <div id="message-nano-wrapper" class="nano">
-		<div class="nano-content">
+	  <div class="nano">
+		<div class="nano-content" perfect-scrollbar>
 		  <ul class="message-container">
 			  <li ng-repeat="msg in data.activeThread.messages" ng-class="{sent: $even, received: $odd}">
 				  <div class="details">
 					  <div class="left">You
-						  <div class="arrow"></div>Scott
+						  <div class="arrow" ng-class="{orange: $odd}"></div>Scott
 					  </div>
 					  <div class="right">March 6, 2014, 20:08 pm</div>
 				  </div>

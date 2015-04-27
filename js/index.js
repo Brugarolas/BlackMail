@@ -3,7 +3,7 @@ var apiKey = 'AIzaSyBWOyx1Ri2q5TkIwO-lMMzUovgUmunDryE';
 var scopes = ['https://www.googleapis.com/auth/plus.me', 'https://www.googleapis.com/auth/gmail.readonly',
 	'https://www.googleapis.com/auth/userinfo.email'];
 
-var app = angular.module("app", []);
+var app = angular.module("app", ["scrollbar"]);
 
 app.controller('GmailMainController', function($scope) {
 	$scope.data = {
@@ -458,8 +458,6 @@ app.controller('GmailMainController', function($scope) {
 
 //Step 1: Start here
 function handleLoad() {
-	$('.nano').nanoScroller(); // Enable sexy scrollbars
-
 	// Get scope, set API and start client load
 	var scope = angular.element(document.querySelector('body')).scope();
 	scope.handleClientLoad();

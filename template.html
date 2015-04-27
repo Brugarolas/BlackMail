@@ -1,39 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="styles">
 <head>
 	<meta charset="UTF-8">
 	<title>Responsive Mail UI</title>
-	<meta name="viewport" content="width=device-width">
-	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+
+	<!-- Icon -->
+	<link rel="shortcut icon" href="images/favicon.ico"/>
+
 	<!-- Bootstrap -->
 	<link rel="stylesheet" href="css/bootstrap.min.css" />
-	
+
 	<!-- Fonts and reset stylesheet -->
 	<link rel="stylesheet" href="css/roboto-fonts.css" />
 	<link rel="stylesheet" href="css/reset.css" />
 	
 	<!-- Custom stylesheet With Less -->
 	<link rel="stylesheet/less" type="text/css" href="less/mail_main_style.less" />
-	<script src="js/libs/less.min.js"></script>
 	<script src="js/less.config.js"></script>
-	
+	<script src="js/libs/less.min.js"></script>
+
 	<!-- jQuery plugin -->
-	<script src='js/libs/jquery.min.js'></script>
+	<!-- script src='js/libs/jquery.min.js'></script -->
 
 	<!-- Nano Scroller -->
-	<script src="js/libs/jquery.nanoscroller.min.js"></script>
-	<link rel="stylesheet" href="css/nanoscroller.css" />
+	<!-- script src="js/libs/jquery.nanoscroller.min.js"></script>
+	<link rel="stylesheet" href="css/nanoscroller.css" / -->
+
+	<!-- Perfect scroller -->
+	<script src="js/libs/angular.min.js"></script>
+	<link rel='stylesheet' href='css/perfect-scrollbar.css' />
+	<script src='js/libs/perfect-scrollbar.js'></script>
+	<script src='js/angular.perfectscrollbar.js'></script>
+	<script src='js/angular.stylescontroller.js'></script>
 
 	<!-- Prefix Free plugin -->
 	<script src="js/libs/prefixfree.min.js"></script>
 
 	<!-- Custom plugin -->
-	<script src="js/mail_main.js"></script>
+	<!-- script src="js/mail_main.js"></script -->
 </head>
-<body>
+<body id="mainBody" ng-controller="StylesController" ng-class="{'show-message': data.messageActive >= 0, 'show-main-overlay': data.showOverlay, 'show-sidebar': data.showSidebar }">
+
 	<!-- Left lateral bar -->
 	<aside id="sidebar" class="nano">
-	  <div class="nano-content">
+	  <div class="nano-content" perfect-scrollbar>
 		<div class="logo-container"><span class="logo glyphicon glyphicon-envelope"></span>Mail</div><a class="compose-button">Compose</a>
 		<menu class="menu-segment">
 		  <ul>
@@ -71,20 +82,20 @@
 	
 	<!-- Main centered mail list -->
 	<main id="main">
-	  <div class="overlay"></div>
+	  <div class="overlay" ng-click="clickOnOverlay()"></div>
 	  <header class="header">
 		<div class="search-box">
 		  <input placeholder="Search..."><span class="icon glyphicon glyphicon-search"></span>
 		</div>
 		<h1 class="page-title">
-			<a class="sidebar-toggle-btn trigger-toggle-sidebar">
+			<a class="sidebar-toggle-btn trigger-toggle-sidebar" ng-click="clickOnToggleSidebar()">
 				<span class="line"></span><span class="line"></span>
 				<span class="line"></span><span class="line line-angle1"></span>
 				<span class="line line-angle2"></span>
 			</a>
 			Inbox
 			<span class="menu">
-				<a><span class="icon selectable-menu glyphicon glyphicon-chevron-down"></span></a>
+				<a><span class="icon selectable-menu glyphicon" ng-class="{'glyphicon-chevron-down': !data.showMenu, 'glyphicon-chevron-up': data.showMenu}"></span></a>
 				<ul class="sub-menu">
 					<li>Social</li>
 					<li>Forums</li>
@@ -103,13 +114,13 @@
 		  <li><a class="icon circle-icon red glyphicon glyphicon-flag"></a></li>
 		</ul>
 	  </div>
-	  <div id="main-nano-wrapper" class="nano">
-		<div class="nano-content">
-		  <ul class="message-list">
-			<li class="unread">
+	  <div class="nano">
+		<div class="nano-content" perfect-scrollbar>
+		  	<ul class="message-list">
+			<li ng-class="{unread: isUnread(['UNREAD']), active: data.messageActive == 0}" ng-click="clickOnThread($event, 0)">
 			  <div class="col col-1"><span class="dot"></span>
 				<div class="checkbox-wrapper">
-				  <input type="checkbox" id="chk1">
+				  <input type="checkbox" id="chk1" ng-click="clickOnCheckbox($event, 0)">
 				  <label for="chk1" class="toggle"></label>
 				</div>
 				<p class="title">Lucas Kriebel (via Twitter)</p><span class="star-toggle glyphicon glyphicon-star-empty"></span>
@@ -119,10 +130,10 @@
 				<div class="date">11:49 am</div>
 			  </div>
 			</li>
-			<li class="green-dot unread">
+			<li class="green-dot" ng-class="{unread: isUnread(['UNREAD']), active: data.messageActive == 1}" ng-click="clickOnThread($event, 1)">
 			  <div class="col col-1"><span class="dot"></span>
 				<div class="checkbox-wrapper">
-				  <input type="checkbox" id="chk2">
+				  <input type="checkbox" id="chk2" ng-click="clickOnCheckbox($event, 1)">
 				  <label for="chk2" class="toggle"></label>
 				</div>
 				<p class="title">Conceptboard</p>
@@ -133,10 +144,10 @@
 				<div class="date">11:45 am</div>
 			  </div>
 			</li>
-			<li>
+			<li ng-class="{unread: isUnread([]), active: data.messageActive == 2}" ng-click="clickOnThread($event, 2)">
 			  <div class="col col-1"><span class="dot"></span>
 				<div class="checkbox-wrapper">
-				  <input type="checkbox" id="chk3">
+				  <input type="checkbox" id="chk3" ng-click="clickOnCheckbox($event, 2)">
 				  <label for="chk3" class="toggle"></label>
 				</div>
 				<p class="title">Randy, me (5)</p><span class="star-toggle glyphicon glyphicon-star-empty"></span>
@@ -146,10 +157,10 @@
 				<div class="date">5:01 am</div>
 			  </div>
 			</li>
-			<li class="blue-dot">
+			<li class="blue-dot" ng-class="{unread: isUnread([]), active: data.messageActive == 3}" ng-click="clickOnThread($event, 3)">
 			  <div class="col col-1"><span class="dot"></span>
 				<div class="checkbox-wrapper">
-				  <input type="checkbox" id="chk4">
+				  <input type="checkbox" id="chk4" ng-click="clickOnCheckbox($event, 3)">
 				  <label for="chk4" class="toggle"></label>
 				</div>
 				<p class="title">Andrew Zimmer</p><span class="star-toggle glyphicon glyphicon-star-empty"></span>
@@ -159,10 +170,10 @@
 				<div class="date">Mar 8</div>
 			  </div>
 			</li>
-			<li class="unread">
+			<li ng-class="{unread: isUnread(['UNREAD']), active: data.messageActive == 4}" ng-click="clickOnThread($event, 4)">
 			  <div class="col col-1"><span class="dot"></span>
 				<div class="checkbox-wrapper">
-				  <input type="checkbox" id="chk5">
+				  <input type="checkbox" id="chk5" ng-click="clickOnCheckbox($event, 4)">
 				  <label for="chk5" class="toggle"></label>
 				</div>
 				<p class="title">Infinity HR</p><span class="star-toggle glyphicon glyphicon-star-empty"></span>
@@ -172,10 +183,10 @@
 				<div class="date">Mar 8</div>
 			  </div>
 			</li>
-			<li>
+			<li ng-class="{unread: isUnread([]), active: data.messageActive == 5}" ng-click="clickOnThread($event, 5)">
 			  <div class="col col-1"><span class="dot"></span>
 				<div class="checkbox-wrapper">
-				  <input type="checkbox" id="chk6">
+				  <input type="checkbox" id="chk6" ng-click="clickOnCheckbox($event, 5)">
 				  <label for="chk6" class="toggle"></label>
 				</div>
 				<p class="title">Web Support Dennis</p><span class="star-toggle glyphicon glyphicon-star-empty"></span>
@@ -185,10 +196,10 @@
 				<div class="date">Mar 7</div>
 			  </div>
 			</li>
-			<li>
+			<li ng-class="{unread: isUnread([]), active: data.messageActive == 6}" ng-click="clickOnThread($event, 6)">
 			  <div class="col col-1"><span class="dot"></span>
 				<div class="checkbox-wrapper">
-				  <input type="checkbox" id="chk7">
+				  <input type="checkbox" id="chk7" ng-click="clickOnCheckbox($event, 6)">
 				  <label for="chk7" class="toggle"></label>
 				</div>
 				<p class="title">me, Peter (2)</p><span class="star-toggle glyphicon glyphicon-star-empty"></span>
@@ -198,10 +209,10 @@
 				<div class="date">Mar 4</div>
 			  </div>
 			</li>
-			<li class="orange-dot">
+			<li class="orange-dot" ng-class="{unread: isUnread([]), active: data.messageActive == 7}" ng-click="clickOnThread($event, 7)">
 			  <div class="col col-1"><span class="dot"></span>
 				<div class="checkbox-wrapper">
-				  <input type="checkbox" id="chk8">
+				  <input type="checkbox" id="chk8" ng-click="clickOnCheckbox($event, 7)">
 				  <label for="chk8" class="toggle"></label>
 				</div>
 				<p class="title">Medium</p><span class="star-toggle glyphicon glyphicon-star-empty"></span>
@@ -211,10 +222,10 @@
 				<div class="date">Feb 28</div>
 			  </div>
 			</li>
-			<li class="blue-dot">
+			<li class="blue-dot" ng-class="{unread: isUnread([]), active: data.messageActive == 8}" ng-click="clickOnThread($event, 8)">
 			  <div class="col col-1"><span class="dot"></span>
 				<div class="checkbox-wrapper">
-				  <input type="checkbox" id="chk9">
+				  <input type="checkbox" id="chk9" ng-click="clickOnCheckbox($event, 8)">
 				  <label for="chk9" class="toggle"></label>
 				</div>
 				<p class="title">Death to Stock</p><span class="star-toggle glyphicon glyphicon-star-empty"></span>
@@ -224,10 +235,10 @@
 				<div class="date">Feb 28</div>
 			  </div>
 			</li>
-			<li>
+			<li ng-class="{unread: isUnread([]), active: data.messageActive == 9}" ng-click="clickOnThread($event, 9)">
 			  <div class="col col-1"><span class="dot"></span>
 				<div class="checkbox-wrapper">
-				  <input type="checkbox" id="chk10">
+				  <input type="checkbox" id="chk10" ng-click="clickOnCheckbox($event, 9)">
 				  <label for="chk10" class="toggle"></label>
 				</div>
 				<p class="title">Revibe</p><span class="star-toggle glyphicon glyphicon-star-empty"></span>
@@ -237,10 +248,10 @@
 				<div class="date">Feb 27</div>
 			  </div>
 			</li>
-			<li>
+			<li ng-class="{unread: isUnread([]), active: data.messageActive == 10}" ng-click="clickOnThread($event, 10)">
 			  <div class="col col-1"><span class="dot"></span>
 				<div class="checkbox-wrapper">
-				  <input type="checkbox" id="chk11">
+				  <input type="checkbox" id="chk11" ng-click="clickOnCheckbox($event, 10)">
 				  <label for="chk11" class="toggle"></label>
 				</div>
 				<p class="title">Erik, me (5)</p><span class="star-toggle glyphicon glyphicon-star-empty"></span>
@@ -250,10 +261,10 @@
 				<div class="date">Feb 24</div>
 			  </div>
 			</li>
-			<li>
+			<li ng-class="{unread: isUnread([]), active: data.messageActive == 11}" ng-click="clickOnThread($event, 11)">
 			  <div class="col col-1"><span class="dot"></span>
 				<div class="checkbox-wrapper">
-				  <input type="checkbox" id="chk12">
+				  <input type="checkbox" id="chk12" ng-click="clickOnCheckbox($event, 11)">
 				  <label for="chk12" class="toggle"></label>
 				</div>
 				<p class="title">KanbanFlow</p><span class="star-toggle glyphicon glyphicon-star-empty"></span>
@@ -263,10 +274,10 @@
 				<div class="date">Feb 24</div>
 			  </div>
 			</li>
-			<li class="blue-dot">
+			<li class="blue-dot" ng-class="{unread: isUnread([]), active: data.messageActive == 12}" ng-click="clickOnThread($event, 12)">
 			  <div class="col col-1"><span class="dot"></span>
 				<div class="checkbox-wrapper">
-				  <input type="checkbox" id="chk13">
+				  <input type="checkbox" id="chk13" ng-click="clickOnCheckbox($event, 12)">
 				  <label for="chk13" class="toggle"></label>
 				</div>
 				<p class="title">Tobias Berggren</p><span class="star-toggle glyphicon glyphicon-star-empty"></span>
@@ -276,10 +287,10 @@
 				<div class="date">Feb 23</div>
 			  </div>
 			</li>
-			<li>
+			<li ng-class="{unread: isUnread([]), active: data.messageActive == 13}" ng-click="clickOnThread($event, 13)">
 			  <div class="col col-1"><span class="dot"></span>
 				<div class="checkbox-wrapper">
-				  <input type="checkbox" id="chk14">
+				  <input type="checkbox" id="chk14" ng-click="clickOnCheckbox($event, 13)">
 				  <label for="chk14" class="toggle"></label>
 				</div>
 				<p class="title">Charukaw, me (7)</p><span class="star-toggle glyphicon glyphicon-star-empty"></span>
@@ -289,10 +300,10 @@
 				<div class="date">Feb 23</div>
 			  </div>
 			</li>
-			<li class="unread">
+			<li ng-class="{unread: isUnread(['UNREAD']), active: data.messageActive == 14}" ng-click="clickOnThread($event, 14)">
 			  <div class="col col-1"><span class="dot"></span>
 				<div class="checkbox-wrapper">
-				  <input type="checkbox" id="chk15">
+				  <input type="checkbox" id="chk15" ng-click="clickOnCheckbox($event, 14)">
 				  <label for="chk15" class="toggle"></label>
 				</div>
 				<p class="title">me, Peter (5)</p><span class="star-toggle glyphicon glyphicon-star-empty"></span>
@@ -302,10 +313,10 @@
 				<div class="date">Feb 21</div>
 			  </div>
 			</li>
-			<li class="green-dot">
+			<li class="green-dot" ng-class="{unread: isUnread([]), active: data.messageActive == 15}" ng-click="clickOnThread($event, 15)">
 			  <div class="col col-1"><span class="dot"></span>
 				<div class="checkbox-wrapper">
-				  <input type="checkbox" id="chk16">
+				  <input type="checkbox" id="chk16" ng-click="clickOnCheckbox($event, 15)">
 				  <label for="chk16" class="toggle"></label>
 				</div>
 				<p class="title">Stack Exchange</p><span class="star-toggle glyphicon glyphicon-star-empty"></span>
@@ -315,10 +326,10 @@
 				<div class="date">Feb 21</div>
 			  </div>
 			</li>
-			<li>
+			<li ng-class="{unread: isUnread([]), active: data.messageActive == 16}" ng-click="clickOnThread($event, 16)">
 			  <div class="col col-1"><span class="dot"></span>
 				<div class="checkbox-wrapper">
-				  <input type="checkbox" id="chk17">
+				  <input type="checkbox" id="chk17" ng-click="clickOnCheckbox($event, 16)">
 				  <label for="chk17" class="toggle"></label>
 				</div>
 				<p class="title">Google Drive Team</p><span class="star-toggle glyphicon glyphicon-star-empty"></span>
@@ -328,10 +339,10 @@
 				<div class="date">Feb 20</div>
 			  </div>
 			</li>
-			<li class="unread">
+			<li ng-class="{unread: isUnread(['UNREAD']), active: data.messageActive == 17}" ng-click="clickOnThread($event, 17)">
 			  <div class="col col-1"><span class="dot"></span>
 				<div class="checkbox-wrapper">
-				  <input type="checkbox" id="chk18">
+				  <input type="checkbox" id="chk18" ng-click="clickOnCheckbox($event, 17)">
 				  <label for="chk18" class="toggle"></label>
 				</div>
 				<p class="title">me, Susanna (11)</p><span class="star-toggle glyphicon glyphicon-star-empty"></span>
@@ -341,10 +352,10 @@
 				<div class="date">Feb 19</div>
 			  </div>
 			</li>
-			<li>
+			<li ng-class="{unread: isUnread([]), active: data.messageActive == 18}" ng-click="clickOnThread($event, 18)">
 			  <div class="col col-1"><span class="dot"></span>
 				<div class="checkbox-wrapper">
-				  <input type="checkbox" id="chk19">
+				  <input type="checkbox" id="chk19" ng-click="clickOnCheckbox($event, 18)">
 				  <label for="chk19" class="toggle"></label>
 				</div>
 				<p class="title">Peter, me (3)</p><span class="star-toggle glyphicon glyphicon-star-empty"></span>
@@ -354,10 +365,10 @@
 				<div class="date">Mar. 6</div>
 			  </div>
 			</li>
-			<li>
+			<li ng-class="{unread: isUnread([]), active: data.messageActive == 19}" ng-click="clickOnThread($event, 19)">
 			  <div class="col col-1"><span class="dot"></span>
 				<div class="checkbox-wrapper">
-				  <input type="checkbox" id="chk20">
+				  <input type="checkbox" id="chk20" ng-click="clickOnCheckbox($event, 19)">
 				  <label for="chk20" class="toggle"></label>
 				</div>
 				<p class="title">me, Susanna (7)</p><span class="star-toggle glyphicon glyphicon-star-empty"></span>
@@ -367,7 +378,8 @@
 				<div class="date">Mar. 6</div>
 			  </div>
 			</li>
-		  </ul><a href="#" class="load-more-link">Show more messages</a>
+		  </ul>
+			<a href="#" class="load-more-link">Show more messages</a>
 		</div>
 	  </div>
 	</main>
@@ -375,11 +387,11 @@
 	<!-- Message right menu -->
 	<div id="message">
 	  <div class="header">
-		<h1 class="page-title"><a class="icon circle-icon glyphicon glyphicon-chevron-left trigger-message-close"></a>Process<span class="grey">(6)</span></h1>
+		<h1 class="page-title"><a class="icon circle-icon glyphicon glyphicon-chevron-left trigger-message-close" ng-click="clickOnHideThread()"></a>Process<span class="grey">(6)</span></h1>
 		<p>From <a href="#">You</a> to <a href="#">Scott Waite</a>, started on <a href="#">March 2, 2014</a> at 2:14 pm est.</p>
 	  </div>
-	  <div id="message-nano-wrapper" class="nano">
-		<div class="nano-content">
+	  <div class="nano">
+		<div class="nano-content" perfect-scrollbar>
 		  <ul class="message-container">
 			<li class="sent">
 			  <div class="details">
