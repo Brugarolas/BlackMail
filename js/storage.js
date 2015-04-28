@@ -46,15 +46,19 @@ storage.prototype.getLabels = function() {
 }
 
 storage.prototype.getCategories = function() {
-   var labels = [], id, category = "CATEGORY_";
-   for (i in this.labels) {
-       id = this.labels[i].id;
-       if (id.indexOf(category) == 0) {
-           id = id.substring(category.length);
-           labels.push({'id': this.labels[i].id, 'name': id.charAt(0) + id.slice(1).toLocaleLowerCase() });
-       }
-   }
-   return labels;
+   var labels = [], categories = [], category = "CATEGORY_";
+   for (i in this.labels) if (this.labels[i].id.indexOf(category) == 0) labels.push(this.labels[i].id);
+
+   var labelsAux = [
+        { 'id': "CATEGORY_PERSONAL", 'name': "Personal" },
+        { 'id': "CATEGORY_SOCIAL", 'name': "Social" },
+        { 'id': "CATEGORY_PROMOTIONS", 'name': "Promotions" },
+        { 'id': "CATEGORY_UPDATES", 'name': "Updates" },
+        { 'id': "CATEGORY_FORUMS", 'name': "Forums" }
+   ];
+
+   for (i in labelsAux) if (labels.indexOf(labelsAux[i].id) > -1) categories.push(labelsAux[i]);
+   return categories;
 }
 
 storage.prototype.retrieveThreads = function(email) {

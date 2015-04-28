@@ -31,7 +31,7 @@ function updateThreadMetadata(thread, message) {
         }
     }
 
-    if (!thread.numOfMsgs) thread.numOfMsgs = 1;
+    if (!thread.numOfMsgs) { thread.numOfMsgs = 1; thread.messages = []; }
     else thread.numOfMsgs += 1;
 }
 
