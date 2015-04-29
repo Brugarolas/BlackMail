@@ -11,8 +11,7 @@ app.controller('GmailMainController', function($scope, $controller) {
 		loading: true,
 		loadingMessage: "Loading API...",
 		currentPage: 0,
-		threadsPerPage: 25,
-		selectedLabel: {'id': "CATEGORY_PERSONAL", 'name': "Personal" }
+		threadsPerPage: 25
 	};
 
 	$scope.handleClientLoad = function() {
@@ -92,7 +91,6 @@ app.controller('GmailMainController', function($scope, $controller) {
 
 		//Step 9A: Execute API request and retrieve list of threads
 		request.execute(function(response) {
-			console.log(response);
 			$scope.data.loadingMessage = "Getting new emails...";
 
 			if (response.resultSizeEstimate != 0) {
@@ -114,7 +112,8 @@ app.controller('GmailMainController', function($scope, $controller) {
 
 				$scope.$apply(function() {
 					$scope.data.loadingMessage = storage.saveThreads($scope.data.personalEmail);
-					$scope.updateMessages();
+					$scope.setCategory({'id': "CATEGORY_PERSONAL", 'name': "Personal" });
+					//$scope.updateMessages();
 				});
 				$scope.endLoading(1000);
 			} else {
@@ -134,7 +133,7 @@ app.controller('GmailMainController', function($scope, $controller) {
 
 			$scope.$apply(function() {
 				$scope.data.loadingMessage = storage.saveThreads($scope.data.personalEmail);
-				$scope.updateMessages();
+				$scope.setCategory({'id': "CATEGORY_PERSONAL", 'name': "Personal" });
 			});
 			$scope.endLoading(1000);
 		});
@@ -187,7 +186,7 @@ app.controller('GmailMainController', function($scope, $controller) {
 
 					$scope.$apply(function() {
 						$scope.data.loadingMessage = storage.saveThreads($scope.data.personalEmail);
-						$scope.updateMessages();
+						$scope.setCategory({'id': "CATEGORY_PERSONAL", 'name': "Personal" });
 					});
 					$scope.endLoading(1000);
 				}
@@ -371,7 +370,7 @@ app.controller('GmailMainController', function($scope, $controller) {
 		}
 	}
 
-	$scope.updateMessages = function() {
+	$scope.updateCategories = function() {
 		$scope.data.categories = storage.getCategories();
 		for (i in $scope.data.categories) {
 			if ($scope.data.categories[i].id == $scope.data.selectedLabel.id) {
@@ -379,6 +378,9 @@ app.controller('GmailMainController', function($scope, $controller) {
 				break;
 			}
 		}
+	}
+
+	$scope.updateMessages = function() {
 		$scope.data.messageList = storage.getThreads($scope.data.currentPage, $scope.data.threadsPerPage, $scope.data.selectedLabel.id);
 		$scope.data.numOfThreads = storage.getNumOfThreads($scope.data.selectedLabel.id);
 		$scope.data.numOfPages = Math.ceil($scope.data.numOfThreads / $scope.data.threadsPerPage);
@@ -388,7 +390,24 @@ app.controller('GmailMainController', function($scope, $controller) {
 		$scope.data.selectedLabel = category;
 		$scope.data.showMenu = false;
 		$scope.currentPage = 0;
+
+		$scope.updateCategories();
 		$scope.updateMessages();
+	}
+
+	$scope.showCategoryMenu = function() {
+		return ($scope.data.selectedLabel && $scope.data.selectedLabel.id.indexOf('CATEGORY_') == 0);
+	}
+
+	$scope.setLabel = function(label) {
+		if (label.category) $scope.setCategory(label.category);
+		else {
+			$scope.data.selectedLabel = label;
+			$scope.data.showMenu = false;
+			$scope.currentPage = 0;
+
+			$scope.updateMessages();
+		}
 	}
 
 	$scope.getNumShowingThreads = function() {
@@ -396,6 +415,8 @@ app.controller('GmailMainController', function($scope, $controller) {
 	}
 
 	$scope.endLoading = function(timeout) {
+		$scope.data.labels = storage.getDefaultLabels();
+
 		if (!timeout) timeout = 0;
 		setTimeout(function() {
 			$scope.$apply(function () {

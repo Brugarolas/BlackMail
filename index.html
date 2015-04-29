@@ -78,11 +78,9 @@
 
 		<menu class="menu-segment">
 		  <ul>
-			<li class="active"><a>Inbox<span> (43)</span></a></li>
-			<li><a>Important</a></li>
-			<li><a>Sent</a></li>
-			<li><a>Drafts</a></li>
-			<li><a>Trash</a></li>
+			<li ng-repeat="label in data.labels" ng-click="setLabel(label)">
+				<a>{{label.name}}<span ng-show="label.unread"> ({{label.unread}})</span></a>
+			</li>
 		  </ul>
 		</menu>
 		<div class="separator"></div>
@@ -126,7 +124,7 @@
 				<span class="line line-angle2"></span>
 			</a>
 			{{data.selectedLabel.name}}
-			<span class="menu">
+			<span class="menu" ng-show="showCategoryMenu()">
 				<a ng-click="clickShowMenu()"><span class="icon selectable-menu glyphicon" ng-class="{'glyphicon-chevron-down': !data.showMenu, 'glyphicon-chevron-up': data.showMenu}"></span></a>
 				<ul class="sub-menu" ng-class="{'show-menu': data.showMenu}" >
 					<li ng-repeat="category in data.categories" ng-click="setCategory(category)">{{category.name}}</li>

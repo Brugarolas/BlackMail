@@ -45,11 +45,38 @@ storage.prototype.getLabels = function() {
     return this.labels;
 }
 
+storage.prototype.getLabel = function(id) {
+    return this.labels[id];
+}
+
+storage.prototype.getDefaultLabels = function() {
+    if (!this.defaultLabels) {
+        this.defaultLabels = [
+            { 'id': 'INBOX', 'name': 'Inbox', 'category': {'id': "CATEGORY_PERSONAL", 'name': "Personal" }, 'unread': 0 },
+            { 'id': 'IMPORTANT', 'name': 'Important' },
+            { 'id': 'SENT', 'name': 'Sent' },
+            { 'id': 'DRAFTS', 'name': 'Drafts' },
+            { 'id': 'TRASH', 'name': 'Trash' },
+            { 'id': 'SPAM', 'name': 'Spam' }
+        ];
+
+        var personal = this.threadLabels['CATEGORY_PERSONAL'], thread;
+        for (i in personal) {
+            thread = this.getThreadByIndex(personal[i]);
+            if (thread.labels.indexOf('UNREAD') > -1) {
+                this.defaultLabels[0].unread += 1;
+            }
+        }
+    }
+
+    return this.defaultLabels;
+}
+
 storage.prototype.getCategories = function() {
    var labels = [], categories = [], category = "CATEGORY_";
    for (i in this.labels) if (this.labels[i].id.indexOf(category) == 0) labels.push(this.labels[i].id);
 
-   var labelsAux = [
+   var sortedLabels = [
         { 'id': "CATEGORY_PERSONAL", 'name': "Personal" },
         { 'id': "CATEGORY_SOCIAL", 'name': "Social" },
         { 'id': "CATEGORY_PROMOTIONS", 'name': "Promotions" },
@@ -57,7 +84,7 @@ storage.prototype.getCategories = function() {
         { 'id': "CATEGORY_FORUMS", 'name': "Forums" }
    ];
 
-   for (i in labelsAux) if (labels.indexOf(labelsAux[i].id) > -1) categories.push(labelsAux[i]);
+   for (i in sortedLabels) if (labels.indexOf(sortedLabels[i].id) > -1) categories.push(sortedLabels[i]);
    return categories;
 }
 
