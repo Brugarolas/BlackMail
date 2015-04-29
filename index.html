@@ -9,7 +9,8 @@
 	<link rel="shortcut icon" href="images/favicon.ico"/>
 
 	<!-- Bootstrap and AngularJS-->
-	<link rel="stylesheet" href="css/bootstrap.min.css" />
+	<link rel="stylesheet" href="css/bootstrap.min.css"/>
+	<link rel="stylesheet" href="css/font-awesome.min.css"/>
 	<script src="js/libs/angular.min.js"></script>
 
 	<!-- Fonts and reset stylesheet -->
@@ -80,8 +81,9 @@
 		  <ul>
 			<li ng-repeat="label in data.labels" ng-click="setLabel(label)" ng-class="{active: isActiveLabel(label)}">
 				<a>
-					<i class="icon glyphicon" ng-class="label.class"> &nbsp; </i>
-					{{label.name}}<span ng-show="label.unread"> ({{label.unread}})</span></a>
+					<i class="fa" ng-class="label.class"> &nbsp; </i>
+					{{label.name}}<span ng-show="label.unread"> ({{label.unread}})</span>
+				</a>
 			</li>
 		  </ul>
 		</menu>
@@ -125,24 +127,31 @@
 				<span class="line line-angle1"></span>
 				<span class="line line-angle2"></span>
 			</a>
-			{{data.selectedLabel.name}}
+			<i class="fa" ng-class="data.selectedLabel.class"> &nbsp; </i> {{data.selectedLabel.name}}
 			<span class="menu" ng-show="showCategoryMenu()">
 				<a ng-click="clickShowMenu()"><span class="icon selectable-menu glyphicon" ng-class="{'glyphicon-chevron-down': !data.showMenu, 'glyphicon-chevron-up': data.showMenu}"></span></a>
 				<ul class="sub-menu" ng-class="{'show-menu': data.showMenu}" >
-					<li ng-repeat="category in data.categories" ng-click="setCategory(category)">{{category.name}}</li>
+					<li ng-repeat="category in data.categories" ng-click="setCategory(category)"><i class="fa" ng-class="category.class"> &nbsp; </i>{{category.name}}</li>
 				</ul>
 			</span>
 		</h1>
 	  </header>
 	  <div class="action-bar">
-		<ul>
+		<ul class="action-threads">
 		  <li><a class="icon circle-icon glyphicon glyphicon-chevron-down"></a></li>
 		  <li><a class="icon circle-icon glyphicon glyphicon-refresh"></a></li>
 		  <li><a class="icon circle-icon glyphicon glyphicon-share-alt"></a></li>
 		  <li><a class="icon circle-icon red glyphicon glyphicon-remove"></a></li>
 		  <li><a class="icon circle-icon red glyphicon glyphicon-flag"></a></li>
 		</ul>
+		  <!--a class="text"> &nbsp; Showing {{getNumShowingThreads()}} out of {{data.numOfThreads}} messages (page {{data.currentPage + 1}} of {{data.numOfPages}}) &nbsp; </a -->
+		<ul class="action-pages">
+		  <li><a class="icon circle-icon glyphicon glyphicon-chevron-right" ng-class="{disabled: (data.currentPage + 1) == data.numOfPages}" ng-click="clickNextPage()"></a></li>
+		  <li><a class="text">&nbsp; Showing {{getNumShowingThreads()}} out of {{data.numOfThreads}} messages (page {{data.currentPage + 1}} of {{data.numOfPages}}) &nbsp;</a></li>
+		  <li><a class="icon circle-icon glyphicon glyphicon-chevron-left" ng-class="{disabled: data.currentPage == 0}" ng-click="clickPreviousPage()"></a></li>
+		</ul>
 	  </div>
+
 	  <div id="main-nano-wrapper" class="nano">
 		<div class="nano-content" perfect-scrollbar>
 		  <ul class="message-list">
@@ -163,11 +172,6 @@
 				  </div>
 			  </li>
 		  </ul>
-          <div class="load-more-link">
-          	<a ng-click="clickPreviousPage()" ng-hide="data.currentPage == 0">Previous.</a>
-		  	<a> Showing {{getNumShowingThreads()}} out of {{data.numOfThreads}} messages (page {{data.currentPage + 1}} of {{data.numOfPages}}). </a>
-          	<a ng-click="clickNextPage()" ng-hide="(data.currentPage + 1) == data.numOfPages">Next.</a>
-          </div>
         </div>
 	  </div>
 	</main>

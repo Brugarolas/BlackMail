@@ -107,7 +107,7 @@ app.controller('GmailMainController', function($scope, $controller) {
 
 				$scope.$apply(function() {
 					$scope.data.loadingMessage = storage.saveThreads($scope.data.personalEmail);
-					$scope.setCategory({'id': "CATEGORY_PERSONAL", 'name': "Personal" });
+					$scope.setCategory({'id': "CATEGORY_PERSONAL", 'name': "Personal", 'class': 'fa-envelope-square' });
 					//$scope.updateMessages();
 				});
 				$scope.endLoading(1000);
@@ -127,7 +127,7 @@ app.controller('GmailMainController', function($scope, $controller) {
 
 			$scope.$apply(function() {
 				$scope.data.loadingMessage = storage.saveThreads($scope.data.personalEmail);
-				$scope.setCategory({'id': "CATEGORY_PERSONAL", 'name': "Personal" });
+				$scope.setCategory({'id': "CATEGORY_PERSONAL", 'name': "Personal", 'class': 'fa-envelope-square' });
 			});
 			$scope.endLoading(1000);
 		});
@@ -176,7 +176,7 @@ app.controller('GmailMainController', function($scope, $controller) {
 
 					$scope.$apply(function() {
 						$scope.data.loadingMessage = storage.saveThreads($scope.data.personalEmail);
-						$scope.setCategory({'id': "CATEGORY_PERSONAL", 'name': "Personal" });
+						$scope.setCategory({'id': "CATEGORY_PERSONAL", 'name': "Personal", 'class': 'fa-envelope-square' });
 					});
 					$scope.endLoading(1000);
 				}

@@ -52,13 +52,12 @@ storage.prototype.getLabel = function(id) {
 storage.prototype.getDefaultLabels = function() {
     if (!this.defaultLabels) {
         this.defaultLabels = [
-            { 'id': 'INBOX', 'name': 'Inbox', 'unread': 0, 'class': 'glyphicon-inbox',
-                                            'category': {'id': "CATEGORY_PERSONAL", 'name': "Personal" } },
-            { 'id': 'IMPORTANT', 'name': 'Important', 'class': 'glyphicon-star' },
-            { 'id': 'SENT', 'name': 'Sent', 'class': 'glyphicon-send' },
-            { 'id': 'DRAFT', 'name': 'Drafts', 'class': 'glyphicon-file' },
-            { 'id': 'TRASH', 'name': 'Trash', 'class': 'glyphicon-trash' },
-            { 'id': 'SPAM', 'name': 'Spam', 'class': 'glyphicon-flash' }
+            { 'id': 'INBOX', 'name': 'Inbox', 'unread': 0, 'class': 'fa-inbox', 'category': {'id': "CATEGORY_PERSONAL", 'name': "Personal", 'class': 'fa-envelope-square' } },
+            { 'id': 'IMPORTANT', 'name': 'Important', 'class': 'fa-star' },
+            { 'id': 'SENT', 'name': 'Sent', 'class': 'fa-paper-plane' },
+            { 'id': 'DRAFT', 'name': 'Drafts', 'class': 'fa-file-text' },
+            { 'id': 'TRASH', 'name': 'Trash', 'class': 'fa-trash' },
+            { 'id': 'SPAM', 'name': 'Spam', 'class': 'fa-bolt ' }
         ];
 
         var personal = this.threadLabels['CATEGORY_PERSONAL'], thread;
@@ -78,11 +77,11 @@ storage.prototype.getCategories = function() {
    for (i in this.labels) if (this.labels[i].id.indexOf(category) == 0) labels.push(this.labels[i].id);
 
    var sortedLabels = [
-        { 'id': "CATEGORY_PERSONAL", 'name': "Personal" },
-        { 'id': "CATEGORY_SOCIAL", 'name': "Social" },
-        { 'id': "CATEGORY_PROMOTIONS", 'name': "Promotions" },
-        { 'id': "CATEGORY_UPDATES", 'name': "Updates" },
-        { 'id': "CATEGORY_FORUMS", 'name': "Forums" }
+        { 'id': "CATEGORY_PERSONAL", 'name': "Personal", 'class': 'fa-envelope-square' },
+        { 'id': "CATEGORY_SOCIAL", 'name': "Social", 'class': 'fa-users' },
+        { 'id': "CATEGORY_PROMOTIONS", 'name': "Promotions", 'class': 'fa-tags' },
+        { 'id': "CATEGORY_UPDATES", 'name': "Updates", 'class': 'fa-info-circle' },
+        { 'id': "CATEGORY_FORUMS", 'name': "Forums", 'class': 'fa-comments' }
    ];
 
    for (i in sortedLabels) if (labels.indexOf(sortedLabels[i].id) > -1) categories.push(sortedLabels[i]);

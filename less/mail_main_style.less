@@ -2,7 +2,7 @@
 
 @color-light-grey: #EFEFEF;
 @color-dark-grey: #888;
-@color-red: #D23B3D;
+@color-red: #B93A38;
 @color-orange: #E2A917;
 @color-blue: #1BC3E1;
 @color-green: #9AE14F;
@@ -23,7 +23,7 @@ body {
 	font-family: Roboto, sans-serif;
 	font-weight: 400;
 	line-height: 1.5em;
-	color: #788;
+	color: @color-dark-grey;
 }
 
 h1 {
@@ -175,7 +175,7 @@ a {
 		  	max-width: 150px;
 		  	max-height: 150px;
 		  	width: auto;
-		 	 height: auto;
+		 	height: auto;
 		}
 	}
 
@@ -336,12 +336,16 @@ a {
 	}
 
 	.header {
-		padding: 50px 25px;
+		padding: 20px 25px;
 		border-bottom: 1px solid @color-light-grey;
 		overflow: hidden;
 
 		.page-title {
 			display: block;
+
+		  	.fa {
+				color: darken(@color-dark-grey, 30%);
+			}
 
 			.sidebar-toggle-btn {
 				width: 0;
@@ -424,12 +428,20 @@ a {
 
 				  	li {
 					  	padding: 10px 36px;
-					}
 
-					li:hover {
-					  	background: @color-light-grey;
-					  	color: darken(@accent-color, 20%);
-					  	transition-duration: .05s;
+					  	.fa {
+							color: darken(@accent-color, 20%);
+					  	}
+
+					  	&:hover {
+						  background: @color-light-grey;
+						  color: darken(@accent-color, 20%);
+						  transition-duration: .05s;
+
+						  .fa {
+								color: darken(@accent-color, 30%);
+						  }
+						}
 					}
 				}
 
@@ -501,21 +513,50 @@ a {
 
 
 	.action-bar {
-		padding: 20px 25px;
+		padding: 10px 25px;
 		border-bottom: 1px solid @color-light-grey;
 		overflow: hidden;
 
-		li {
-			float: left;
-			margin-right: 10px;
+		.text {
+		  position: relative;
+		  cursor: pointer;
+		  top: 2px;
+		  line-height: 28px;
+		  font-size: 18px;
+		  color: #B4BBC1;
+		}
+
+		.disabled {
+  			color: @color-light-grey;
+		  	border: 2px solid @color-light-grey;
+		  	cursor: default;
+
+		  	&:hover {
+			  	color: @color-light-grey;
+			 	border: 2px solid @color-light-grey;
+			  	cursor: default;
+			}
+		}
+
+		.action-threads {
+		  	li {
+			  	margin-right: 6px;
+			  	float: left;
+			}
+		}
+
+		.action-pages {
+			li {
+			  	margin-left: 6px;
+			  	font-weight: bolder;
+			  	float: right;
+			}
 		}
 	}
 
-	
-	// Ugly hack because i can't get the damn thing to work!
 	#main-nano-wrapper {
 		position: absolute;
-		top: 214px;
+		top: 142px;
 		bottom: 0;
 		height: auto;
 	}
@@ -635,12 +676,6 @@ a {
 				}
 			}
 		}
-	}
-
-	.load-more-link {
-		display: block;
-		text-align: center;
-		margin: 30px 0 100px 0;
 	}
 }
 
