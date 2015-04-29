@@ -43,7 +43,7 @@ function getMessageSubject(message) {
 
 function getMessageSnippet(message) {
     var snippet = message.snippet;
-    return (snippet) ? htmlspecialchars_decode(snippet, 1): "(No snippet)";
+    return (snippet) ? htmlspecialchars_decode(snippet, 1) : false;
 }
 
 function getMessageDate(message) {

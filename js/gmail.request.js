@@ -19,11 +19,13 @@ gmail.prototype.getNewMessagesRequest = function(lastDate, nextPageToken) {
         return gapi.client.gmail.users.messages.list({
             'userId': this.email,
             'pageToken': nextPageToken,
+            'includeSpamTrash': true,
             'q': '!in:chats after:' + lastDate.toString('yyyy/MM/dd')
         });
     } else {
         return gapi.client.gmail.users.messages.list({
             'userId': this.email,
+            'includeSpamTrash': true,
             'q': '!in:chats after:' + lastDate.toString('yyyy/MM/dd')
         });
     }
@@ -33,12 +35,14 @@ gmail.prototype.getAllThreadsRequest = function(nextPageToken) {
     if (nextPageToken === undefined) {
         return gapi.client.gmail.users.threads.list({
             'userId': this.email,
+            'includeSpamTrash': true,
             'q': '!in:chats'
         });
     } else {
         return gapi.client.gmail.users.threads.list({
             'userId': this.email,
             'pageToken': nextPageToken,
+            'includeSpamTrash': true,
             'q': '!in:chats'
         });
     }
@@ -76,6 +80,30 @@ gmail.prototype.getNewMessagesBatchRequest = function(newMessages) {
     }
 
     return batchRequest;
+}
+
+gmail.prototype.getEmailImagesBatchRequest = function(email) {
+    var batchRequest = gapi.client.newBatch();
+
+    for (i in email.images) {
+        batchRequest.add(
+            gapi.client.gmail.users.messages.attachments.get({
+                'id': email.images[i].body.attachmentId,
+                'messageId': email.id,
+                'userId': 'me'
+            }), {'id': i }
+        );
+    }
+
+    return batchRequest;
+}
+
+gmail.prototype.getThreadRequest = function(id) {
+    return gapi.client.gmail.users.threads.get({
+        'userId': this.email,
+        'id': id,
+        'format': 'full'
+    });
 }
 
 gmail.prototype.getLabelListRequest = function() {

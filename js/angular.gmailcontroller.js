@@ -72,9 +72,7 @@ app.controller('GmailMainController', function($scope, $controller) {
 	}
 
 	$scope.getListOfLabels = function() {
-		var request = gmail.getLabelListRequest();
-
-		request.execute(function(response) {
+		gmail.getLabelListRequest().execute(function(response) {
 			storage.saveLabels(response.result.labels);
 
 			if (storage.retrieveThreads($scope.data.personalEmail)) $scope.getListOfNewMessages();
@@ -86,11 +84,8 @@ app.controller('GmailMainController', function($scope, $controller) {
 	$scope.getListOfNewMessages = function(nextPageToken, newMessages) {
 		if (newMessages === undefined) newMessages = [];
 
-		//Step 8: Assemble the API request
-		var request = gmail.getNewMessagesRequest(storage.getLastDate(), nextPageToken);
-
-		//Step 9A: Execute API request and retrieve list of threads
-		request.execute(function(response) {
+		//Step 8: Assemble the API request & Step 9A: Execute API request and retrieve list of threads
+		gmail.getNewMessagesRequest(storage.getLastDate(), nextPageToken).execute(function(response) {
 			$scope.data.loadingMessage = "Getting new emails...";
 
 			if (response.resultSizeEstimate != 0) {
@@ -126,8 +121,7 @@ app.controller('GmailMainController', function($scope, $controller) {
 	}
 
 	$scope.getDataOfNewMessages = function(newMessages) {
-		var request = gmail.getNewMessagesBatchRequest(newMessages);
-		request.execute(function(response) {
+		gmail.getNewMessagesBatchRequest(newMessages).execute(function(response) {
 			for (i in response) storage.addMessageToThread(response[i].result);
 			storage.classifyThreads();
 
@@ -141,11 +135,8 @@ app.controller('GmailMainController', function($scope, $controller) {
 
 	// Get list of threads
 	$scope.getListOfAllThreads = function(nextPageToken) {
-		//Step 8: Assemble the API request
-		var request = gmail.getAllThreadsRequest(nextPageToken);
-
-		//Step 9A: Execute API request and retrieve list of threads
-		request.execute(function(response) {
+		//Step 8: Assemble the API request & Step 9A: Execute API request and retrieve list of threads
+		gmail.getAllThreadsRequest(nextPageToken).execute(function(response) {
 			//Step 9B. Save threads
 			storage.addNewThreadsToList(response.threads);
 
@@ -169,9 +160,8 @@ app.controller('GmailMainController', function($scope, $controller) {
 	$scope.getPageThreads = function(page) {
 		if (!page) page = 0;
 		var pagesToLoad = 100, numOfPages = Math.ceil(storage.getNumOfThreads() / pagesToLoad);
-		var batchRequest = gmail.getPageThreadsBatchRequest(page, pagesToLoad);
 
-		batchRequest.then(
+		gmail.getPageThreadsBatchRequest(page, pagesToLoad).then(
 			function(response) {
 				storage.addPageThreads(response.result);
 
@@ -252,13 +242,7 @@ app.controller('GmailMainController', function($scope, $controller) {
 			return;
 		}
 
-		var request = gapi.client.gmail.users.threads.get({
-			'userId': 'me',
-			'id': thread.id,
-			'format': 'full'
-		});
-
-		request.execute(function (response) {
+		gmail.getThreadRequest(thread.id).execute(function (response) {
 			console.dir(response);
             $scope.getMailHTML(thread, response.messages, 0);
 
@@ -311,19 +295,7 @@ app.controller('GmailMainController', function($scope, $controller) {
 	}
 
 	$scope.addImages = function(email, thread, messages, indexMsg) {
-		var batchRequest = gapi.client.newBatch();
-
-		for (i in email.images) {
-			batchRequest.add(
-				gapi.client.gmail.users.messages.attachments.get({
-					'id': email.images[i].body.attachmentId,
-					'messageId': email.id,
-					'userId': 'me'
-				}), {'id': i }
-			);
-		}
-
-		batchRequest.then(function(response) {
+		gmail.getEmailImagesBatchRequest(email).then(function(response) {
 			var data, src;
 			for (i in response.result) {
 				data = response.result[i].result.data.replace(/-/g, '+').replace(/_/g, '/');
@@ -386,28 +358,30 @@ app.controller('GmailMainController', function($scope, $controller) {
 		$scope.data.numOfPages = Math.ceil($scope.data.numOfThreads / $scope.data.threadsPerPage);
 	}
 
-	$scope.setCategory = function(category) {
-		$scope.data.selectedLabel = category;
-		$scope.data.showMenu = false;
-		$scope.currentPage = 0;
-
-		$scope.updateCategories();
-		$scope.updateMessages();
-	}
-
 	$scope.showCategoryMenu = function() {
 		return ($scope.data.selectedLabel && $scope.data.selectedLabel.id.indexOf('CATEGORY_') == 0);
 	}
 
+	$scope.isActiveLabel = function(label) {
+		if (label.id == "INBOX") return ($scope.data.selectedLabel.id.indexOf('CATEGORY_') == 0);
+		else return (label.id == $scope.data.selectedLabel.id);
+	}
+
+	$scope.setCategory = function(category) {
+		$scope.updateLabel(category);
+		$scope.updateCategories();
+	}
+
 	$scope.setLabel = function(label) {
 		if (label.category) $scope.setCategory(label.category);
-		else {
-			$scope.data.selectedLabel = label;
-			$scope.data.showMenu = false;
-			$scope.currentPage = 0;
+		else $scope.updateLabel(label);
+	}
 
-			$scope.updateMessages();
-		}
+	$scope.updateLabel = function(label) {
+		$scope.data.selectedLabel = label;
+		$scope.data.showMenu = false;
+		$scope.currentPage = 0;
+		$scope.updateMessages();
 	}
 
 	$scope.getNumShowingThreads = function() {
