@@ -52,12 +52,13 @@ storage.prototype.getLabel = function(id) {
 storage.prototype.getDefaultLabels = function() {
     if (!this.defaultLabels) {
         this.defaultLabels = [
-            { 'id': 'INBOX', 'name': 'Inbox', 'category': {'id': "CATEGORY_PERSONAL", 'name': "Personal" }, 'unread': 0 },
-            { 'id': 'IMPORTANT', 'name': 'Important' },
-            { 'id': 'SENT', 'name': 'Sent' },
-            { 'id': 'DRAFTS', 'name': 'Drafts' },
-            { 'id': 'TRASH', 'name': 'Trash' },
-            { 'id': 'SPAM', 'name': 'Spam' }
+            { 'id': 'INBOX', 'name': 'Inbox', 'unread': 0, 'class': 'glyphicon-inbox',
+                                            'category': {'id': "CATEGORY_PERSONAL", 'name': "Personal" } },
+            { 'id': 'IMPORTANT', 'name': 'Important', 'class': 'glyphicon-star' },
+            { 'id': 'SENT', 'name': 'Sent', 'class': 'glyphicon-send' },
+            { 'id': 'DRAFT', 'name': 'Drafts', 'class': 'glyphicon-file' },
+            { 'id': 'TRASH', 'name': 'Trash', 'class': 'glyphicon-trash' },
+            { 'id': 'SPAM', 'name': 'Spam', 'class': 'glyphicon-flash' }
         ];
 
         var personal = this.threadLabels['CATEGORY_PERSONAL'], thread;

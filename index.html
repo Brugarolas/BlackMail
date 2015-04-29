@@ -79,7 +79,9 @@
 		<menu class="menu-segment">
 		  <ul>
 			<li ng-repeat="label in data.labels" ng-click="setLabel(label)" ng-class="{active: isActiveLabel(label)}">
-				<a>{{label.name}}<span ng-show="label.unread"> ({{label.unread}})</span></a>
+				<a>
+					<i class="icon glyphicon" ng-class="label.class"> &nbsp; </i>
+					{{label.name}}<span ng-show="label.unread"> ({{label.unread}})</span></a>
 			</li>
 		  </ul>
 		</menu>
@@ -154,7 +156,9 @@
 					  <span class="star-toggle glyphicon" ng-class="{'glyphicon-star-empty': !isImportant(msg.labels), 'important glyphicon-star': isImportant(msg.labels)}"></span>
 				  </div>
 				  <div class="col col-2">
-					  <div class="subject">{{msg.subject}}<span ng-hide="!msg.snippet"> &nbsp;&ndash;&nbsp; <span class="teaser">{{msg.snippet}}</span></span></div>
+					  <div class="subject">{{msg.subject}}
+						  <span ng-hide="!msg.snippet"> &nbsp;&ndash;&nbsp; <span class="teaser">{{msg.snippet}}</span></span>
+					  </div>
 					  <div class="date">{{formatDateShort(msg.date)}}</div>
 				  </div>
 			  </li>
