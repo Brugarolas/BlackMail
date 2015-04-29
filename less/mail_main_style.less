@@ -518,12 +518,20 @@ a {
 		overflow: hidden;
 
 		.text {
-		  position: relative;
-		  cursor: pointer;
-		  top: 2px;
-		  line-height: 28px;
-		  font-size: 18px;
-		  color: #B4BBC1;
+			position: relative;
+			cursor: pointer;
+			top: 2px;
+			line-height: 28px;
+			font-size: 18px;
+			color: #B4BBC1;
+		}
+
+	  	.message-big {
+		  	display: block;
+		}
+
+	  	.message-small {
+		  	display: none;
 		}
 
 		.disabled {
@@ -907,6 +915,10 @@ a {
 }
 
 @media only screen and (max-width: 1024px) {
+	h1 {
+		font-size: 40px;
+		line-height: 30px;
+	}
 
 	#sidebar {
 		transform: translateX(-100%);
@@ -916,10 +928,39 @@ a {
 		left: 0;
 		box-shadow: none;
 
-		.header .page-title .sidebar-toggle-btn {
-			margin-right: 20px;
-			opacity: 1;
-			width: 20px;
+	  	.action-bar {
+			.message-big {
+			  display: none;
+			}
+
+			.message-small {
+			  display: block;
+			}
+		}
+
+	  	.header {
+		  	.page-title {
+				.sidebar-toggle-btn {
+					margin-right: 20px;
+					opacity: 1;
+					width: 20px;
+				}
+
+				.menu .sub-menu {
+					font-size: 20px;
+					right: 100px;
+
+					li {
+					 	padding: 10px 25px;
+					}
+				}
+			}
+
+		    a {
+				font-size: 12px;
+				position: relative;
+				top: 5px;
+			}
 		}
 	}
 
@@ -946,16 +987,26 @@ a {
 			}
 		}
 	}
-
 }
 
-
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 640px) {
 	#main .header {
+	  	.page-title .menu .sub-menu {
+		  	position: fixed;
+		  	text-align: center;
+			left: 20%;
+		  	right: 20%;
+
+			li {
+			  	padding: 8px 18px;
+			}
+		}
+
 		.search-box {
 			float: none;
 			width: 100%;
 			margin-bottom: -110px;
+		  	top: -8px;
 			margin-top: 70px;
 
 			input, input:focus {
@@ -968,9 +1019,28 @@ a {
 		}
 	}
 
+  	#main .action-bar {
+		.text {
+			top: 4px;
+			line-height: 26px;
+			font-size: 12px;
+		}
+		.action-threads {
+			li {
+			  margin-right: 2px;
+			}
+		}
+
+		.action-pages {
+			li {
+			  margin-left: 2px;
+			}
+		}
+	}
+
 	#main #main-nano-wrapper {
 		position: absolute;
-		top: 260px;
+		top: 182px;
 		bottom: 0;
 		height: auto;
 	}

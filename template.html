@@ -10,6 +10,7 @@
 
 	<!-- Bootstrap -->
 	<link rel="stylesheet" href="css/bootstrap.min.css" />
+	<link rel="stylesheet" href="css/font-awesome.min.css"/>
 
 	<!-- Fonts and reset stylesheet -->
 	<link rel="stylesheet" href="css/roboto-fonts.css" />
@@ -39,11 +40,11 @@
 		<div class="logo-container"><span class="logo glyphicon glyphicon-envelope"></span>Mail</div><a class="compose-button">Compose</a>
 		<menu class="menu-segment">
 		  <ul>
-			<li class="active"><a href="#">Inbox<span> (43)</span></a></li>
-			<li><a href="#">Important</a></li>
-			<li><a href="#">Sent</a></li>
-			<li><a href="#">Drafts</a></li>
-			<li><a href="#">Trash</a></li>
+			<li class="active"><a href="#"><i class="fa fa-inbox"> &nbsp; </i>Inbox<span> (43)</span></a></li>
+			<li><a href="#"><i class="fa fa-star"> &nbsp; </i>Important</a></li>
+			<li><a href="#"><i class="fa fa-paper-plane"> &nbsp; </i>Sent</a></li>
+			<li><a href="#"><i class="fa fa-file-text"> &nbsp; </i>Drafts</a></li>
+			<li><a href="#"><i class="fa fa-trash"> &nbsp; </i>Trash</a></li>
 		  </ul>
 		</menu>
 		<div class="separator"></div>
@@ -84,27 +85,33 @@
 				<span class="line"></span><span class="line line-angle1"></span>
 				<span class="line line-angle2"></span>
 			</a>
-			Inbox
+			<i class="fa fa-envelope-square"> &nbsp; </i> Personal
 			<span class="menu">
 				<a ng-click="clickShowMenu()"><span class="icon selectable-menu glyphicon" ng-class="{'glyphicon-chevron-down': !data.showMenu, 'glyphicon-chevron-up': data.showMenu}"></span></a>
 				<ul class="sub-menu" ng-class="{'show-menu': data.showMenu}">
-					<li>Social</li>
-					<li>Forums</li>
-					<li>Promotions</li>
-					<li>Groups</li>
+					<li><i class="fa fa-users"> &nbsp; </i> Social</li>
+					<li><i class="fa fa-comments"> &nbsp; </i> Forums</li>
+					<li><i class="fa fa-tags"> &nbsp; </i> Promotions</li>
+					<li><i class="fa fa-info-circle"> &nbsp; </i> Groups</li>
 				</ul>
 			</span>
 		</h1>
 	  </header>
-	  <div class="action-bar">
-		<ul>
-		  <li><a class="icon circle-icon glyphicon glyphicon-chevron-down"></a></li>
-		  <li><a class="icon circle-icon glyphicon glyphicon-refresh"></a></li>
-		  <li><a class="icon circle-icon glyphicon glyphicon-share-alt"></a></li>
-		  <li><a class="icon circle-icon red glyphicon glyphicon-remove"></a></li>
-		  <li><a class="icon circle-icon red glyphicon glyphicon-flag"></a></li>
-		</ul>
-	  </div>
+		<div class="action-bar">
+			<ul class="action-threads">
+				<li><a class="icon circle-icon glyphicon glyphicon-chevron-down"></a></li>
+				<li><a class="icon circle-icon glyphicon glyphicon-refresh"></a></li>
+				<li><a class="icon circle-icon glyphicon glyphicon-share-alt"></a></li>
+				<li><a class="icon circle-icon red glyphicon glyphicon-remove"></a></li>
+				<li><a class="icon circle-icon red glyphicon glyphicon-flag"></a></li>
+			</ul>
+			<ul class="action-pages">
+				<li><a class="icon circle-icon glyphicon glyphicon-chevron-right" ng-class="{disabled: (data.currentPage + 1) == data.numOfPages}" ng-click="clickNextPage()"></a></li>
+				<li><a class="text message-big">&nbsp; Showing 20 out of 140 messages (page 2 of 7) &nbsp;</a></li>
+				<li><a class="text message-small"> 112/1097 </a></li>
+				<li><a class="icon circle-icon glyphicon glyphicon-chevron-left" ng-class="{disabled: data.currentPage == 0}" ng-click="clickPreviousPage()"></a></li>
+			</ul>
+		</div>
 	  <div id="main-nano-wrapper" class="nano">
 		<div class="nano-content" perfect-scrollbar>
 		  	<ul class="message-list">
@@ -370,7 +377,6 @@
 			  </div>
 			</li>
 		  </ul>
-			<a href="#" class="load-more-link">Show more messages</a>
 		</div>
 	  </div>
 	</main>
