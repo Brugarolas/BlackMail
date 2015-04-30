@@ -4,7 +4,10 @@ var scopes = ['https://www.googleapis.com/auth/plus.me', 'https://www.googleapis
 	'https://www.googleapis.com/auth/userinfo.email'];
 
 var app = angular.module("app", ["styles"]);
-var system = new system();
+
+//Init notifications & storage
+system.initNotificationSystem();
+system.initStorage();
 
 app.controller('GmailMainController', function($scope, $controller) {
 	$controller('StylesController', {$scope: $scope});

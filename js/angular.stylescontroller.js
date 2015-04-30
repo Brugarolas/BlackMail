@@ -2,6 +2,8 @@
  * Created by Andrés on 27/04/2015.
  */
 
+var system = new system();
+
 angular.module("styles", ['scrollbar'])
     .controller('StylesController', function ($scope) {
         $scope.data = {
@@ -69,6 +71,6 @@ angular.module("styles", ['scrollbar'])
         }
 
         $scope.clickShowMenu = function() {
-            if (!system.isMobile) $scope.data.showMenu = !$scope.data.showMenu;
+            if (!system.isMobile()) $scope.data.showMenu = !$scope.data.showMenu;
         }
     });

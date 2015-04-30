@@ -157,7 +157,7 @@
 		<div class="nano-content" perfect-scrollbar>
 		  <ul class="message-list">
 			  <li class="orange-dot" ng-repeat="msg in data.messageList" ng-class="{unread: isUnread(msg.labels), active: data.messageActive == $index}" ng-click="clickOnThread($event, $index)">
-				  <div class="col col-1 col-sm-3">
+				  <div class="col col-1 col-sm-3 col-xs-10">
 					  <span class="dot"></span>
 					  <div class="checkbox-wrapper">
 						  <input type="checkbox" id="chk{{$index}}" ng-click="clickOnCheckbox($event, $index)">
@@ -166,14 +166,15 @@
 					  <span class="star-toggle glyphicon" ng-class="{'glyphicon-star-empty': !isImportant(msg.labels), 'important glyphicon-star': isImportant(msg.labels)}"></span>
 					  <span class="title">{{msg.sender}} {{msg.numOfMsgs}}</span>
 				  </div>
-				  <div class="col col-2 col-sm-8">
+				  <div class="col col-3 col-sm-1 col-xs-2">
+					  <div class="date">{{formatDateShort(msg.date)}}</div>
+				  </div>
+				  <div class="col col-2 col-sm-8 col-xs-11">
 					  <div class="subject">
 						  {{msg.subject}}<span ng-hide="!msg.snippet"> &nbsp;&ndash;&nbsp; <span class="teaser">{{msg.snippet}}</span></span>
 					  </div>
 				  </div>
-				  <div class="col col-3 col-sm-1">
-					  <div class="date">{{formatDateShort(msg.date)}}</div>
-				  </div>
+
 			  </li>
 		  </ul>
         </div>

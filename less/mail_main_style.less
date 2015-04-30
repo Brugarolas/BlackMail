@@ -571,6 +571,7 @@ a {
 
 	.message-list {
 	  	display: block;
+	  	margin-bottom: 40px;
 
 	  	li {
 			position: relative;
@@ -579,6 +580,7 @@ a {
 			line-height: 50px;
 			cursor: default;
 			transition-duration: .3s;
+		  	border-bottom: 1px solid @color-light-grey;
 
 			&:hover, &.active, &.selected {
 				background: @color-light-grey;
@@ -619,6 +621,8 @@ a {
 				.star-toggle {
 					font-size: 18px;
 					margin-top: 14px;
+				  	margin-left: 2px;
+				  	margin-right: 6px;
 				}
 
 				.important {
@@ -668,8 +672,6 @@ a {
 			  	float: right;
 
 			  	.date {
-					//text-overflow: ellipsis;
-					//overflow: hidden;
 					white-space: nowrap;
 				}
 			}
@@ -918,6 +920,13 @@ a {
 		left: 0;
 		box-shadow: none;
 
+		#main-nano-wrapper {
+			position: absolute;
+			top: 132px;
+			bottom: 0;
+			height: auto;
+		}
+
 	  	.action-bar {
 			.message-big {
 			  display: none;
@@ -952,6 +961,10 @@ a {
 				top: 5px;
 			}
 		}
+
+	  	.message-list {
+		  	font-size: 12px;
+		}
 	}
 
 	.show-sidebar {
@@ -979,17 +992,65 @@ a {
 	}
 }
 
+@media only screen and (max-width: 768px) {
+	#main {
+		.message-list {
+			li {
+			  height: 54px;
+
+			  .col-1 {
+				line-height: 15px;
+
+				  .title {
+					margin-top: 8px;
+				  }
+
+				  .star-toggle {
+					margin-top: 4px;
+				  }
+
+				  .dot {
+					margin: 12px 5px 0 0;
+				  }
+
+				  .checkbox-wrapper {
+					margin-top: 5px;
+				  }
+			  }
+
+			  .col-3 {
+				line-height: 15px;
+				margin-top: 10px;
+				padding-right: 20px;
+				text-align: right;
+			  }
+
+			  .col-2 {
+				line-height: 15px;
+				margin-top: 8px;
+			  }
+			}
+		}
+	}
+}
+
 @media only screen and (max-width: 640px) {
 	#main .header {
-	  	.page-title .menu .sub-menu {
-		  	position: fixed;
-		  	text-align: center;
-			left: 20%;
-		  	right: 20%;
-
-			li {
-			  	padding: 8px 18px;
+	  	.page-title .menu {
+			.icon {
+			  position: fixed;
+			  top: 35px;
+			  right: 10%;
 			}
+		  .sub-menu {
+			  position: fixed;
+			  top: 55px;
+			  right: 5%;
+
+			  li {
+				  padding: 8px 18px;
+			  }
+		  }
 		}
 
 		.search-box {
@@ -1033,29 +1094,5 @@ a {
 		top: 182px;
 		bottom: 0;
 		height: auto;
-	}
-
-	#main .message-list li {
-		.col-1 {
-			position: absolute;
-			top: 0;
-			bottom: 0;
-			left: 0;
-			right: 120px;
-			width: auto;
-		}
-		.col-2 {
-			right: 0;
-			left: auto;
-			width: 120px;
-
-			.date {
-				padding-left: 0;
-				position: static;
-			}
-			.subject {
-				display: none;
-			}
-		}
 	}
 }

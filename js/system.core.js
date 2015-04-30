@@ -11,10 +11,6 @@ function system() {
     if (this.platform == "Node") {
         this.platform = (typeof require('nw.gui') !== "undefined") ? "Node Webkit" : "Node.js";
     }
-
-    //Init notifications & storage
-    this.initNotificationSystem();
-    this.initStorage();
 }
 
 system.prototype.isMobile = function() {
