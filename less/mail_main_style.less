@@ -570,48 +570,47 @@ a {
 	}
 
 	.message-list {
-		display: block;
+	  	display: block;
 
-		li {
+	  	li {
 			position: relative;
 			display: block;
 			height: 50px;
 			line-height: 50px;
 			cursor: default;
 			transition-duration: .3s;
-			
+
 			&:hover, &.active, &.selected {
 				background: @color-light-grey;
 				transition-duration: .05s;
 			}
 
 			&.active, &.active:hover {
-				box-shadow: inset 5px 0 0 @accent-color;
+			  	box-shadow: inset 5px 0 0 @accent-color;
 			}
 
 			&.unread {
-				font-weight: 600;
-        		color: #555;
+			  	font-weight: 600;
+			  	color: #555;
 			}
 
 			.col {
 				float: left;
-				position: relative;
+			  	padding-left: 8px;
+			  	padding-right: 2px;
 			}
 
 			&.blue-dot .col-1 .dot {
-				border-color: @color-blue;
+			  	border-color: @color-blue;
 			}
 			&.orange-dot .col-1 .dot {
-				border-color: @color-orange;
+			 	border-color: @color-orange;
 			}
 			&.green-dot .col-1 .dot {
-				border-color: @color-green;
+			 	border-color: @color-green;
 			}
-			
-			.col-1 {
-				width: 365px;
 
+			.col-1 {
 				.star-toggle, .checkbox-wrapper, .dot {
 					display: block;
 					float: left;
@@ -619,17 +618,17 @@ a {
 
 				.star-toggle {
 					font-size: 18px;
-				  	margin-top: 15px;
+					margin-top: 14px;
 				}
 
-			  	.important {
+				.important {
 				  	color: #D4AF37;
 				}
 
 				.dot {
 					border: 4px solid transparent;
 					border-radius: 100px;
-					margin: 22px 12px 0;
+					margin: 22px 5px 0 0;
 					height: 0;
 					width: 0;
 					line-height: 0;
@@ -642,45 +641,36 @@ a {
 				}
 
 				.title {
-					position: absolute;
-					top: 0;
-					left: 105px;
-					right: 0;
+				  margin-left: 5px;
+				  display: block;
 
-					text-overflow: ellipsis;
-					overflow: hidden;
-					white-space: nowrap;
+				  text-overflow: ellipsis;
+				  overflow: hidden;
+				  white-space: nowrap;
 				}
 			}
-			.col-2 {
-				position: absolute;
-				top: 0;
-				left: 365px;
-				right: 0;
-				bottom: 0;
 
-				.subject, .date {
-					position: absolute;
-					top: 0;
-				}
-
+		  	.col-2 {
 				.subject {
-					left: 0;
-					right: 200px;
-					text-overflow: ellipsis;
-					overflow: hidden;
-					white-space: nowrap;
+				  text-overflow: ellipsis;
+				  overflow: hidden;
+				  white-space: nowrap;
 
-				  	.teaser {
-					  	font-weight: 400;
-					  	color: #AAA;
-					}
+				  .teaser {
+					font-weight: 400;
+					color: #AAA;
+				  }
 				}
+			}
 
-				.date {
-					right: 0;
-					width: 200px;
-					padding-left: 100px;
+		  	.col-3 {
+			  	display: block;
+			  	float: right;
+
+			  	.date {
+					//text-overflow: ellipsis;
+					//overflow: hidden;
+					white-space: nowrap;
 				}
 			}
 		}
