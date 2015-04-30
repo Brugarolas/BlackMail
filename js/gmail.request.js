@@ -50,14 +50,14 @@ gmail.prototype.getAllThreadsRequest = function(nextPageToken) {
 
 gmail.prototype.getPageThreadsBatchRequest = function(currentPage, threadsPerPage) {
     var startingThread = currentPage * threadsPerPage;
-    var lastPage = Math.min(startingThread + threadsPerPage, storage.getNumOfThreads());
+    var lastPage = Math.min(startingThread + threadsPerPage, system.getNumOfThreads());
     var batchRequest = gapi.client.newBatch();
 
     for (i = startingThread; i < lastPage; i++) {
         batchRequest.add(
             gapi.client.gmail.users.threads.get({
                 'userId': this.email,
-                'id': storage.getThreadByIndex(i).id,
+                'id': system.getThreadByIndex(i).id,
                 'format': 'metadata'
             }), {'id': i }
         );

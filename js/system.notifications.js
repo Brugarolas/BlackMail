@@ -2,9 +2,8 @@
  * Created by Andrés on 23/04/2015.
  */
 
-function notificationSystem() {
+system.prototype.initNotificationSystem = function() {
     this.enabled = false;
-    //var webkit = false;
 
     if (Notification) {
         this.enabled = true;
@@ -12,12 +11,10 @@ function notificationSystem() {
     }
 }
 
-notificationSystem.prototype.newNotification = function(text) {
+system.prototype.newNotification = function(text) {
     if (this.enabled) {
         Notification.requestPermission(function(permission) {
             new Notification("BlackMail", {body: text, icon:'images/mail-open-64px.png', dir:'auto'});
         });
     }
 }
-
-var notificationSystem = new notificationSystem();

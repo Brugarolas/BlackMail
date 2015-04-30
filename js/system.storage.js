@@ -1,28 +1,23 @@
 /**
  * Created by Andrés on 19/04/2015.
  */
-function storage() {
-    //Detect platform
-    this.platform = (typeof process !== "undefined" && typeof require !== "undefined") ? "Node" : "Anything";
-    if (this.platform == "Node") {
-        this.platform = (typeof require('nw.gui') !== "undefined") ? "Node Webkit" : "Node.js";
-    }
 
+system.prototype.initStorage = function() {
     this.threadList = [];
     this.threadIds = {};
     this.threadLabels = {};
     this.labels = [];
 }
 
-storage.prototype.setEmail = function(email) {
+system.prototype.setEmail = function(email) {
     this.email = email;
 }
 
-storage.prototype.getLastDate = function() {
+system.prototype.getLastDate = function() {
     return new Date(this.getThreadByIndex(0).date).add(-1).days();
 }
 
-storage.prototype.saveThreads = function(email) {
+system.prototype.saveThreads = function(email) {
     var threads = { 'list': this.threadList, 'ids': this.threadIds }
 
     var compressed = LZString.compress(JSON.stringify(threads));
@@ -35,21 +30,21 @@ storage.prototype.saveThreads = function(email) {
     return "Saving " + getSizeBytes(compressed.length * 16) + " of data...";
 }
 
-storage.prototype.saveLabels = function(labels) {
+system.prototype.saveLabels = function(labels) {
     for (i in labels) {
         this.labels.push(labels[i]);
     }
 }
 
-storage.prototype.getLabels = function() {
+system.prototype.getLabels = function() {
     return this.labels;
 }
 
-storage.prototype.getLabel = function(id) {
+system.prototype.getLabel = function(id) {
     return this.labels[id];
 }
 
-storage.prototype.getDefaultLabels = function() {
+system.prototype.getDefaultLabels = function() {
     if (!this.defaultLabels) {
         this.defaultLabels = [
             { 'id': 'INBOX', 'name': 'Inbox', 'unread': 0, 'class': 'fa-inbox', 'category': {'id': "CATEGORY_PERSONAL", 'name': "Personal", 'class': 'fa-envelope-square' } },
@@ -72,7 +67,7 @@ storage.prototype.getDefaultLabels = function() {
     return this.defaultLabels;
 }
 
-storage.prototype.getCategories = function() {
+system.prototype.getCategories = function() {
    var labels = [], categories = [], category = "CATEGORY_";
    for (i in this.labels) if (this.labels[i].id.indexOf(category) == 0) labels.push(this.labels[i].id);
 
@@ -88,7 +83,7 @@ storage.prototype.getCategories = function() {
    return categories;
 }
 
-storage.prototype.retrieveThreads = function(email) {
+system.prototype.retrieveThreads = function(email) {
     var item = localStorage.getItem(email);
     if (!item) return false;
 
@@ -100,7 +95,7 @@ storage.prototype.retrieveThreads = function(email) {
     return true;
 }
 
-storage.prototype.classifyThreads = function() {
+system.prototype.classifyThreads = function() {
     for (i in this.labels) {
         this.threadLabels[this.labels[i].id] = [];
     }
@@ -115,14 +110,14 @@ storage.prototype.classifyThreads = function() {
     }
 }
 
-storage.prototype.addNewThreadsToList = function(threads) {
+system.prototype.addNewThreadsToList = function(threads) {
     for (i in threads) {
         this.threadList.push({id: threads[i].id});
         this.threadIds[threads[i].id] = this.threadList.length - 1;
     }
 }
 
-storage.prototype.mergeThreadList = function(messages) {
+system.prototype.mergeThreadList = function(messages) {
     this.threadList = messages.concat(this.threadList);
     this.threadIds = {};
 
@@ -130,10 +125,10 @@ storage.prototype.mergeThreadList = function(messages) {
         this.threadIds[this.threadList[i].id] = i;
     }
 
-    if (messages.length > 0) notificationSystem.newNotification(messages.length + " new messages.");
+    if (messages.length > 0) this.newNotification(messages.length + " new messages.");
 }
 
-storage.prototype.addMessagesToList = function(messages) {
+system.prototype.addMessagesToList = function(messages) {
     var threadsAux = [];
 
     for (i in messages) {
@@ -156,30 +151,30 @@ storage.prototype.addMessagesToList = function(messages) {
     return threadsAux;
 }
 
-storage.prototype.addPageThreads = function(result) {
+system.prototype.addPageThreads = function(result) {
     for (i in result) setThreadMetadata(this.getThreadByIndex(i), result[i].result);
 }
 
-storage.prototype.addMessageToThread = function(message) {
+system.prototype.addMessageToThread = function(message) {
     var thread = this.threadList[this.threadIds[message.threadId]];
     updateThreadMetadata(thread, message);
 }
 
-storage.prototype.getNumOfThreads = function(labelId) {
+system.prototype.getNumOfThreads = function(labelId) {
     if (!labelId) return this.threadList.length;
     else return this.threadLabels[labelId].length;
 }
 
-storage.prototype.getThread = function(id) {
+system.prototype.getThread = function(id) {
     return this.threadList[this.threadIds[id]];
 }
 
-storage.prototype.getThreadByIndex = function(index, labelId) {
+system.prototype.getThreadByIndex = function(index, labelId) {
     if (!labelId) return this.threadList[index];
     else return this.threadList[this.threadLabels[labelId][index]];
 }
 
-storage.prototype.getThreads = function(page, num, labelId) {
+system.prototype.getThreads = function(page, num, labelId) {
     var startingThread = page * num;
     if (!labelId) return this.threadList.slice(startingThread, startingThread + num);
     else {
@@ -190,5 +185,3 @@ storage.prototype.getThreads = function(page, num, labelId) {
         return threads;
     }
 }
-
-var storage = new storage();
