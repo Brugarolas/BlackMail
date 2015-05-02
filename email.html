@@ -19,8 +19,8 @@
                     <div class="input-group">
                         <input type="email" class="form-control" placeholder="To">
                         <div class="input-group-btn">
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cog"></i> <span class="caret"></span></button>
-                            <ul class="dropdown-menu pull-right">
+                            <button type="button" class="btn btn-default dropdown-toggle" ng-click="showDropdown()"><i class="fa fa-cog"></i> <span class="caret"></span></button>
+                            <ul class="pull-right dropdown-menu" ng-class="{active: data.showDropdown}">
                                 <li><a ng-click="showCc()">Add Cc</a></li>
                                 <li><a ng-click="showBcc()">Add Bcc</a></li>
                             </ul>
@@ -44,22 +44,26 @@
                 </div>
 
                 <ul class="nav nav-tabs">
-                    <li class="active"><a data-toggle="tab" href="#write">Write</a></li>
-                    <li><a data-toggle="tab" href="#preview">Preview</a></li>
+                    <li ng-class="{active: data.active == 'write'}">
+                        <a ng-click="setActive('write')">Write</a>
+                    </li>
+                    <li ng-class="{active: data.active == 'preview'}">
+                        <a ng-click="setActive('preview')">Preview</a>
+                    </li>
                     <li class="pull-right">
-                        <a data-toggle="modal" href="#myModal"><small><i class="fa fa-code"></i> Markdown Syntax</small></a>
+                        <a><small><i class="fa fa-code"></i> Style</small></a>
                     </li>
                 </ul>
 
                 <div class="tab-content">
-                    <div class="tab-pane active" id="write">
+                    <div class="tab-pane" id="write" ng-class="{active: data.active == 'write'}">
                         <textarea class="form-control" rows="10"></textarea>
                         <div class="attachment">
-                            <small>Attach files or images by dragging & dropping,  <a href="#">selecting them</a>, or pasting from the clipboard.</small>
+                            <small>Attach files or images by dragging & dropping,  <a>selecting them</a>, or pasting from the clipboard.</small>
                         </div>
                     </div>
 
-                    <div class="tab-pane" id="preview">
+                    <div class="tab-pane" id="preview" ng-class="{active: data.active == 'preview'}">
                         preview
                     </div>
                 </div>
@@ -72,60 +76,5 @@
             </form>
         </div>
     </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="myModalLabel">
-                        <i class="fa fa-code"></i> Markdown Syntax
-                    </h4>
-                </div>
-                <div class="modal-body">
-                    <ul class="nav nav-tabs">
-                        <li class="active"><a data-toggle="tab" href="#headings">Headings</a></li>
-                        <li><a data-toggle="tab" href="#paragraphs">Paragraphs</a></li>
-                        <li><a data-toggle="tab" href="#lists">Lists</a></li>
-                        <li><a data-toggle="tab" href="#emphasis">Emphasis</a></li>
-                        <li><a data-toggle="tab" href="#links">Links</a></li>
-                        <li><a data-toggle="tab" href="#images">Images</a></li>
-                        <li><a data-toggle="tab"  href="#code">Code</a></li>
-                    </ul>
-
-                    <br>
-
-                    <div class="tab-content">
-                        <div class="tab-pane active" id="headings">
-                            <p class="h3">Headings</p>
-                        </div>
-                        <div class="tab-pane" id="paragraphs">
-                            <p class="h3">Paragraphs</p>
-                        </div>
-                        <div class="tab-pane" id="lists">
-                            <p class="h3">Lists</p>
-                        </div>
-                        <div class="tab-pane" id="emphasis">
-                            <p class="h3">Emphasis</p>
-                        </div>
-                        <div class="tab-pane" id="links">
-                            <p class="h3">Links</p>
-                        </div>
-                        <div class="tab-pane" id="images">
-                            <p class="h3">Images</p>
-                        </div>
-                        <div class="tab-pane" id="code">
-                            <p class="h3">Code</p>
-                        </div>
-                    </div><!-- end of .tab-content -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src='http://code.jquery.com/jquery-2.1.3.min.js'></script>
-    <script src='js/libs/bootstrap.min.js'></script>
-    <!--script src="js/email.index.js"></script-->
 </body>
 </html>
