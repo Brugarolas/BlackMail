@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="email">
 <head>
     <meta charset="UTF-8">
     <title>Email Template</title>
@@ -7,8 +7,11 @@
     <link rel='stylesheet prefetch' href='css/bootstrap.min.css'>
     <link rel='stylesheet prefetch' href='css/font-awesome.min.css'>
     <link rel="stylesheet" href="css/style.email.css">
+
+    <script src="js/libs/angular.min.js"></script>
+    <script src="js/angular.emailtemplate.js"></script>
 </head>
-<body>
+<body ng-controller="EmailTemplateController">
     <div class="container">
         <div class="container-inner">
             <form class="form-email">
@@ -18,22 +21,22 @@
                         <div class="input-group-btn">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cog"></i> <span class="caret"></span></button>
                             <ul class="dropdown-menu pull-right">
-                                <li><a data-toggle="address" data-target="#cc" href="#">Add Cc</a></li>
-                                <li><a data-toggle="address" data-target="#bcc" href="#">Add Bcc</a></li>
+                                <li><a ng-click="showCc()">Add Cc</a></li>
+                                <li><a ng-click="showBcc()">Add Bcc</a></li>
                             </ul>
                         </div>
                     </div>
                     <small class="help-block text-muted">You may add multiple email addresses and separate them with a comma.</small>
                 </div>
 
-                <div class="form-group" id="cc">
+                <div class="form-group" ng-class="{active: data.showCc}" id="cc">
                     <input type="text" class="form-control" placeholder="Cc">
-                    <button data-toggle="remove" class="remove">&times;</button>
+                    <button class="remove" ng-click="showCc()">&times;</button>
                 </div>
 
-                <div class="form-group" id="bcc">
+                <div class="form-group" ng-class="{active: data.showBcc}" id="bcc">
                     <input type="text" class="form-control" placeholder="Bcc">
-                    <button data-toggle="remove" class="remove">&times;</button>
+                    <button class="remove" ng-click="showBcc()">&times;</button>
                 </div>
 
                 <div class="form-group">
@@ -123,6 +126,6 @@
 
     <script src='http://code.jquery.com/jquery-2.1.3.min.js'></script>
     <script src='js/libs/bootstrap.min.js'></script>
-    <script src="js/email.index.js"></script>
+    <!--script src="js/email.index.js"></script-->
 </body>
 </html>
