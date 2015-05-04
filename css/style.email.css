@@ -1,17 +1,3 @@
-body > .container,
-body > .container > .container-inner {
-  width: 100%;
-  height: 100%;
-}
-body > .container {
-  display: table;
-  padding-top: 100px;
-  padding-bottom: 100px;
-}
-body > .container > .container-inner {
-  display: table-cell;
-  vertical-align: middle;
-}
 .form-email {
   padding: 15px;
   border: 1px solid #cccccc;
@@ -84,11 +70,16 @@ body > .container > .container-inner {
   height: 38px;
 }
 .form-email textarea.form-control {
-  resize: vertical;
+  height: 250px;
+  overflow: hidden;
+  resize: none;
+
   border-bottom-color: transparent;
   background-color: #fbfbfb;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
+
+  transition: height 0.5s ease;
 }
 .form-email textarea.form-control:focus {
   background-color: #ffffff;
@@ -107,26 +98,17 @@ body > .container > .container-inner {
 }
 #bcc,
 #cc {
-  -webkit-transition: all 0.3s ease 0.5s;
-  -moz-transition: all 0.3s ease 0.5s;
-  -o-transition: all 0.3s ease 0.5s;
   transition: all 0.3s ease 0.5s;
   display: none;
   opacity: 0;
 }
 #bcc.active,
 #cc.active {
-  -webkit-transition: all 0.2s ease 0s;
-  -moz-transition: all 0.2s ease 0s;
-  -o-transition: all 0.2s ease 0s;
   transition: all 0.2s ease 0s;
   display: block;
   opacity: 1;
 }
 .active {
-  -webkit-transition: all 0.2s ease 0s;
-  -moz-transition: all 0.2s ease 0s;
-  -o-transition: all 0.2s ease 0s;
   transition: all 0.2s ease 0s;
   display: block;
   opacity: 1;

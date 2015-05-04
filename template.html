@@ -24,9 +24,16 @@
 	<!-- Perfect scroller -->
 	<script src="js/libs/angular.min.js"></script>
 	<link rel='stylesheet' href='css/perfect-scrollbar.min.css' />
+	<link rel="stylesheet" href="css/style.email.css"/>
+
 	<link rel="stylesheet" href="css/nanoscroller.css" />
 	<script src='js/libs/perfect-scrollbar.min.js'></script>
+	<script src="js/libs/angular.off-click.js"></script>
+	<script src="js/libs/angular.elastic.js"></script>
+
 	<script src="js/system.core.js"></script>
+	<script src="js/methods.iframe.js"></script>
+	<script src="js/angular.emailtemplate.js"></script>
 	<script src='js/angular.perfectscrollbar.js'></script>
 	<script src='js/angular.stylescontroller.js'></script>
 
@@ -606,10 +613,78 @@
 	  </div>
 	</div>
 
-	<div id="compose">
+	<div id="compose" perfect-scrollbar>
 		<div class="header">
 			<h1 class="page-title">Write a new email<span class="grey">(Template)</span></h1>
 			<p>Here, there will be an <a>email form</a> to write and send a new email.</p>
+		</div>
+		<div class="container" ng-controller="EmailTemplateController">
+			<div class="container-inner">
+				<form class="form-email">
+					<div class="form-group">
+						<div class="input-group">
+							<input type="email" class="form-control" placeholder="To">
+							<div class="input-group-btn">
+								<button type="button" class="btn btn-default dropdown-toggle" ng-click="toggleDropdown()" off-click="toggleDropdown()" off-click-if="data.showDropdown" off-click-filter="'.dropdown-menu'">
+									<i class="fa fa-cog"></i> <span class="caret"></span>
+								</button>
+								<ul class="pull-right dropdown-menu" ng-class="{active: data.showDropdown}">
+									<li ng-hide="data.showCc"><a ng-click="toggleCc()">Add Cc</a></li>
+									<li ng-show="data.showCc"><a ng-click="toggleCc()">Hide Cc</a></li>
+									<li ng-hide="data.showBcc"><a ng-click="toggleBcc()">Add Bcc</a></li>
+									<li ng-show="data.showBcc"><a ng-click="toggleBcc()">Hide Bcc</a></li>
+								</ul>
+							</div>
+						</div>
+						<small class="help-block text-muted">You may add multiple email addresses and separate them with a comma.</small>
+					</div>
+
+					<div class="form-group" ng-class="{active: data.showCc}" id="cc">
+						<input type="text" class="form-control" placeholder="Cc">
+						<button class="remove" ng-click="toggleCc()">&times;</button>
+					</div>
+
+					<div class="form-group" ng-class="{active: data.showBcc}" id="bcc">
+						<input type="text" class="form-control" placeholder="Bcc">
+						<button class="remove" ng-click="toggleBcc()">&times;</button>
+					</div>
+
+					<div class="form-group">
+						<input type="text" class="form-control" placeholder="Subject">
+					</div>
+
+					<ul class="nav nav-tabs">
+						<li ng-class="{active: data.active == 'write'}">
+							<a ng-click="setActive('write')">Write</a>
+						</li>
+						<li ng-class="{active: data.active == 'preview'}">
+							<a ng-click="setActive('preview'); updatePreview()">Preview</a>
+						</li>
+						<li class="pull-right">
+							<a><small><i class="fa fa-code"></i> Style</small></a>
+						</li>
+					</ul>
+
+					<div class="tab-content">
+						<div class="tab-pane" id="write" ng-class="{active: data.active == 'write'}">
+							<textarea class="form-control" rows="10" ng-model="data.message" msd-elastic></textarea>
+							<div class="attachment">
+								<small>Attach files or images by dragging & dropping, <a>selecting them</a>, or pasting from the clipboard.</small>
+							</div>
+						</div>
+
+						<div class="tab-pane" id="preview" ng-class="{active: data.active == 'preview'}">
+							<iframe id="iframePreview" frameBorder="0" src="about:blank" scrolling="no" ng-email-iframe="{{data.message}}" ng-update-on="updatePreview"></iframe>
+						</div>
+					</div>
+
+					<div class="text-right">
+						<button class="btn btn-success" type="submit">
+							<i class="fa fa-send"></i> &nbsp; Send
+						</button>
+					</div>
+				</form>
+			</div>
 		</div>
 	</div>
 </body>

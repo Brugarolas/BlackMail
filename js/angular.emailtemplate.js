@@ -2,7 +2,7 @@
  * Created by Andrés on 02/05/2015.
  */
 
-angular.module("email", ['offClick'])
+angular.module("email", ['offClick', 'monospaced.elastic'])
     .directive('ngEmailIframe', function($compile) {
         return {
             controller: function($scope) {},

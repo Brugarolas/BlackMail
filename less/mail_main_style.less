@@ -600,7 +600,7 @@ a {
 			}
 
 			&.unread {
-			  	font-weight: 600;
+			  	font-weight: 500;
 			  	color: #555;
 			}
 
@@ -893,7 +893,7 @@ a {
   transition-duration: .5s;
   padding: 40px 25px;
   box-shadow: inset 4px 0 0 @color-light-grey, inset 5px 0 0 darken(@color-light-grey, 5%);
-  background: @color-light-grey;
+  background: white;
 
   .show-compose & {
 	transition-duration: 0.3s;
@@ -920,6 +920,20 @@ a {
 		margin-left: 10px;
 		color: #999;
 	}
+  }
+
+  .container {
+	position: absolute;
+	display: table;
+	padding-left: 0;
+	padding-right: 25px;
+	margin-left: 0;
+	padding-top: 20px;
+  }
+
+  .container-inner {
+	display: table-cell;
+	vertical-align: middle;
   }
 }
 

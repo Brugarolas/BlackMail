@@ -3,7 +3,7 @@ var apiKey = 'AIzaSyBWOyx1Ri2q5TkIwO-lMMzUovgUmunDryE';
 var scopes = ['https://www.googleapis.com/auth/plus.me', 'https://www.googleapis.com/auth/gmail.readonly',
 	'https://www.googleapis.com/auth/userinfo.email'];
 
-var app = angular.module("app", ["styles", "email"]);
+var app = angular.module("app", ["styles"]);
 
 //Init notifications & storage
 system.initNotificationSystem();
@@ -11,7 +11,6 @@ system.initStorage();
 
 app.controller('GmailMainController', function($scope, $controller) {
 	$controller('StylesController', {$scope: $scope});
-	$controller('EmailTemplateController', {$scope: $scope});
 	$scope.data = {
 		loading: true,
 		loadingMessage: "Loading API...",

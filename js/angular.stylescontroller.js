@@ -4,8 +4,8 @@
 
 var system = new system();
 
-angular.module("styles", ['scrollbar'])
-    .controller('StylesController', function ($scope) {
+angular.module("styles", ['scrollbar', 'email'])
+    .controller('StylesController', function ($scope, $controller) {
         $scope.data = {
             messageActive: -1,
             showOverlay: false,
