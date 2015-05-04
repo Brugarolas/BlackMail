@@ -10,6 +10,7 @@
 
     <!-- Bootstrap and AngularJS-->
     <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/bootstrap.xl.css"/>
     <link rel="stylesheet" href="css/font-awesome.min.css"/>
     <script src="js/libs/angular.min.js"></script>
 
@@ -69,7 +70,6 @@
     <div class="nano-content" perfect-scrollbar>
         <div class="personal-container">
             <img id="personalPhoto" ng-src="{{data.personalPhoto}}"/>
-
             <div id="personalName">{{data.personalName}}</div>
         </div>
         <div class="separator"></div>
@@ -83,8 +83,7 @@
 
         <menu class="menu-segment">
             <ul>
-                <li ng-repeat="label in data.labels" ng-click="setLabel(label)"
-                    ng-class="{active: isActiveLabel(label)}">
+                <li ng-repeat="label in data.labels" ng-click="setLabel(label)" ng-class="{active: isActiveLabel(label)}">
                     <a>
                         <i class="fa" ng-class="label.class"> &nbsp; </i>
                         {{label.name}}<span ng-show="label.unread"> ({{label.unread}})</span>
@@ -134,12 +133,10 @@
             </a>
             <i class="fa" ng-class="data.selectedLabel.class"> &nbsp; </i> {{data.selectedLabel.name}}
 			<span class="menu" ng-show="showCategoryMenu()">
-				<a ng-click="clickShowMenu()"><span class="icon selectable-menu glyphicon"
-                                                    ng-class="{'glyphicon-chevron-down': !data.showMenu, 'glyphicon-chevron-up': data.showMenu}"></span></a>
+				<a ng-click="clickShowMenu()"><span class="icon selectable-menu glyphicon" ng-class="{'glyphicon-chevron-down': !data.showMenu, 'glyphicon-chevron-up': data.showMenu}"></span></a>
 				<ul class="sub-menu" ng-class="{'show-menu': data.showMenu}">
-                    <li ng-repeat="category in data.categories" ng-click="setCategory(category)"><i class="fa"
-                                                                                                    ng-class="category.class">
-                        &nbsp; </i>{{category.name}}
+                    <li ng-repeat="category in data.categories" ng-click="setCategory(category)">
+                        <i class="fa" ng-class="category.class"> &nbsp; </i>{{category.name}}
                     </li>
                 </ul>
 			</span>
@@ -170,21 +167,20 @@
                 <li class="orange-dot" ng-repeat="msg in data.messageList"
                     ng-class="{unread: isUnread(msg.labels), active: data.messageActive == $index}"
                     ng-click="clickOnThread($event, $index)">
-                    <div class="col col-1 col-sm-3 col-xs-10">
+                    <div class="col col-1 col-xs-10 col-sm-3 col-xl-2">
                         <span class="dot"></span>
 
                         <div class="checkbox-wrapper">
                             <input type="checkbox" id="chk{{$index}}" ng-click="clickOnCheckbox($event, $index)">
                             <label for="chk{{$index}}" class="toggle"></label>
                         </div>
-                        <span class="star-toggle glyphicon"
-                              ng-class="{'glyphicon-star-empty': !isImportant(msg.labels), 'important glyphicon-star': isImportant(msg.labels)}"></span>
+                        <span class="star-toggle glyphicon" ng-class="{'glyphicon-star-empty': !isImportant(msg.labels), 'important glyphicon-star': isImportant(msg.labels)}"></span>
                         <span class="title">{{msg.sender}} {{msg.numOfMsgs}}</span>
                     </div>
-                    <div class="col col-3 col-sm-1 col-xs-2">
+                    <div class="col col-3 col-xs-2 col-sm-1 col-xl-1">
                         <div class="date">{{formatDateShort(msg.date)}}</div>
                     </div>
-                    <div class="col col-2 col-sm-8 col-xs-11">
+                    <div class="col col-2 col-xs-11 col-sm-8 col-xl-9">
                         <div class="subject">
                             {{msg.subject}}<span ng-hide="!msg.snippet"> &nbsp;&ndash;&nbsp; <span class="teaser">{{msg.snippet}}</span></span>
                         </div>
@@ -210,10 +206,7 @@
             <ul class="message-container">
                 <li ng-repeat="msg in data.activeThread.messages" ng-class="{sent: $even, received: $odd}">
                     <div class="details">
-                        <div class="left">You
-                            <div class="arrow" ng-class="{orange: $odd}"></div>
-                            Scott
-                        </div>
+                        <div class="left">You <div class="arrow" ng-class="{orange: $odd}"></div> Scott </div>
                         <div class="right">March 6, 2014, 20:08 pm</div>
                     </div>
                     <div class="message">
@@ -235,7 +228,6 @@
 <div id="compose" perfect-scrollbar>
     <div class="header">
         <h1 class="page-title">Write a new email<span class="grey">(Template)</span></h1>
-
         <p>Here, there will be an <a>email form</a> to write and send a new email.</p>
     </div>
     <div class="container" ng-controller="EmailTemplateController">
@@ -244,7 +236,6 @@
                 <div class="form-group">
                     <div class="input-group">
                         <input type="email" class="form-control" placeholder="To">
-
                         <div class="input-group-btn">
                             <button type="button" class="btn btn-default dropdown-toggle" ng-click="toggleDropdown()"
                                     off-click="toggleDropdown()" off-click-if="data.showDropdown"
@@ -259,9 +250,7 @@
                             </ul>
                         </div>
                     </div>
-                    <small class="help-block text-muted">You may add multiple email addresses and separate them with a
-                        comma.
-                    </small>
+                    <small class="help-block text-muted">You may add multiple email addresses and separate them with a comma.</small>
                 </div>
 
                 <div class="form-group" ng-class="{active: data.showCc}" id="cc">
@@ -286,9 +275,7 @@
                         <a ng-click="setActive('preview'); updatePreview()">Preview</a>
                     </li>
                     <li class="pull-right">
-                        <a>
-                            <small><i class="fa fa-code"></i> Style</small>
-                        </a>
+                        <a><small><i class="fa fa-code"></i> Style</small></a>
                     </li>
                 </ul>
 
