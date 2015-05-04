@@ -33,12 +33,17 @@
 	<!-- Prefix Free plugin -->
 	<script src="js/libs/prefixfree.min.js"></script>
 </head>
-<body id="mainBody" ng-controller="StylesController" ng-class="{'show-message': data.messageActive >= 0, 'show-main-overlay': data.showOverlay, 'show-sidebar': data.showSidebar }">
+<body id="mainBody" ng-controller="StylesController" ng-class="{'show-message': data.messageActive >= 0, 'show-main-overlay': data.showOverlay, 'show-sidebar': data.showSidebar, 'show-compose': data.showCompose }">
 
 	<!-- Left lateral bar -->
 	<aside id="sidebar" class="nano">
 	  <div class="nano-content" perfect-scrollbar>
-		<div class="logo-container"><span class="logo glyphicon glyphicon-envelope"></span>Mail</div><a class="compose-button">Compose</a>
+		<div class="logo-container">
+			<span class="logo glyphicon glyphicon-envelope"></span>Mail
+		</div>
+		<a class="compose-button" ng-class="{red: data.showCompose }" ng-click="clickOnCompose()">
+			<span ng-hide="data.showCompose">Compose</span> <span ng-show="data.showCompose">Close</span>
+		</a>
 		<menu class="menu-segment">
 		  <ul>
 			<li class="active"><a href="#"><i class="fa fa-inbox"> &nbsp; </i>Inbox<span> (43)</span></a></li>
@@ -599,6 +604,13 @@
 		  </ul>
 		</div>
 	  </div>
+	</div>
+
+	<div id="compose">
+		<div class="header">
+			<h1 class="page-title">Write a new email<span class="grey">(Template)</span></h1>
+			<p>Here, there will be an <a>email form</a> to write and send a new email.</p>
+		</div>
 	</div>
 </body>
 

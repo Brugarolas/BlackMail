@@ -3,7 +3,7 @@ var apiKey = 'AIzaSyBWOyx1Ri2q5TkIwO-lMMzUovgUmunDryE';
 var scopes = ['https://www.googleapis.com/auth/plus.me', 'https://www.googleapis.com/auth/gmail.readonly',
 	'https://www.googleapis.com/auth/userinfo.email'];
 
-var app = angular.module("app", ["styles"]);
+var app = angular.module("app", ["styles", "email"]);
 
 //Init notifications & storage
 system.initNotificationSystem();
@@ -11,6 +11,7 @@ system.initStorage();
 
 app.controller('GmailMainController', function($scope, $controller) {
 	$controller('StylesController', {$scope: $scope});
+	$controller('EmailTemplateController', {$scope: $scope});
 	$scope.data = {
 		loading: true,
 		loadingMessage: "Loading API...",
@@ -284,37 +285,6 @@ app.controller('GmailMainController', function($scope, $controller) {
 		});
 	}
 
-	$scope.loadHTML = function(iframe, id, html) {
-		var loaded = false;
-
-		iframe.contentWindow.document.open('text/html', 'replace');
-		iframe.contentWindow.document.write(html);
-		iframe.contentWindow.document.close();
-
-		//console.log($('#' + id));
-
-		/*$('#' + id).iFrameResize({
-			checkOrigin: false,
-			enablePublicMethods: true
-		});*/
-
-		setTimeout(function(){
-			if (!loaded) iframe.height = (iframe.contentWindow.document.body.scrollHeight / 2) - 50;
-		}, 32);
-
-		/*iframe.onload = function() {
-			 $('#' + id).iFrameResize({
-				 checkOrigin: false,
-				 enablePublicMethods: true
-			 });
-		}*/
-
-		iframe.onload = function() {
-			loaded = true;
-			iframe.height = iframe.contentWindow.document.body.scrollHeight;
-		}
-	}
-
 	$scope.updateCategories = function() {
 		$scope.data.categories = system.getCategories();
 		for (i in $scope.data.categories) {
@@ -396,15 +366,6 @@ function handleLoad() {
 	var scope = angular.element(document.querySelector('body')).scope();
 	scope.handleClientLoad();
 }
-
-app.directive('ngEmailIframe', function($compile) {
-	return {
-		controller: function($scope) {},
-		link: function(scope, element, attrs, ctrl) {
-			scope.loadHTML(element[0], attrs.id, attrs.ngEmailIframe);
-		}
-	}
-});
 
 app.directive('ngDownloadButton', function($compile) {
 	return {

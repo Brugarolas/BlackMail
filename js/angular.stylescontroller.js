@@ -10,7 +10,8 @@ angular.module("styles", ['scrollbar'])
             messageActive: -1,
             showOverlay: false,
             showSidebar: false,
-            showMenu: false
+            showMenu: false,
+            showCompose: false
         };
 
         $scope.clickOnThread = function(event, index) {
@@ -64,6 +65,10 @@ angular.module("styles", ['scrollbar'])
             $scope.data.showOverlay = false;
             $scope.data.messageActive = -1;
             $scope.data.showSidebar = false;
+        }
+
+        $scope.clickOnCompose = function () {
+            $scope.data.showCompose = !$scope.data.showCompose;
         }
 
         $scope.clickOnCheckbox = function (event, index) {

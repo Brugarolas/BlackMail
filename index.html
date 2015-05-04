@@ -52,17 +52,20 @@
 	<script src="js/message.methods.js"></script>
 	<script src="js/thread.methods.js"></script>
 	<script src="js/gmail.request.js"></script>
+	<script src="js/methods.iframe.js"></script>
 
 	<!-- Angular plugins -->
 	<script src='js/angular.perfectscrollbar.js'></script>
 	<script src='js/angular.stylescontroller.js'></script>
+	<script src="js/libs/angular.off-click.js"></script>
+	<script src="js/angular.emailtemplate.js"></script>
 	<script src="js/angular.gmailcontroller.js"></script>
 
 	<!-- JavaScript Google API client library -->
 	<script src="js/libs/google.api.min.js"></script>
 </head>
 <body id="mainBody" ng-controller="GmailMainController" ng-class="{'show-message': data.messageActive >= 0,
-	'show-main-overlay': data.showOverlay, 'show-sidebar': data.showSidebar }" onload="handleLoad()" >
+	'show-main-overlay': data.showOverlay, 'show-sidebar': data.showSidebar, 'show-compose': data.showCompose }" onload="handleLoad()" >
 
 	<!-- Left lateral bar -->
 	<aside id="sidebar" class="nano">
@@ -76,7 +79,9 @@
 		<div class="logo-container">
 			<span class="logo glyphicon glyphicon-envelope"></span>Mail
 		</div>
-		<a class="compose-button">Compose</a>
+		<a class="compose-button" ng-class="{red: data.showCompose }" ng-click="clickOnCompose()">
+		    <span ng-hide="data.showCompose">Compose</span> <span ng-show="data.showCompose">Close</span>
+		</a>
 
 		<menu class="menu-segment">
 		  <ul>
@@ -213,6 +218,12 @@
 		  </ul>
 		</div>
 	  </div>
+	</div>
+
+	<div id="compose">
+		<div class="header">
+			<h1 class="page-title">Write a new email<span class="grey">(Template)</span></h1>
+		</div>
 	</div>
 
 	<!-- Loading -->

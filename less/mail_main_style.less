@@ -179,22 +179,30 @@ a {
 		}
 	}
 
-	.compose-button {
-		border-radius: 100px;
-		padding: 13px 20px;
-		text-align: center;
-		font-weight: 500;
-		text-transform: uppercase;
-		color: @accent-color;
-		border: 2px solid @accent-color;
-		display: block;
-		margin: 0 @sidebar-padding 30px @sidebar-padding;
-		cursor: pointer;
+  	.compose-button {
+	  font-size: 18px;
+	  border-radius: 10px;
+	  padding: 12px 18px;
+	  text-align: center;
+	  font-weight: 500;
+	  text-transform: capitalize;
+	  color: @sidebar-background;
+	  background: @accent-color;
+	  margin: 0 @sidebar-padding 30px @sidebar-padding;
+	  display: block;
+	  cursor: pointer;
 
-		&:hover {
-			color: @sidebar-text-color;
-			border-color: @sidebar-text-color;
-		}
+	  &:hover {
+		background: darken(@accent-color, 20%);
+	  }
+	}
+
+  	.red {
+	  background: @color-red;
+
+	  &:hover {
+		background: darken(@color-red, 10%);
+	  }
 	}
 
 	.menu-segment {
@@ -872,6 +880,52 @@ a {
 	}
 }
 
+#compose {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  left: @sidebar-width;
+  margin-right: @sidebar-width;
+
+  z-index: 6;
+  transform: translateX(200%);
+  transition-duration: .5s;
+  padding: 40px 25px;
+  box-shadow: inset 4px 0 0 @color-light-grey, inset 5px 0 0 darken(@color-light-grey, 5%);
+  background: @color-light-grey;
+
+  .show-compose & {
+	transition-duration: 0.3s;
+  }
+
+  .header {
+	margin-bottom: 20px;
+	padding: 0;
+
+	.page-title {
+		display: block;
+		float: none;
+		font-size: 36px;
+		font-weight: 400;
+		margin-bottom: 16px;
+
+		line-height: 118%;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+	}
+
+	.grey {
+		margin-left: 10px;
+		color: #999;
+	}
+  }
+}
+
+.show-compose #compose {
+  	transform: none;
+}
 
 .show-message #message {
 	transform: none;
@@ -881,11 +935,9 @@ a {
 }
 
 @media only screen and (min-width: 1749px) {
-	
 	#main .overlay {
 		display: none;
 	}
-
 }
 
 @media only screen and (max-width: 1750px) {
