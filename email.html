@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="css/style.email.css">
 
     <script src="js/libs/angular.min.js"></script>
+    <script src="js/libs/angular.off-click.js"></script>
+    <script src="js/methods.iframe.js"></script>
     <script src="js/angular.emailtemplate.js"></script>
 </head>
 <body ng-controller="EmailTemplateController">
@@ -19,10 +21,14 @@
                     <div class="input-group">
                         <input type="email" class="form-control" placeholder="To">
                         <div class="input-group-btn">
-                            <button type="button" class="btn btn-default dropdown-toggle" ng-click="showDropdown()"><i class="fa fa-cog"></i> <span class="caret"></span></button>
+                            <button type="button" class="btn btn-default dropdown-toggle" ng-click="toggleDropdown()" off-click="toggleDropdown()" off-click-if="data.showDropdown" off-click-filter="'.dropdown-menu'">
+                                <i class="fa fa-cog"></i> <span class="caret"></span>
+                            </button>
                             <ul class="pull-right dropdown-menu" ng-class="{active: data.showDropdown}">
-                                <li><a ng-click="showCc()">Add Cc</a></li>
-                                <li><a ng-click="showBcc()">Add Bcc</a></li>
+                                <li ng-hide="data.showCc"><a ng-click="toggleCc()">Add Cc</a></li>
+                                <li ng-show="data.showCc"><a ng-click="toggleCc()">Hide Cc</a></li>
+                                <li ng-hide="data.showBcc"><a ng-click="toggleBcc()">Add Bcc</a></li>
+                                <li ng-show="data.showBcc"><a ng-click="toggleBcc()">Hide Bcc</a></li>
                             </ul>
                         </div>
                     </div>
@@ -31,12 +37,12 @@
 
                 <div class="form-group" ng-class="{active: data.showCc}" id="cc">
                     <input type="text" class="form-control" placeholder="Cc">
-                    <button class="remove" ng-click="showCc()">&times;</button>
+                    <button class="remove" ng-click="toggleCc()">&times;</button>
                 </div>
 
                 <div class="form-group" ng-class="{active: data.showBcc}" id="bcc">
                     <input type="text" class="form-control" placeholder="Bcc">
-                    <button class="remove" ng-click="showBcc()">&times;</button>
+                    <button class="remove" ng-click="toggleBcc()">&times;</button>
                 </div>
 
                 <div class="form-group">
@@ -48,7 +54,7 @@
                         <a ng-click="setActive('write')">Write</a>
                     </li>
                     <li ng-class="{active: data.active == 'preview'}">
-                        <a ng-click="setActive('preview')">Preview</a>
+                        <a ng-click="setActive('preview'); updatePreview()">Preview</a>
                     </li>
                     <li class="pull-right">
                         <a><small><i class="fa fa-code"></i> Style</small></a>
@@ -57,14 +63,14 @@
 
                 <div class="tab-content">
                     <div class="tab-pane" id="write" ng-class="{active: data.active == 'write'}">
-                        <textarea class="form-control" rows="10"></textarea>
+                        <textarea class="form-control" rows="10" ng-model="data.message"></textarea>
                         <div class="attachment">
-                            <small>Attach files or images by dragging & dropping,  <a>selecting them</a>, or pasting from the clipboard.</small>
+                            <small>Attach files or images by dragging & dropping, <a>selecting them</a>, or pasting from the clipboard.</small>
                         </div>
                     </div>
 
                     <div class="tab-pane" id="preview" ng-class="{active: data.active == 'preview'}">
-                        preview
+                        <iframe id="iframePreview" frameBorder="0" src="about:blank" scrolling="no" ng-email-iframe="{{data.message}}" ng-update-on="updatePreview"></iframe>
                     </div>
                 </div>
 
