@@ -226,7 +226,7 @@ a {
 
       &.title {
         text-transform: uppercase;
-        font-weight: 600;
+        font-weight: 500;
         padding: 10px 0;
         color: @sidebar-dark-text-color;
 
@@ -768,7 +768,7 @@ a {
 
         .left {
           float: left;
-          font-weight: 600;
+          font-weight: 500;
           color: @color-dark-grey;
           transition-duration: .3s;
 
@@ -902,6 +902,12 @@ a {
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
+
+      .icon {
+        overflow: visible;
+        margin-top: 4px;
+        margin-right: 10px;
+      }
     }
 
     .grey {
@@ -970,6 +976,11 @@ a {
 
   #sidebar {
     transform: translateX(-100%);
+  }
+
+  #compose {
+    left: 0;
+    padding: 40px 0 40px 25px;
   }
 
   #main {

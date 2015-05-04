@@ -227,7 +227,10 @@
 
 <div id="compose" perfect-scrollbar>
     <div class="header">
-        <h1 class="page-title">Write a new email<span class="grey">(Template)</span></h1>
+        <h1 class="page-title">
+            <a class="icon circle-icon glyphicon glyphicon-chevron-left" ng-click="clickOnCompose()"></a>
+            Write a new email<span class="grey">(Template)</span>
+        </h1>
         <p>Here, there will be an <a>email form</a> to write and send a new email.</p>
     </div>
     <div class="container" ng-controller="EmailTemplateController">
