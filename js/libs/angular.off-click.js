@@ -1,7 +1,6 @@
 angular.module('offClick', [])
     .directive('offClick', ['$rootScope', '$parse', function ($rootScope, $parse) {
-    var id = 0;
-    var listeners = {};
+    var id = 0, listeners = {};
 
     document.addEventListener("touchend", offClickEventHandler, true);
     document.addEventListener('click', offClickEventHandler, true);
@@ -24,7 +23,6 @@ angular.module('offClick', [])
                     });
                 })
             }
-
         });
     }
 
