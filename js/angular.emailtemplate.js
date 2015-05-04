@@ -3,10 +3,11 @@
  */
 
 angular.module("email", ['offClick', 'monospaced.elastic'])
-    .directive('ngEmailIframe', function($compile) {
+    .directive('ngEmailIframe', function ($compile) {
         return {
-            controller: function($scope) {},
-            link: function(scope, element, attrs, ctrl) {
+            controller: function ($scope) {
+            },
+            link: function (scope, element, attrs, ctrl) {
                 var iframe = element[0], updateOn = attrs.ngUpdateOn;
 
                 if (!updateOn) {
@@ -19,7 +20,7 @@ angular.module("email", ['offClick', 'monospaced.elastic'])
             }
         }
     })
-    .controller('EmailTemplateController', function($scope) {
+    .controller('EmailTemplateController', function ($scope) {
         $scope.data = {
             active: 'write',
             showDropdown: false,
@@ -27,23 +28,23 @@ angular.module("email", ['offClick', 'monospaced.elastic'])
             showBcc: false
         }
 
-        $scope.toggleDropdown = function() {
+        $scope.toggleDropdown = function () {
             $scope.data.showDropdown = !$scope.data.showDropdown;
         }
 
-        $scope.toggleCc = function() {
+        $scope.toggleCc = function () {
             $scope.data.showCc = !$scope.data.showCc;
         }
 
-        $scope.toggleBcc = function() {
+        $scope.toggleBcc = function () {
             $scope.data.showBcc = !$scope.data.showBcc;
         }
 
-        $scope.setActive = function(active) {
+        $scope.setActive = function (active) {
             if ($scope.data.active != active) $scope.data.active = active;
         }
 
-        $scope.updatePreview = function() {
+        $scope.updatePreview = function () {
             $scope.$broadcast('updatePreview', {});
         }
     });

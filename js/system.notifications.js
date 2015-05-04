@@ -2,7 +2,7 @@
  * Created by Andrés on 23/04/2015.
  */
 
-system.prototype.initNotificationSystem = function() {
+system.prototype.initNotificationSystem = function () {
     this.enabled = false;
 
     if (Notification) {
@@ -11,10 +11,10 @@ system.prototype.initNotificationSystem = function() {
     }
 }
 
-system.prototype.newNotification = function(text) {
+system.prototype.newNotification = function (text) {
     if (this.enabled) {
-        Notification.requestPermission(function(permission) {
-            new Notification("BlackMail", {body: text, icon:'images/mail-open-64px.png', dir:'auto'});
+        Notification.requestPermission(function (permission) {
+            new Notification("BlackMail", {body: text, icon: 'images/mail-open-64px.png', dir: 'auto'});
         });
     }
 }

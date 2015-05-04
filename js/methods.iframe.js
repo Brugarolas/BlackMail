@@ -7,7 +7,7 @@ function setIframeData(iframe, content, margin) {
     iframe.contentWindow.document.write(content);
     iframe.contentWindow.document.close();
 
-    iframe.onload = function() {
+    iframe.onload = function () {
         iframe.height = iframe.contentWindow.document.body.scrollHeight + ((!margin) ? 0 : margin );
     }
 }

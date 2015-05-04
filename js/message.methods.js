@@ -47,8 +47,8 @@ function createMainHTML(content) {
     var text = Base64.decode(content).replace(/(\n)/g, '<br>');
     getLink(text);
     //var text = Base64.decode(content).replace(/(\n)/g, '<br>').replace(re_weburl, getLink("$1"));
-           // ("$1".indexOf("http") == 0) ? "<a href='$1'>$1</a>" :
-           //     (("$1".indexOf("@") > -1) ? "<a href='mailto:$1'>$1</a>" : "<a href='http://$1'>$1</a>"));
+    // ("$1".indexOf("http") == 0) ? "<a href='$1'>$1</a>" :
+    //     (("$1".indexOf("@") > -1) ? "<a href='mailto:$1'>$1</a>" : "<a href='http://$1'>$1</a>"));
 
     return "<!DOCTYPE html> \
             <html> \
@@ -68,14 +68,14 @@ function createMainHTML(content) {
 function getLink(find) {
     /*console.log(find);
 
-    if (find.indexOf('http') == 0) return "<a href=" + find + ">" + find + "</a>";
-    if (find.indexOf('www') != 0 && find.indexOf('@') > -1) return "<a href=mailto:" + find + ">" + find + "</a>";
-    return "<a href=http://" + find + ">" + find + "</a>";*/
+     if (find.indexOf('http') == 0) return "<a href=" + find + ">" + find + "</a>";
+     if (find.indexOf('www') != 0 && find.indexOf('@') > -1) return "<a href=mailto:" + find + ">" + find + "</a>";
+     return "<a href=http://" + find + ">" + find + "</a>";*/
 }
 
 function getSizeBytes(size) {
     var metrics = ['bytes', 'kilobytes', 'megabytes', 'gigabytes', 'terabytes',
-                    'petabytes', 'exabytes', 'zettabytes'];
+        'petabytes', 'exabytes', 'zettabytes'];
 
     for (i in metrics) {
         if (size < 1024) return roundToTwo(size) + ' ' + metrics[i];
@@ -149,10 +149,10 @@ function getImageSrcToReplace(image) {
 }
 
 function roundToTwo(num) {
-    return +(Math.round(num + "e+2")  + "e-2");
+    return +(Math.round(num + "e+2") + "e-2");
 }
 
 function roundToPorc(num) {
-    return +(Math.round(num + "e+4")  + "e-2");
+    return +(Math.round(num + "e+4") + "e-2");
 }
 

@@ -14,7 +14,7 @@ angular.module("styles", ['scrollbar', 'email'])
             showCompose: false
         };
 
-        $scope.clickOnThread = function(event, index) {
+        $scope.clickOnThread = function (event, index) {
             //If we click on toggle button, nothing should happen
             if (event.target.tagName == "LABEL") return;
 
@@ -27,7 +27,7 @@ angular.module("styles", ['scrollbar', 'email'])
                 if ($scope.data.messageActive != -1) {
                     //If there is a selected thread, we should unselect it and show new thread in 300ms
                     $scope.showThread(-1);
-                    setTimeout(function() {
+                    setTimeout(function () {
                         $scope.$apply(function () {
                             $scope.showThread(index);
                         });
@@ -39,15 +39,13 @@ angular.module("styles", ['scrollbar', 'email'])
             }
         }
 
-        $scope.showThread = function(index) {
+        $scope.showThread = function (index) {
             $scope.data.messageActive = index;
             $scope.data.showOverlay = (index > -1);
         }
 
-        $scope.isUnread = function(labels) {
-            for (i in labels) {
-                if (labels[i] === "UNREAD") return true;
-            }
+        $scope.isUnread = function (labels) {
+            for (i in labels) if (labels[i] === "UNREAD") return true;
             return false;
         }
 
@@ -75,7 +73,7 @@ angular.module("styles", ['scrollbar', 'email'])
             event.stopImmediatePropagation();
         }
 
-        $scope.clickShowMenu = function() {
+        $scope.clickShowMenu = function () {
             if (!system.isMobile()) $scope.data.showMenu = !$scope.data.showMenu;
         }
     });

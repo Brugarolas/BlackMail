@@ -25,8 +25,7 @@ function updateThreadMetadata(thread, message) {
         thread.labels = message.labelIds;
     } else {
         for (i in message.labelIds) {
-            label = message.labelIds[i];
-
+            var label = message.labelIds[i];
             if (thread.labels.indexOf(label) == -1) thread.labels.push(label);
         }
     }
@@ -65,7 +64,6 @@ function getThreadLabels(response) {
 
         for (n in message.labelIds) {
             label = message.labelIds[n];
-
             if (labels.indexOf(label) == -1) labels.push(label);
         }
     }
@@ -80,9 +78,8 @@ function formatSender(sender) {
     var value = sender.replace(new RegExp('"', "g"), '');
 
     var x = value.indexOf('<');
-    if (x > 0) {
-        return value.substring(0, x - 1);
-    } else {
+    if (x > 0) return value.substring(0, x - 1);
+    else {
         var y = value.indexOf('@');
         return (x == 0) ? value.substring(1, y) : value.substring(0, y);
     }
@@ -99,15 +96,12 @@ function formatDate(date) {
         "MMT": "+0630", "BST": "+0600", "NPT": "+0545", "IST": "+0530", "PKT": "+0500", "AFT": "+0430", "MSK": "+0400",
         "IRST": "+0330", "FET": "+0300", "EET": "+0200", "CET": "+0100", "GMT": "+0000", "UTC": "+0000", "CVT": "-0100",
         "GST": "-0200", "BRT": "-0300", "NST": "-0330", "AST": "-0400", "EST": "-0500", "CST": "-0600", "MST": "-0700",
-        "PST": "-0800", "AKST": "-0900", "MIT": "-0930", "HST": "-1000", "SST": "-1100", "BIT": "-1200"
-    };
+        "PST": "-0800", "AKST": "-0900", "MIT": "-0930", "HST": "-1000", "SST": "-1100", "BIT": "-1200" };
     var match = date.match(/(\d?\d:\d?\d:\d?\d)/), index, indexTime = (match) ? date.indexOf(match[0]) + match[0].length : -1;
 
     if (indexTime != -1) for (var key in standard) {
         index = date.indexOf(key, indexTime);
-        if (index != -1) {
-            return date.substring(0, index) + standard[key] + '(' + key + ')' + date.substring(index + key.length);
-        }
+        if (index != -1) return date.substring(0, index) + standard[key] + '(' + key + ')' + date.substring(index + key.length);
     }
 
     return date;
@@ -120,30 +114,18 @@ function htmlspecialchars_decode(string, quote_style) {
 
     string = string.toString().replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#39;/g, "'");
 
-    var OPTS = {
-        'ENT_NOQUOTES': 0,
-        'ENT_HTML_QUOTE_SINGLE': 1,
-        'ENT_HTML_QUOTE_DOUBLE': 2,
-        'ENT_COMPAT': 2,
-        'ENT_QUOTES': 3,
-        'ENT_IGNORE': 4
-    };
-    if (quote_style === 0) {
-        noquotes = true;
-    }
+    var OPTS = { 'ENT_NOQUOTES': 0, 'ENT_HTML_QUOTE_SINGLE': 1, 'ENT_HTML_QUOTE_DOUBLE': 2,
+        'ENT_COMPAT': 2, 'ENT_QUOTES': 3, 'ENT_IGNORE': 4 };
+    if (quote_style === 0) noquotes = true;
 
     if (typeof quote_style !== 'number') {
         // Allow for a single string or an array of string flags
         quote_style = [].concat(quote_style);
 
-        for (i = 0; i < quote_style.length; i++) {
-            // Resolve string input to bitwise e.g. 'PATHINFO_EXTENSION' becomes 4
-            if (OPTS[quote_style[i]] === 0) {
-                noquotes = true;
-            } else if (OPTS[quote_style[i]]) {
-                optTemp = optTemp | OPTS[quote_style[i]];
-            }
-        }
+        // Resolve string input to bitwise e.g. 'PATHINFO_EXTENSION' becomes 4
+        for (i = 0; i < quote_style.length; i++)
+            if (OPTS[quote_style[i]] === 0) noquotes = true;
+            else if (OPTS[quote_style[i]]) optTemp = optTemp | OPTS[quote_style[i]];
         quote_style = optTemp;
     }
 
