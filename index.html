@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="css/bootstrap.min.css"/>
     <link rel="stylesheet" href="css/bootstrap.xl.css"/>
     <link rel="stylesheet" href="css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="css/font-awesome-animation.min.css"/>
     <script src="js/libs/angular.min.js"></script>
 
     <!-- Fonts and reset stylesheet -->
@@ -297,8 +298,8 @@
                 </div>
 
                 <div class="text-right">
-                    <button class="btn btn-success" type="submit" ng-click="sendEmail()">
-                        <i class="fa fa-send"></i> &nbsp; Send
+                    <button class="btn btn-success" type="submit" ng-disabled="data.sendingEmail" ng-click="sendEmail()">
+                        <i class="fa" ng-class="{'fa-send': !data.sendingEmail, 'fa-spinner faa-spin animated': data.sendingEmail}"></i> &nbsp; Send
                     </button>
                 </div>
             </form>

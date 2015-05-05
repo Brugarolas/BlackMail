@@ -13,12 +13,13 @@ system.initStorage();
 app.controller('GmailMainController', function ($scope, $controller) {
     $controller('StylesController', {$scope: $scope});
     $scope.data = {
-		selectedCheckboxes: [],
         loading: true,
         loadingMessage: "Loading API...",
         currentPage: 0,
         threadsPerPage: 25,
-		newMessage: {}
+		newMessage: {},
+		selectedCheckboxes: [],
+		sendingEmail: false
     };
 
     $scope.handleClientLoad = function () {
@@ -367,8 +368,19 @@ app.controller('GmailMainController', function ($scope, $controller) {
     }
 
 	$scope.sendEmail = function () {
-		if ($scope.data.newMessage.email && $scope.data.newMessage.subject && $scope.data.newMessage.message)
-			send($scope.data.newMessage.email, $scope.data.newMessage.subject, $scope.data.newMessage.message);
+		if ($scope.data.newMessage.email && $scope.data.newMessage.subject && $scope.data.newMessage.message) {
+			$scope.data.sendingEmail = true;
+			send($scope.data.newMessage.email, $scope.data.newMessage.subject, $scope.data.newMessage.message, function (response) {
+				console.log(response);
+				setTimeout(function () {
+					$scope.$apply(function () {
+						$scope.data.newMessage = {};
+						$scope.data.sendingEmail = false;
+					});
+				}, 250);
+			});
+		}
+
 	}
 
 	$scope.selectedThreadsToTrash = function () {
@@ -408,14 +420,12 @@ function sendMessage(email, callback) {
 	request.execute(callback);
 }
 
-function send(to, subject, content) {
+function send(to, subject, content, callback) {
 	var email = "From: 'me'\r\n" +
 		"To:  " + to + "\r\n" +
 		"Subject: " + subject + "\r\n" +
 		"\r\n" + content;
 
-	sendMessage(email, function () {
-		console.log(arguments);
-	});
+	sendMessage(email, callback);
 }
 
