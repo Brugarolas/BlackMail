@@ -376,17 +376,18 @@ app.controller('GmailMainController', function ($scope, $controller) {
 	$scope.sendEmail = function () {
 		if ($scope.data.newMessage.email && $scope.data.newMessage.subject && $scope.data.newMessage.message) {
 			$scope.data.sendingEmail = true;
-			send($scope.data.newMessage.email, $scope.data.newMessage.subject, $scope.data.newMessage.message, function (response) {
-				console.log(response);
-				setTimeout(function () {
-					$scope.$apply(function () {
-						$scope.data.newMessage = {};
-						$scope.data.sendingEmail = false;
-					});
-				}, 250);
+			send($scope.data.newMessage.email, $scope.data.newMessage.subject, $scope.data.newMessage.message, function (message) {
+                gmail.getThreadRequest(message.threadId).execute(function(response) {
+                    console.log(response);
+
+                    $scope.$apply(function () {
+                        $scope.updateMessages();
+                        $scope.data.newMessage = {};
+                        $scope.data.sendingEmail = false;
+                    });
+                });
 			});
 		}
-
 	}
 
 	$scope.selectedThreadsToTrash = function () {
