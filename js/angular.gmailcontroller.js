@@ -19,7 +19,8 @@ app.controller('GmailMainController', function ($scope, $controller) {
         threadsPerPage: 25,
 		newMessage: {},
 		selectedCheckboxes: [],
-		sendingEmail: false
+		sendingEmail: false,
+        newMailValid: false
     };
 
     $scope.handleClientLoad = function () {
@@ -365,6 +366,11 @@ app.controller('GmailMainController', function ($scope, $controller) {
 			$scope.data.messageList = system.getThreads(++$scope.data.currentPage, $scope.data.threadsPerPage, $scope.data.selectedLabel.id);
 			$scope.data.selectedCheckboxes = [];
 		}
+    }
+
+    $scope.checkValidNewEmail = function() {
+        if ($scope.data.newMessage.email && $scope.data.newMessage.subject && $scope.data.newMessage.message) $scope.data.newMailValid = true;
+        else $scope.data.newMailValid = false;
     }
 
 	$scope.sendEmail = function () {
