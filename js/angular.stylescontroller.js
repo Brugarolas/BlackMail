@@ -12,7 +12,8 @@ angular.module("styles", ['scrollbar', 'email'])
             showOverlay: false,
             showSidebar: false,
             showMenu: false,
-            showCompose: false
+            showCompose: false,
+            selectedCheckboxes: []
         };
 
         $scope.clickOnThread = function (event, index) {
@@ -72,6 +73,10 @@ angular.module("styles", ['scrollbar', 'email'])
 
         $scope.clickOnCheckbox = function (event, index) {
             event.stopImmediatePropagation();
+
+            var position = $scope.data.selectedCheckboxes.indexOf(index);
+            if (position > -1) $scope.data.selectedCheckboxes.splice(position, 1);
+            else $scope.data.selectedCheckboxes.push(index);
         }
 
         $scope.clickShowMenu = function () {

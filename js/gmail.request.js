@@ -112,4 +112,17 @@ gmail.prototype.getLabelListRequest = function () {
     });
 }
 
+gmail.prototype.getSendThreadToTrashBatch = function (threadIds, callback) {
+    var batchRequest = gapi.client.newBatch();
+    for (i in threadIds) {
+        batchRequest.add(
+            gapi.client.gmail.users.threads.trash({
+                'userId': this.email,
+                'id': threadIds[i]
+            })
+        );
+    }
+    batchRequest.execute(callback);
+}
+
 var gmail = new gmail('me');

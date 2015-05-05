@@ -1,7 +1,8 @@
 var clientId = '845333536022-mgv2v21pvnosl5p7dn3ccvu53hcpt2ga.apps.googleusercontent.com';
 var apiKey = 'AIzaSyBWOyx1Ri2q5TkIwO-lMMzUovgUmunDryE';
 var scopes = ['https://www.googleapis.com/auth/plus.me', 'https://www.googleapis.com/auth/gmail.readonly',
-    'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/gmail.compose'];
+    'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/gmail.compose',
+	'https://www.googleapis.com/auth/gmail.modify'];
 
 var app = angular.module("app", ["styles"]);
 
@@ -12,6 +13,7 @@ system.initStorage();
 app.controller('GmailMainController', function ($scope, $controller) {
     $controller('StylesController', {$scope: $scope});
     $scope.data = {
+		selectedCheckboxes: [],
         loading: true,
         loadingMessage: "Loading API...",
         currentPage: 0,
@@ -292,8 +294,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
         $scope.data.categories = system.getCategories();
         for (i in $scope.data.categories) {
             if ($scope.data.categories[i].id == $scope.data.selectedLabel.id) {
-                $scope.data.categories.splice(i, 1);
-                break;
+                $scope.data.categories.splice(i, 1); break;
             }
         }
     }
@@ -302,6 +303,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
         $scope.data.messageList = system.getThreads($scope.data.currentPage, $scope.data.threadsPerPage, $scope.data.selectedLabel.id);
         $scope.data.numOfThreads = system.getNumOfThreads($scope.data.selectedLabel.id);
         $scope.data.numOfPages = Math.ceil($scope.data.numOfThreads / $scope.data.threadsPerPage);
+		$scope.data.selectedCheckboxes = [];
     }
 
     $scope.showCategoryMenu = function () {
@@ -351,16 +353,31 @@ app.controller('GmailMainController', function ($scope, $controller) {
     }
 
     $scope.clickPreviousPage = function () {
-        if ($scope.data.currentPage > 0) $scope.data.messageList = system.getThreads(--$scope.data.currentPage, $scope.data.threadsPerPage, $scope.data.selectedLabel.id);
+        if ($scope.data.currentPage > 0) {
+			$scope.data.messageList = system.getThreads(--$scope.data.currentPage, $scope.data.threadsPerPage, $scope.data.selectedLabel.id);
+			$scope.data.selectedCheckboxes = [];
+		}
     }
 
     $scope.clickNextPage = function () {
-        if ($scope.data.currentPage < $scope.data.numOfPages - 1) $scope.data.messageList = system.getThreads(++$scope.data.currentPage, $scope.data.threadsPerPage, $scope.data.selectedLabel.id);
+        if ($scope.data.currentPage < $scope.data.numOfPages - 1) {
+			$scope.data.messageList = system.getThreads(++$scope.data.currentPage, $scope.data.threadsPerPage, $scope.data.selectedLabel.id);
+			$scope.data.selectedCheckboxes = [];
+		}
     }
 
 	$scope.sendEmail = function () {
 		if ($scope.data.newMessage.email && $scope.data.newMessage.subject && $scope.data.newMessage.message)
 			send($scope.data.newMessage.email, $scope.data.newMessage.subject, $scope.data.newMessage.message);
+	}
+
+	$scope.selectedThreadsToTrash = function () {
+		var threads = [], starting = $scope.data.currentPage * $scope.data.threadsPerPage, label = $scope.data.selectedLabel.id;
+		for (n in $scope.data.selectedCheckboxes) threads.push(system.getThreadByIndex(starting + $scope.data.selectedCheckboxes[n], label).id);
+
+		if (threads.length > 0) gmail.getSendThreadToTrashBatch(threads, function (response) {
+			console.log(response);
+		});
 	}
 });
 

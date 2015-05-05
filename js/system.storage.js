@@ -95,13 +95,22 @@ system.prototype.retrieveThreads = function (email) {
 }
 
 system.prototype.classifyThreads = function () {
-    for (i in this.labels) this.threadLabels[this.labels[i].id] = [];
+    /* First, we classify only default labels */
+    var defaultLabels = this.getDefaultLabels(), thread, categories = this.getCategories();
+    for (i in defaultLabels) this.threadLabels[defaultLabels[i].id] = [];
 
-    var thread;
     for (i in this.threadList) {
         thread = this.threadList[i];
+        for (n in thread.labels) if (thread.labels[n] in this.threadLabels) this.threadLabels[thread.labels[n]].push(i);
+    }
 
-        for (n in thread.labels) this.threadLabels[thread.labels[n]].push(i);
+    /* Then, we classify categories from Inbox threads (so we don't see a deleted thread) */
+    for (i in categories) this.threadLabels[categories[i].id] = [];
+
+    var inboxLabels = this.threadLabels['INBOX'];
+    for (i in inboxLabels) {
+        thread = this.threadList[inboxLabels[i]];
+        for (n in thread.labels) if (thread.labels[n].indexOf('CATEGORY_') == 0) this.threadLabels[thread.labels[n]].push(inboxLabels[i]);
     }
 }
 
