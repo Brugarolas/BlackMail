@@ -22,7 +22,6 @@ angular.module("email", ['offClick', 'monospaced.elastic'])
     })
     .controller('EmailTemplateController', function ($scope) {
         $scope.data = {
-            active: 'write',
             showDropdown: false,
             showCc: false,
             showBcc: false

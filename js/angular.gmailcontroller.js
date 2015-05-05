@@ -1,7 +1,7 @@
 var clientId = '845333536022-mgv2v21pvnosl5p7dn3ccvu53hcpt2ga.apps.googleusercontent.com';
 var apiKey = 'AIzaSyBWOyx1Ri2q5TkIwO-lMMzUovgUmunDryE';
 var scopes = ['https://www.googleapis.com/auth/plus.me', 'https://www.googleapis.com/auth/gmail.readonly',
-    'https://www.googleapis.com/auth/userinfo.email'];
+    'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/gmail.compose'];
 
 var app = angular.module("app", ["styles"]);
 
@@ -15,7 +15,8 @@ app.controller('GmailMainController', function ($scope, $controller) {
         loading: true,
         loadingMessage: "Loading API...",
         currentPage: 0,
-        threadsPerPage: 25
+        threadsPerPage: 25,
+		newMessage: {}
     };
 
     $scope.handleClientLoad = function () {
@@ -356,6 +357,11 @@ app.controller('GmailMainController', function ($scope, $controller) {
     $scope.clickNextPage = function () {
         if ($scope.data.currentPage < $scope.data.numOfPages - 1) $scope.data.messageList = system.getThreads(++$scope.data.currentPage, $scope.data.threadsPerPage, $scope.data.selectedLabel.id);
     }
+
+	$scope.sendEmail = function () {
+		if ($scope.data.newMessage.email && $scope.data.newMessage.subject && $scope.data.newMessage.message)
+			send($scope.data.newMessage.email, $scope.data.newMessage.subject, $scope.data.newMessage.message);
+	}
 });
 
 //Step 1: Start here
@@ -373,4 +379,26 @@ app.directive('ngDownloadButton', function ($compile) {
         }
     }
 });
+
+function sendMessage(email, callback) {
+	var base64EncodedEmail = Base64.encode(email, true);
+	var request = gapi.client.gmail.users.messages.send({
+		'userId': 'me',
+		'resource': {
+			'raw': base64EncodedEmail
+		}
+	});
+	request.execute(callback);
+}
+
+function send(to, subject, content) {
+	var email = "From: 'me'\r\n" +
+		"To:  " + to + "\r\n" +
+		"Subject: " + subject + "\r\n" +
+		"\r\n" + content;
+
+	sendMessage(email, function () {
+		console.log(arguments);
+	});
+}
 

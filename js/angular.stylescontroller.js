@@ -6,6 +6,7 @@ var system = new system();
 
 angular.module("styles", ['scrollbar', 'email'])
     .controller('StylesController', function ($scope, $controller) {
+        $controller('EmailTemplateController', {$scope: $scope});
         $scope.data = {
             messageActive: -1,
             showOverlay: false,
