@@ -214,6 +214,22 @@ app.controller('GmailMainController', function ($scope, $controller) {
                 //Some error happened
                 console.error(reason.result.error.message);
             });
+
+            //Mark message as read if needed
+            var indexOf = thread.labels.indexOf('UNREAD');
+            if (indexOf > -1) {
+                gmail.readThreads([thread], function (response) {
+                    console.log("Reading...")
+
+                    thread.labels.splice(indexOf, 1);
+                    $scope.$apply(function () {
+                        system.classifyThreads();
+                        $scope.updateMessages();
+                        system.saveThreads();
+                    });
+                    console.log(response);
+                });
+            }
         }
     }
 

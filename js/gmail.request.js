@@ -90,7 +90,7 @@ gmail.prototype.getEmailImagesBatchRequest = function (email) {
             gapi.client.gmail.users.messages.attachments.get({
                 'id': email.images[i].body.attachmentId,
                 'messageId': email.id,
-                'userId': 'me'
+                'userId': this.email
             }), {'id': i}
         );
     }
@@ -110,6 +110,20 @@ gmail.prototype.getLabelListRequest = function () {
     return gapi.client.gmail.users.labels.list({
         'userId': this.email
     });
+}
+
+gmail.prototype.readThreads = function(threads, callback) {
+    var batchRequest = gapi.client.newBatch();
+    for (i in threads) {
+        batchRequest.add(
+            gapi.client.gmail.users.threads.modify({
+                'id': threads[i].id,
+                'userId': this.email,
+                'removeLabelIds': ['UNREAD']
+            }), {'id': i}
+        );
+    }
+    batchRequest.execute(callback);
 }
 
 gmail.prototype.sendMessage = function(to, subject, content, callback) {
