@@ -110,17 +110,9 @@ app.controller('GmailMainController', function ($scope, $controller) {
             }
 
             // Check if we need to update some messages
-            if (newMessages.length == 0) {
-                system.classifyThreads();
+            if (newMessages.length == 0) $scope.endLoading(1000);
+            else $scope.getDataOfNewMessages(newMessages);
 
-                $scope.$apply(function () {
-                    $scope.data.loadingMessage = system.saveThreads();
-                    $scope.setCategory({'id': "CATEGORY_PERSONAL", 'name': "Personal", 'class': 'fa-envelope-square'});
-                });
-                $scope.endLoading(1000);
-            } else {
-                $scope.getDataOfNewMessages(newMessages);
-            }
         }, function (reason) {
             //Some error happened
             console.error(reason.result.error.message);
@@ -130,12 +122,6 @@ app.controller('GmailMainController', function ($scope, $controller) {
     $scope.getDataOfNewMessages = function (newMessages) {
         gmail.getNewMessagesBatchRequest(newMessages).execute(function (response) {
             for (i in response) system.addMessageToThread(response[i].result);
-            system.classifyThreads();
-
-            $scope.$apply(function () {
-                $scope.data.loadingMessage = system.saveThreads();
-                $scope.setCategory({'id': "CATEGORY_PERSONAL", 'name': "Personal", 'class': 'fa-envelope-square'});
-            });
             $scope.endLoading(1000);
         });
     }
@@ -178,19 +164,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
                         $scope.data.loadingMessage = "Loading threads (" + porc + "% threads loaded)...";
                     });
                     $scope.getPageThreads(page + 1);
-                } else {
-                    system.classifyThreads();
-
-                    $scope.$apply(function () {
-                        $scope.data.loadingMessage = system.saveThreads();
-                        $scope.setCategory({
-                            'id': "CATEGORY_PERSONAL",
-                            'name': "Personal",
-                            'class': 'fa-envelope-square'
-                        });
-                    });
-                    $scope.endLoading(1000);
-                }
+                } else $scope.endLoading(1000);
 
             }, function (reason) {
                 //Some error happened
@@ -305,6 +279,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
         $scope.data.messageList = system.getThreads($scope.data.currentPage, $scope.data.threadsPerPage, $scope.data.selectedLabel.id);
         $scope.data.numOfThreads = system.getNumOfThreads($scope.data.selectedLabel.id);
         $scope.data.numOfPages = Math.ceil($scope.data.numOfThreads / $scope.data.threadsPerPage);
+        if ($scope.data.currentPage >= $scope.data.numOfPages) $scope.data.currentPage = $scope.data.numOfPages - 1;
 		$scope.data.selectedCheckboxes = [];
     }
 
@@ -330,17 +305,27 @@ app.controller('GmailMainController', function ($scope, $controller) {
     $scope.updateLabel = function (label) {
         $scope.data.selectedLabel = label;
         $scope.data.showMenu = false;
-        $scope.currentPage = 0;
+        $scope.data.currentPage = 0;
         $scope.updateMessages();
     }
 
-    $scope.getNumShowingThreads = function () {
-        return Math.min($scope.data.numOfThreads, $scope.data.threadsPerPage);
+    $scope.getActualPageTextBig = function () {
+        return ($scope.data.numOfPages == 0) ? "No messages" : "Showing " + Math.min($scope.data.numOfThreads, $scope.data.threadsPerPage) +
+            " out of " + $scope.data.numOfThreads + " messages (page " + ($scope.data.currentPage+1) + " of " + $scope.data.numOfPages + ")";
+    }
+
+    $scope.getActualPageTextSmall = function () {
+        return ($scope.data.numOfPages == 0) ? "0/0" : ($scope.data.currentPage+1) + "/" + $scope.data.numOfPages;
     }
 
     $scope.endLoading = function (timeout) {
-        $scope.data.labels = system.getDefaultLabels();
+        system.classifyThreads();
+        $scope.$apply(function () {
+            $scope.data.loadingMessage = system.saveThreads();
+            $scope.setCategory({'id': "CATEGORY_PERSONAL", 'name': "Personal", 'class': 'fa-envelope-square'});
+        });
 
+        $scope.data.labels = system.getDefaultLabels();
         if (!timeout) timeout = 0;
         setTimeout(function () {
             $scope.$apply(function () {
@@ -396,7 +381,12 @@ app.controller('GmailMainController', function ($scope, $controller) {
 		for (n in $scope.data.selectedCheckboxes) threads.push(system.getThreadByIndex(starting + $scope.data.selectedCheckboxes[n], label).id);
 
 		if (threads.length > 0) gmail.getSendThreadToTrashBatch(threads, function (response) {
-			console.log(response);
+			system.updateLabels(response);
+
+            $scope.$apply(function () {
+                $scope.updateMessages();
+                $scope.data.newMessage = {};
+            });
 		});
 	}
 });

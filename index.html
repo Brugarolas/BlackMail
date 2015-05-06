@@ -154,11 +154,10 @@
         <ul class="action-pages">
             <li><a class="icon circle-icon glyphicon glyphicon-chevron-right"
                    ng-class="{disabled: (data.currentPage + 1) == data.numOfPages}" ng-click="clickNextPage()"></a></li>
-            <li><a class="text message-big">&nbsp; Showing {{getNumShowingThreads()}} out of {{data.numOfThreads}}
-                messages (page {{data.currentPage + 1}} of {{data.numOfPages}}) &nbsp;</a></li>
-            <li><a class="text message-small"> {{data.currentPage + 1}}/{{data.numOfPages}} </a></li>
+            <li><a class="text message-big">&nbsp; {{getActualPageTextBig()}} &nbsp;</a></li>
+            <li><a class="text message-small"> {{getActualPageTextSmall()}} </a></li>
             <li><a class="icon circle-icon glyphicon glyphicon-chevron-left"
-                   ng-class="{disabled: data.currentPage == 0}" ng-click="clickPreviousPage()"></a></li>
+                   ng-class="{disabled: data.currentPage <= 0}" ng-click="clickPreviousPage()"></a></li>
         </ul>
     </div>
 

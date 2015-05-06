@@ -43,30 +43,6 @@ system.prototype.getLabel = function (id) {
     return this.labels[id];
 }
 
-system.prototype.getDefaultLabels = function () {
-    if (!this.defaultLabels) {
-        this.defaultLabels = [
-            {
-                'id': 'INBOX', 'name': 'Inbox', 'unread': 0, 'class': 'fa-inbox',
-                'category': {'id': "CATEGORY_PERSONAL", 'name': "Personal", 'class': 'fa-envelope-square'}
-            },
-            {'id': 'IMPORTANT', 'name': 'Important', 'class': 'fa-star'},
-            {'id': 'SENT', 'name': 'Sent', 'class': 'fa-paper-plane'},
-            {'id': 'DRAFT', 'name': 'Drafts', 'class': 'fa-file-text'},
-            {'id': 'TRASH', 'name': 'Trash', 'class': 'fa-trash'},
-            {'id': 'SPAM', 'name': 'Spam', 'class': 'fa-bolt '}
-        ];
-
-        var personal = this.threadLabels['CATEGORY_PERSONAL'], thread;
-        for (i in personal) {
-            thread = this.getThreadByIndex(personal[i]);
-            if (thread.labels.indexOf('UNREAD') > -1) this.defaultLabels[0].unread += 1;
-        }
-    }
-
-    return this.defaultLabels;
-}
-
 system.prototype.getCategories = function () {
     var labels = [], categories = [], category = "CATEGORY_";
     for (i in this.labels) if (this.labels[i].id.indexOf(category) == 0) labels.push(this.labels[i].id);
@@ -121,6 +97,32 @@ system.prototype.classifyThreads = function () {
         /* If message don't have a category, it will be in personal category */
         if (!hasCategories) this.threadLabels['CATEGORY_PERSONAL'].push(inboxLabels[i]);
     }
+
+    /* Count unread personal messages */
+    var personal = this.threadLabels['CATEGORY_PERSONAL'];
+    this.defaultLabels[0].unread = 0;
+    for (i in personal) {
+        thread = this.getThreadByIndex(personal[i]);
+        if (thread.labels.indexOf('UNREAD') > -1) this.defaultLabels[0].unread += 1;
+    }
+}
+
+system.prototype.getDefaultLabels = function () {
+    if (!this.defaultLabels) {
+        this.defaultLabels = [
+            {
+                'id': 'INBOX', 'name': 'Inbox', 'unread': 0, 'class': 'fa-inbox',
+                'category': {'id': "CATEGORY_PERSONAL", 'name': "Personal", 'class': 'fa-envelope-square'}
+            },
+            {'id': 'IMPORTANT', 'name': 'Important', 'class': 'fa-star'},
+            {'id': 'SENT', 'name': 'Sent', 'class': 'fa-paper-plane'},
+            {'id': 'DRAFT', 'name': 'Drafts', 'class': 'fa-file-text'},
+            {'id': 'TRASH', 'name': 'Trash', 'class': 'fa-trash'},
+            {'id': 'SPAM', 'name': 'Spam', 'class': 'fa-bolt '}
+        ];
+    }
+
+    return this.defaultLabels;
 }
 
 system.prototype.addNewThreadsToList = function (threads) {
@@ -184,6 +186,16 @@ system.prototype.addOrUpdateThread = function (result) {
     this.addNewThreadToListSorted(thread);
     this.sortThreadIds();
     this.saveThreads();
+    this.classifyThreads();
+}
+
+system.prototype.updateLabels = function (response) {
+    var thread;
+    for (i in response) {
+        thread = this.threadList[this.threadIds[response[i].result.id]];
+        thread.labels = getThreadLabels(response[i].result);
+    }
+    this.saveThreads()
     this.classifyThreads();
 }
 
