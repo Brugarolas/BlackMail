@@ -7,7 +7,7 @@ function setThreadMetadata(thread, result) {
 
     thread.subject = getMessageSubject(firstMessage);
     thread.snippet = getMessageSnippet(lastMessage);
-    thread.date = Date.parse(getMessageDate(lastMessage));
+    thread.date = new Date(getMessageDate(lastMessage));
     thread.sender = getMessageSender(lastMessage);
     thread.labels = getThreadLabels(result);
 
@@ -18,7 +18,7 @@ function setThreadMetadata(thread, result) {
 function updateThreadMetadata(thread, message) {
     if (!thread.subject) thread.subject = getMessageSubject(message);
     thread.snippet = getMessageSnippet(message);
-    thread.date = Date.parse(getMessageDate(message));
+    thread.date = new Date(getMessageDate(message));
     thread.sender = getMessageSender(message);
 
     if (!thread.labels) {

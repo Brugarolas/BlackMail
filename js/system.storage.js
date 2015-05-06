@@ -17,14 +17,15 @@ system.prototype.getLastDate = function () {
     return new Date(this.getThreadByIndex(0).date).add(-1).days();
 }
 
-system.prototype.saveThreads = function (email) {
+system.prototype.saveThreads = function () {
     var threads = {'list': this.threadList, 'ids': this.threadIds}
 
-    var compressed = LZString.compress(JSON.stringify(threads));
-    localStorage.setItem(email, compressed);
+    //var compressed = LZString.compress(JSON.stringify(threads));
+    var compressed = LZString.compress(angular.toJson(threads, false));
+    localStorage.setItem(this.email, compressed);
 
     for (i in this.threadList) {
-        this.threadList[i].date = Date.parse(this.threadList[i].date);
+        this.threadList[i].date = new Date(this.threadList[i].date);
     }
 
     return "Saving " + getSizeBytes(compressed.length * 16) + " of data...";
@@ -107,10 +108,18 @@ system.prototype.classifyThreads = function () {
     /* Then, we classify categories from Inbox threads (so we don't see a deleted thread) */
     for (i in categories) this.threadLabels[categories[i].id] = [];
 
-    var inboxLabels = this.threadLabels['INBOX'];
+    var inboxLabels = this.threadLabels['INBOX'], hasCategories;
     for (i in inboxLabels) {
+        hasCategories = false;
         thread = this.threadList[inboxLabels[i]];
-        for (n in thread.labels) if (thread.labels[n].indexOf('CATEGORY_') == 0) this.threadLabels[thread.labels[n]].push(inboxLabels[i]);
+
+        for (n in thread.labels) if (thread.labels[n].indexOf('CATEGORY_') == 0) {
+            hasCategories = true;
+            this.threadLabels[thread.labels[n]].push(inboxLabels[i]);
+        }
+
+        /* If message don't have a category, it will be in personal category */
+        if (!hasCategories) this.threadLabels['CATEGORY_PERSONAL'].push(inboxLabels[i]);
     }
 }
 
@@ -119,6 +128,22 @@ system.prototype.addNewThreadsToList = function (threads) {
         this.threadList.push({id: threads[i].id});
         this.threadIds[threads[i].id] = this.threadList.length - 1;
     }
+}
+
+system.prototype.addNewThreadToListSorted = function (thread) {
+    var index = 0, actualThread;
+    for (i in this.threadList) {
+        actualThread = this.threadList[i];
+        if (Date.compare(thread.date, actualThread.date) == 1) {
+            index = i; break;
+        }
+    }
+
+    this.threadList.splice(index, 0, thread);
+}
+
+system.prototype.sortThreadIds = function () {
+    for (i in this.threadList) this.threadIds[this.threadList[i].id] = i;
 }
 
 system.prototype.mergeThreadList = function (messages) {
@@ -149,6 +174,17 @@ system.prototype.addMessagesToList = function (messages) {
     }
 
     return threadsAux;
+}
+
+system.prototype.addOrUpdateThread = function (result) {
+    var index = this.threadIds[result.id], thread = { id: result.id };
+    if (index !== undefined) this.threadList.splice(index, 1);
+
+    setThreadMetadata(thread, result);
+    this.addNewThreadToListSorted(thread);
+    this.sortThreadIds();
+    this.saveThreads();
+    this.classifyThreads();
 }
 
 system.prototype.addPageThreads = function (result) {

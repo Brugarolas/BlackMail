@@ -114,7 +114,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
                 system.classifyThreads();
 
                 $scope.$apply(function () {
-                    $scope.data.loadingMessage = system.saveThreads($scope.data.personalEmail);
+                    $scope.data.loadingMessage = system.saveThreads();
                     $scope.setCategory({'id': "CATEGORY_PERSONAL", 'name': "Personal", 'class': 'fa-envelope-square'});
                 });
                 $scope.endLoading(1000);
@@ -133,7 +133,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
             system.classifyThreads();
 
             $scope.$apply(function () {
-                $scope.data.loadingMessage = system.saveThreads($scope.data.personalEmail);
+                $scope.data.loadingMessage = system.saveThreads();
                 $scope.setCategory({'id': "CATEGORY_PERSONAL", 'name': "Personal", 'class': 'fa-envelope-square'});
             });
             $scope.endLoading(1000);
@@ -182,7 +182,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
                     system.classifyThreads();
 
                     $scope.$apply(function () {
-                        $scope.data.loadingMessage = system.saveThreads($scope.data.personalEmail);
+                        $scope.data.loadingMessage = system.saveThreads();
                         $scope.setCategory({
                             'id': "CATEGORY_PERSONAL",
                             'name': "Personal",
@@ -227,7 +227,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
         } else {
             //If not, we need to make a request
             gmail.getThreadRequest(thread.id).execute(function (response) {
-                console.dir(response);
+                console.log(response);
                 $scope.getMailHTML(thread, response.messages, 0);
 
                 setTimeout(function () {
@@ -379,6 +379,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
 			send($scope.data.newMessage.email, $scope.data.newMessage.subject, $scope.data.newMessage.message, function (message) {
                 gmail.getThreadRequest(message.threadId).execute(function(response) {
                     console.log(response);
+                    system.addOrUpdateThread(response.result);
 
                     $scope.$apply(function () {
                         $scope.updateMessages();
