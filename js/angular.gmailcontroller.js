@@ -376,15 +376,15 @@ app.controller('GmailMainController', function ($scope, $controller) {
 	$scope.sendEmail = function () {
 		if ($scope.data.newMessage.email && $scope.data.newMessage.subject && $scope.data.newMessage.message) {
 			$scope.data.sendingEmail = true;
-			send($scope.data.newMessage.email, $scope.data.newMessage.subject, $scope.data.newMessage.message, function (message) {
+			gmail.sendMessage($scope.data.newMessage.email, $scope.data.newMessage.subject, $scope.data.newMessage.message, function (message) {
                 gmail.getThreadRequest(message.threadId).execute(function(response) {
-                    console.log(response);
                     system.addOrUpdateThread(response.result);
 
                     $scope.$apply(function () {
                         $scope.updateMessages();
                         $scope.data.newMessage = {};
                         $scope.data.sendingEmail = false;
+                        $scope.data.showCompose = false;
                     });
                 });
 			});
@@ -416,24 +416,4 @@ app.directive('ngDownloadButton', function ($compile) {
         }
     }
 });
-
-function sendMessage(email, callback) {
-	var base64EncodedEmail = Base64.encode(email, true);
-	var request = gapi.client.gmail.users.messages.send({
-		'userId': 'me',
-		'resource': {
-			'raw': base64EncodedEmail
-		}
-	});
-	request.execute(callback);
-}
-
-function send(to, subject, content, callback) {
-	var email = "From: 'me'\r\n" +
-		"To:  " + to + "\r\n" +
-		"Subject: " + subject + "\r\n" +
-		"\r\n" + content;
-
-	sendMessage(email, callback);
-}
 

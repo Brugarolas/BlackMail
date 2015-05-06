@@ -112,6 +112,20 @@ gmail.prototype.getLabelListRequest = function () {
     });
 }
 
+gmail.prototype.sendMessage = function(to, subject, content, callback) {
+    var email = "From: " + this.email + "\r\n" +
+        "To:  " + to + "\r\n" +
+        "Subject: " + subject + "\r\n" +
+        "\r\n" + utf8_encode(content);
+
+    gapi.client.gmail.users.messages.send({
+        'userId': 'me',
+        'resource': {
+            'raw': btoa(email).replace(/\//g, '_').replace(/\+/g, '-')
+        }
+    }).execute(callback);
+}
+
 gmail.prototype.getSendThreadToTrashBatch = function (threadIds, callback) {
     var batchRequest = gapi.client.newBatch();
     for (i in threadIds) {
