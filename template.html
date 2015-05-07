@@ -51,7 +51,8 @@
             <span class="logo glyphicon glyphicon-envelope"></span>Mail
         </div>
         <a class="compose-button" ng-class="{red: data.showCompose }" ng-click="clickOnCompose()">
-            <span ng-hide="data.showCompose">Compose</span> <span ng-show="data.showCompose">Close</span>
+            <span ng-hide="data.showCompose"><i class="fa fa-pencil-square-o"> &nbsp; </i>Compose</span>
+            <span ng-show="data.showCompose"><i class="fa fa-times-circle"> &nbsp; </i>Close</span>
         </a>
         <menu class="menu-segment">
             <ul>

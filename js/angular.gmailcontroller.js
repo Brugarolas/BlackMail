@@ -388,19 +388,38 @@ app.controller('GmailMainController', function ($scope, $controller) {
 		}
 	}
 
-	$scope.selectedThreadsToTrash = function () {
-		var threads = [], starting = $scope.data.currentPage * $scope.data.threadsPerPage, label = $scope.data.selectedLabel.id;
-		for (n in $scope.data.selectedCheckboxes) threads.push(system.getThreadByIndex(starting + $scope.data.selectedCheckboxes[n], label).id);
+    $scope.getSelectedIds = function () {
+        var threads = [], starting = $scope.data.currentPage * $scope.data.threadsPerPage, label = $scope.data.selectedLabel.id;
+        for (n in $scope.data.selectedCheckboxes) threads.push(system.getThreadByIndex(starting + $scope.data.selectedCheckboxes[n], label).id);
+        return threads;
+    }
 
-		if (threads.length > 0) gmail.getSendThreadToTrashBatch(threads, function (response) {
-			system.updateLabels(response);
+	$scope.selectedThreadsToTrash = function () {
+        var threads = $scope.getSelectedIds();
+        if (threads.length > 0) gmail.getSendThreadToTrashBatch(threads, function (response) {
+            system.updateLabels(response);
 
             $scope.$apply(function () {
                 $scope.updateMessages();
                 $scope.data.newMessage = {};
             });
-		});
-	}
+        });
+    }
+
+    $scope.selectedMarkAsSpam = function () {
+        var threads = $scope.getSelectedIds();
+        console.log(threads);
+
+        if (threads.length > 0) gmail.setAsSpam(threads, function (response) {
+            console.log(response);
+            system.updateLabels(response);
+
+            $scope.$apply(function () {
+                $scope.updateMessages();
+                $scope.data.newMessage = {};
+            });
+        });
+    }
 });
 
 //Step 1: Start here

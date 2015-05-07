@@ -112,20 +112,6 @@ gmail.prototype.getLabelListRequest = function () {
     });
 }
 
-gmail.prototype.readThreads = function(threads, callback) {
-    var batchRequest = gapi.client.newBatch();
-    for (i in threads) {
-        batchRequest.add(
-            gapi.client.gmail.users.threads.modify({
-                'id': threads[i].id,
-                'userId': this.email,
-                'removeLabelIds': ['UNREAD']
-            }), {'id': i}
-        );
-    }
-    batchRequest.execute(callback);
-}
-
 gmail.prototype.sendMessage = function(to, subject, content, callback) {
     var email = "From: " + this.email + "\r\n" +
         "To:  " + to + "\r\n" +
@@ -150,6 +136,52 @@ gmail.prototype.getSendThreadToTrashBatch = function (threadIds, callback) {
             })
         );
     }
+    batchRequest.execute(callback);
+}
+
+gmail.prototype.readThreads = function(threads, callback) {
+    var batchRequest = gapi.client.newBatch();
+    for (i in threads) {
+        batchRequest.add(
+            gapi.client.gmail.users.threads.modify({
+                'id': threads[i].id,
+                'userId': this.email,
+                'removeLabelIds': ['UNREAD']
+            }), {'id': i}
+        );
+    }
+    batchRequest.execute(callback);
+}
+
+gmail.prototype.setAsSpam = function(threads, callback) {
+    var batchRequest = gapi.client.newBatch();
+    for (i in threads) {
+        batchRequest.add(
+            gapi.client.gmail.users.threads.modify({
+                'userId': this.email,
+                'id': threads[i],
+                'removeLabelIds': ['INBOX'],
+                'addLabelIds': ['SPAM']
+            }), {'id': i}
+        );
+    }
+
+    batchRequest.execute(callback);
+}
+
+gmail.prototype.setAsNotSpam = function(threads, callback) {
+    var batchRequest = gapi.client.newBatch();
+    for (i in threads) {
+        batchRequest.add(
+            gapi.client.gmail.users.threads.modify({
+                'userId': this.email,
+                'id': threads[i],
+                'removeLabelIds': ['SPAM'],
+                'addLabelIds': ['INBOX']
+            }), {'id': i}
+        );
+    }
+
     batchRequest.execute(callback);
 }
 
