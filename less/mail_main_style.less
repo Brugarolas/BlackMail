@@ -412,7 +412,10 @@ a {
 
         .sub-menu {
           position: relative;
-          display: none;
+          display: block;
+          visibility: hidden;
+          opacity: 0;
+          transition-delay: 0.1s;
           clear: both;
 
           font-size: 24px;
@@ -447,12 +450,16 @@ a {
         }
 
         .show-menu {
-          display: block;
+          opacity: 1;
+          visibility: visible;
+          transition-delay: 0.1s;
         }
       }
 
       .menu:hover .sub-menu {
-        display: block;
+        opacity: 1;
+        visibility: visible;
+        transition-delay: 0.1s;
       }
     }
 
@@ -550,6 +557,56 @@ a {
       li {
         margin-right: 6px;
         float: left;
+
+        .sub-list {
+          position: absolute;
+          display: block;
+          visibility: hidden;
+          opacity: 0;
+          transition-delay: 0.25s;
+          transition-duration: 0.30s;
+
+          left: 20px;
+          top: 140px;
+          z-index: 2;
+          cursor: pointer;
+
+          background: #FFF;
+          border: 1px solid @color-light-grey;
+          color: lighten(#57636C, 10%);
+
+          box-shadow: 3px 3px 12px 0 rgba(50, 50, 50, 0.75);
+          overflow: hidden;
+
+
+          li {
+            display: block;
+            float: none;
+            margin: 0;
+            padding: 6px 18px;
+
+            .fa {
+              color: #57636C;
+            }
+
+            &:hover {
+              background: @color-light-grey;
+              color: #57636C;
+              transition-duration: .05s;
+
+              .fa {
+                color: darken(#57636C, 10%);
+              }
+            }
+          }
+        }
+
+        .list:hover .sub-list {
+          opacity: 1;
+          visibility: visible;
+          transition-delay: 0.1s;
+          transition-duration: 0.05s;
+        }
       }
     }
 
