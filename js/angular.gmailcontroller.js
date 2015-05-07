@@ -394,9 +394,21 @@ app.controller('GmailMainController', function ($scope, $controller) {
         return threads;
     }
 
-	$scope.selectedThreadsToTrash = function () {
+	$scope.selectedToTrash = function () {
         var threads = $scope.getSelectedIds();
         if (threads.length > 0) gmail.getSendThreadToTrashBatch(threads, function (response) {
+            system.updateLabels(response);
+
+            $scope.$apply(function () {
+                $scope.updateMessages();
+                $scope.data.newMessage = {};
+            });
+        });
+    }
+
+    $scope.selectedRetrieveFromTrash = function () {
+        var threads = $scope.getSelectedIds();
+        if (threads.length > 0) gmail.getRetrieveFromTrashBatch(threads, function (response) {
             system.updateLabels(response);
 
             $scope.$apply(function () {

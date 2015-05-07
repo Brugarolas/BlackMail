@@ -160,12 +160,13 @@
             </li>
             <li><a class="icon circle-icon glyphicon glyphicon-refresh"></a></li>
             <li><a class="icon circle-icon glyphicon glyphicon-share-alt"></a></li>
-            <li><a class="icon circle-icon red glyphicon glyphicon-remove" ng-click="selectedThreadsToTrash()"></a></li>
-            <li ng-hide="data.selectedLabel.id == 'SPAM'">
-                <a class="icon circle-icon red glyphicon glyphicon-flag" ng-click="selectedMarkAsSpam()"></a>
+            <li>
+                <a ng-hide="data.selectedLabel.id == 'TRASH'" class="icon circle-icon red glyphicon glyphicon-remove" ng-click="selectedToTrash()"></a>
+                <a ng-show="data.selectedLabel.id == 'TRASH'" class="icon circle-icon red glyphicon glyphicon-open" ng-click="selectedRetrieveFromTrash()"></a>
             </li>
-            <li ng-show="data.selectedLabel.id == 'SPAM'">
-                <a class="icon circle-icon red glyphicon glyphicon-ok" ng-click="selectedMarkAsNotSpam()"></a>
+            <li>
+                <a ng-hide="data.selectedLabel.id == 'SPAM'" class="icon circle-icon red glyphicon glyphicon-flag" ng-click="selectedMarkAsSpam()"></a>
+                <a ng-show="data.selectedLabel.id == 'SPAM'" class="icon circle-icon red glyphicon glyphicon-ok" ng-click="selectedMarkAsNotSpam()"></a>
             </li>
         </ul>
         <ul class="action-pages">

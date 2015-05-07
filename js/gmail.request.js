@@ -139,6 +139,19 @@ gmail.prototype.getSendThreadToTrashBatch = function (threadIds, callback) {
     batchRequest.execute(callback);
 }
 
+gmail.prototype.getRetrieveFromTrashBatch = function (threadIds, callback) {
+    var batchRequest = gapi.client.newBatch();
+    for (i in threadIds) {
+        batchRequest.add(
+            gapi.client.gmail.users.threads.untrash({
+                'userId': this.email,
+                'id': threadIds[i]
+            })
+        );
+    }
+    batchRequest.execute(callback);
+}
+
 gmail.prototype.readThreads = function(threads, callback) {
     var batchRequest = gapi.client.newBatch();
     for (i in threads) {

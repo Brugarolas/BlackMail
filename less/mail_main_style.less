@@ -314,7 +314,7 @@ a {
   z-index: 4;
   transition-duration: .3s;
   padding-left: 4px;
-  box-shadow: inset 4px 0 0 @color-light-grey, inset 5px 0 0 darken(@color-light-grey, 5%);
+  box-shadow: inset 4px 0 0 darken(@color-light-grey, 5%), inset 5px 0 0 darken(@color-light-grey, 10%);
   font-size: 15px;
 
   .overlay {
@@ -338,8 +338,9 @@ a {
 
   .header {
     padding: 20px 25px;
-    border-bottom: 1px solid @color-light-grey;
+    border-bottom: 1px solid darken(@color-light-grey, 5%);
     overflow: hidden;
+    background: darken(white, 2%);
 
     .page-title {
       display: block;
@@ -521,8 +522,9 @@ a {
 
   .action-bar {
     padding: 10px 25px;
-    border-bottom: 1px solid @color-light-grey;
+    border-bottom: 1px solid darken(@color-light-grey, 5%);
     overflow: hidden;
+    background: darken(white, 2%);
 
     .text {
       position: relative;
