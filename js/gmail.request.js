@@ -126,27 +126,30 @@ gmail.prototype.sendMessage = function(to, subject, content, callback) {
     }).execute(callback);
 }
 
-gmail.prototype.getSendThreadToTrashBatch = function (threadIds, callback) {
+gmail.prototype.getSendThreadToTrashBatch = function (threads, callback) {
     var batchRequest = gapi.client.newBatch();
-    for (i in threadIds) {
+    for (i in threads) {
         batchRequest.add(
-            gapi.client.gmail.users.threads.trash({
+            gapi.client.gmail.users.threads.modify({
+                'id': threads[i],
                 'userId': this.email,
-                'id': threadIds[i]
-            })
+                'addLabelIds': ['TRASH']
+            }), {'id': i}
         );
     }
     batchRequest.execute(callback);
 }
 
-gmail.prototype.getRetrieveFromTrashBatch = function (threadIds, callback) {
+gmail.prototype.getRetrieveFromTrashBatch = function (threads, callback) {
     var batchRequest = gapi.client.newBatch();
-    for (i in threadIds) {
+    for (i in threads) {
         batchRequest.add(
-            gapi.client.gmail.users.threads.untrash({
+            gapi.client.gmail.users.threads.modify({
+                'id': threads[i],
                 'userId': this.email,
-                'id': threadIds[i]
-            })
+                'addLabelIds': ['INBOX'],
+                'removeLabelIds': ['TRASH']
+            }), {'id': i}
         );
     }
     batchRequest.execute(callback);
@@ -187,7 +190,6 @@ gmail.prototype.setAsSpam = function(threads, callback) {
             gapi.client.gmail.users.threads.modify({
                 'userId': this.email,
                 'id': threads[i],
-                'removeLabelIds': ['INBOX'],
                 'addLabelIds': ['SPAM']
             }), {'id': i}
         );
@@ -203,8 +205,8 @@ gmail.prototype.setAsNotSpam = function(threads, callback) {
             gapi.client.gmail.users.threads.modify({
                 'userId': this.email,
                 'id': threads[i],
+                'addLabelIds': ['INBOX'],
                 'removeLabelIds': ['SPAM'],
-                'addLabelIds': ['INBOX']
             }), {'id': i}
         );
     }

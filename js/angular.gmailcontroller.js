@@ -427,7 +427,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
 
             $scope.$apply(function () {
                 $scope.updateMessages();
-                $scope.data.newMessage = {};
+                $scope.data.selectedCheckboxes = [];
             });
         });
     }
@@ -439,35 +439,31 @@ app.controller('GmailMainController', function ($scope, $controller) {
 
             $scope.$apply(function () {
                 $scope.updateMessages();
-                $scope.data.newMessage = {};
+                $scope.data.selectedCheckboxes = [];
             });
         });
     }
 
     $scope.selectedMarkAsSpam = function () {
         var threads = $scope.getSelectedIds();
-        console.log(threads);
-
         if (threads.length > 0) gmail.setAsSpam(threads, function (response) {
             system.updateLabels(response);
 
             $scope.$apply(function () {
                 $scope.updateMessages();
-                $scope.data.newMessage = {};
+                $scope.data.selectedCheckboxes = [];
             });
         });
     }
 
     $scope.selectedMarkAsNotSpam = function () {
         var threads = $scope.getSelectedIds();
-        console.log(threads);
-
         if (threads.length > 0) gmail.setAsNotSpam(threads, function (response) {
             system.updateLabels(response);
 
             $scope.$apply(function () {
                 $scope.updateMessages();
-                $scope.data.newMessage = {};
+                $scope.data.selectedCheckboxes = [];
             });
         });
     }
