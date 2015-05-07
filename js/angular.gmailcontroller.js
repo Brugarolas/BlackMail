@@ -218,16 +218,12 @@ app.controller('GmailMainController', function ($scope, $controller) {
             //Mark message as read if needed
             var indexOf = thread.labels.indexOf('UNREAD');
             if (indexOf > -1) {
-                gmail.readThreads([thread], function (response) {
-                    console.log("Reading...")
-
-                    thread.labels.splice(indexOf, 1);
+                gmail.readThreads([thread.id], function (response) {
+                    system.deleteLabelFromThread([thread.id], 'UNREAD');
                     $scope.$apply(function () {
-                        system.classifyThreads();
                         $scope.updateMessages();
-                        system.saveThreads();
                     });
-                    console.log(response);
+                    system.saveThreads();
                 });
             }
         }

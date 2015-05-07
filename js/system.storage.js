@@ -99,6 +99,29 @@ system.prototype.classifyThreads = function () {
     }
 
     /* Count unread personal messages */
+    this.countUnread();
+}
+
+system.prototype.deleteLabelFromThread = function(ids, label) {
+    var pos, thread, indexOf, classify = false, labelThreads = this.threadLabels[label];
+    for (i in ids) {
+        pos = this.threadIds[ids[i]];
+        thread = this.threadList[pos];
+        indexOf = thread.labels.indexOf(label);
+
+        if (indexOf > -1) {
+            thread.labels.splice(indexOf, 1); indexOf = -1;
+
+            for (i in labelThreads) if (labelThreads[i] == pos) { indexOf = i; break; }
+            if (indexOf > -1) { labelThreads.splice(indexOf, 1); classify = true; }
+        }
+    }
+
+    if (classify) this.countUnread();
+}
+
+system.prototype.countUnread = function() {
+    /* Count unread personal messages */
     var personal = this.threadLabels['CATEGORY_PERSONAL'];
     this.defaultLabels[0].unread = 0;
     for (i in personal) {
