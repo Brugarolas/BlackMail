@@ -216,18 +216,14 @@ app.controller('GmailMainController', function ($scope, $controller) {
             });
 
             //Mark message as read if needed
-            var indexOf = thread.labels.indexOf('UNREAD');
-            if (indexOf > -1) {
-                gmail.readThreads([thread.id], function (response) {
-                    console.log(response);
-                    //system.deleteLabelFromThread([thread.id], 'UNREAD');
+            if (thread.labels.indexOf('UNREAD') > -1)
+                gmail.modifyThreads([thread.id], [], ['UNREAD'], function (response) {
                     system.updateLabels(response);
                     $scope.$apply(function () {
                         $scope.updateMessages();
+                        $scope.data.selectedCheckboxes = [];
                     });
-                    system.saveThreads();
                 });
-            }
         }
     }
 
