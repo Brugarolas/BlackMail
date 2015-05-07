@@ -396,71 +396,10 @@ app.controller('GmailMainController', function ($scope, $controller) {
         return threads;
     }
 
-    $scope.markRead = function () {
+    $scope.modifySelectedThreads = function(addLabels, removeLabels) {
         var threads = $scope.getSelectedIds();
-        if (threads.length > 0) gmail.readThreads(threads, function (response) {
+        if (threads.length > 0) gmail.modifyThreads(threads, addLabels, removeLabels, function (response) {
             system.updateLabels(response);
-
-            $scope.$apply(function () {
-                $scope.updateMessages();
-                $scope.data.selectedCheckboxes = [];
-            });
-        });
-    }
-
-    $scope.markUnread = function () {
-        var threads = $scope.getSelectedIds();
-        if (threads.length > 0) gmail.unreadThreads(threads, function (response) {
-            system.updateLabels(response);
-
-            $scope.$apply(function () {
-                $scope.updateMessages();
-                $scope.data.selectedCheckboxes = [];
-            });
-        });
-    }
-
-	$scope.selectedToTrash = function () {
-        var threads = $scope.getSelectedIds();
-        if (threads.length > 0) gmail.getSendThreadToTrashBatch(threads, function (response) {
-            system.updateLabels(response);
-
-            $scope.$apply(function () {
-                $scope.updateMessages();
-                $scope.data.selectedCheckboxes = [];
-            });
-        });
-    }
-
-    $scope.selectedRetrieveFromTrash = function () {
-        var threads = $scope.getSelectedIds();
-        if (threads.length > 0) gmail.getRetrieveFromTrashBatch(threads, function (response) {
-            system.updateLabels(response);
-
-            $scope.$apply(function () {
-                $scope.updateMessages();
-                $scope.data.selectedCheckboxes = [];
-            });
-        });
-    }
-
-    $scope.selectedMarkAsSpam = function () {
-        var threads = $scope.getSelectedIds();
-        if (threads.length > 0) gmail.setAsSpam(threads, function (response) {
-            system.updateLabels(response);
-
-            $scope.$apply(function () {
-                $scope.updateMessages();
-                $scope.data.selectedCheckboxes = [];
-            });
-        });
-    }
-
-    $scope.selectedMarkAsNotSpam = function () {
-        var threads = $scope.getSelectedIds();
-        if (threads.length > 0) gmail.setAsNotSpam(threads, function (response) {
-            system.updateLabels(response);
-
             $scope.$apply(function () {
                 $scope.updateMessages();
                 $scope.data.selectedCheckboxes = [];

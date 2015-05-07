@@ -152,8 +152,8 @@
                     <ul class="sub-list">
                         <li><i class="fa fa-inbox"> &nbsp; </i> Archive Message(s)</li>
                         <li><i class="fa fa-star"> &nbsp; </i> Mark as Important</li>
-                        <li ng-click="markUnread()"><i class="fa fa-envelope"> &nbsp; </i> Mark as Unread</li>
-                        <li ng-click="markRead()"><i class="fa fa-envelope-o"> &nbsp; </i> Mark as Read</li>
+                        <li ng-click="modifySelectedThreads(['UNREAD'], [])"><i class="fa fa-envelope"> &nbsp; </i> Mark as Unread</li>
+                        <li ng-click="modifySelectedThreads([], ['UNREAD'])"><i class="fa fa-envelope-o"> &nbsp; </i> Mark as Read</li>
                         <li><i class="fa fa-trash "> &nbsp; </i> Completely Delete</li>
                     </ul>
                 </span>
@@ -161,12 +161,12 @@
             <li><a class="icon circle-icon glyphicon glyphicon-refresh"></a></li>
             <li><a class="icon circle-icon glyphicon glyphicon-share-alt"></a></li>
             <li>
-                <a ng-hide="data.selectedLabel.id == 'TRASH'" class="icon circle-icon red glyphicon glyphicon-remove" ng-click="selectedToTrash()"></a>
-                <a ng-show="data.selectedLabel.id == 'TRASH'" class="icon circle-icon red glyphicon glyphicon-open" ng-click="selectedRetrieveFromTrash()"></a>
+                <a ng-hide="data.selectedLabel.id == 'TRASH'" class="icon circle-icon red glyphicon glyphicon-remove" ng-click="modifySelectedThreads(['TRASH'], [])"></a>
+                <a ng-show="data.selectedLabel.id == 'TRASH'" class="icon circle-icon red glyphicon glyphicon-open" ng-click="modifySelectedThreads(['INBOX'], ['TRASH'])"></a>
             </li>
             <li>
-                <a ng-hide="data.selectedLabel.id == 'SPAM'" class="icon circle-icon red glyphicon glyphicon-flag" ng-click="selectedMarkAsSpam()"></a>
-                <a ng-show="data.selectedLabel.id == 'SPAM'" class="icon circle-icon red glyphicon glyphicon-ok" ng-click="selectedMarkAsNotSpam()"></a>
+                <a ng-hide="data.selectedLabel.id == 'SPAM'" class="icon circle-icon red glyphicon glyphicon-flag" ng-click="modifySelectedThreads(['SPAM'], [])"></a>
+                <a ng-show="data.selectedLabel.id == 'SPAM'" class="icon circle-icon red glyphicon glyphicon-ok" ng-click="modifySelectedThreads(['INBOX'], ['SPAM'])"></a>
             </li>
         </ul>
         <ul class="action-pages">

@@ -126,91 +126,18 @@ gmail.prototype.sendMessage = function(to, subject, content, callback) {
     }).execute(callback);
 }
 
-gmail.prototype.getSendThreadToTrashBatch = function (threads, callback) {
+gmail.prototype.modifyThreads = function (threads, addLabels, removeLabels, callback) {
     var batchRequest = gapi.client.newBatch();
     for (i in threads) {
         batchRequest.add(
             gapi.client.gmail.users.threads.modify({
                 'id': threads[i],
                 'userId': this.email,
-                'addLabelIds': ['TRASH']
+                'addLabelIds': addLabels,
+                'removeLabelIds': removeLabels
             }), {'id': i}
         );
     }
-    batchRequest.execute(callback);
-}
-
-gmail.prototype.getRetrieveFromTrashBatch = function (threads, callback) {
-    var batchRequest = gapi.client.newBatch();
-    for (i in threads) {
-        batchRequest.add(
-            gapi.client.gmail.users.threads.modify({
-                'id': threads[i],
-                'userId': this.email,
-                'addLabelIds': ['INBOX'],
-                'removeLabelIds': ['TRASH']
-            }), {'id': i}
-        );
-    }
-    batchRequest.execute(callback);
-}
-
-gmail.prototype.readThreads = function(threads, callback) {
-    var batchRequest = gapi.client.newBatch();
-    for (i in threads) {
-        batchRequest.add(
-            gapi.client.gmail.users.threads.modify({
-                'id': threads[i],
-                'userId': this.email,
-                'removeLabelIds': ['UNREAD']
-            }), {'id': i}
-        );
-    }
-    batchRequest.execute(callback);
-}
-
-gmail.prototype.unreadThreads = function(threads, callback) {
-    var batchRequest = gapi.client.newBatch();
-    for (i in threads) {
-        batchRequest.add(
-            gapi.client.gmail.users.threads.modify({
-                'id': threads[i],
-                'userId': this.email,
-                'addLabelIds': ['UNREAD']
-            }), {'id': i}
-        );
-    }
-    batchRequest.execute(callback);
-}
-
-gmail.prototype.setAsSpam = function(threads, callback) {
-    var batchRequest = gapi.client.newBatch();
-    for (i in threads) {
-        batchRequest.add(
-            gapi.client.gmail.users.threads.modify({
-                'userId': this.email,
-                'id': threads[i],
-                'addLabelIds': ['SPAM']
-            }), {'id': i}
-        );
-    }
-
-    batchRequest.execute(callback);
-}
-
-gmail.prototype.setAsNotSpam = function(threads, callback) {
-    var batchRequest = gapi.client.newBatch();
-    for (i in threads) {
-        batchRequest.add(
-            gapi.client.gmail.users.threads.modify({
-                'userId': this.email,
-                'id': threads[i],
-                'addLabelIds': ['INBOX'],
-                'removeLabelIds': ['SPAM'],
-            }), {'id': i}
-        );
-    }
-
     batchRequest.execute(callback);
 }
 
