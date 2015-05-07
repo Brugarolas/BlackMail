@@ -411,7 +411,20 @@ app.controller('GmailMainController', function ($scope, $controller) {
         console.log(threads);
 
         if (threads.length > 0) gmail.setAsSpam(threads, function (response) {
-            console.log(response);
+            system.updateLabels(response);
+
+            $scope.$apply(function () {
+                $scope.updateMessages();
+                $scope.data.newMessage = {};
+            });
+        });
+    }
+
+    $scope.selectedMarkAsNotSpam = function () {
+        var threads = $scope.getSelectedIds();
+        console.log(threads);
+
+        if (threads.length > 0) gmail.setAsNotSpam(threads, function (response) {
             system.updateLabels(response);
 
             $scope.$apply(function () {
