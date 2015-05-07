@@ -392,7 +392,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
 
     $scope.getSelectedIds = function () {
         var threads = [], starting = $scope.data.currentPage * $scope.data.threadsPerPage, label = $scope.data.selectedLabel.id;
-        for (n in $scope.data.selectedCheckboxes) threads.push(system.getThreadByIndex(starting + $scope.data.selectedCheckboxes[n], label).id);
+        for (var n = 0; n < $scope.data.threadsPerPage; n++) if ($scope.data.selectedCheckboxes[n]) threads.push(system.getThreadByIndex(starting + n, label).id);
         return threads;
     }
 
