@@ -152,8 +152,8 @@
                     <ul class="sub-list">
                         <li><i class="fa fa-inbox"> &nbsp; </i> Archive Message(s)</li>
                         <li><i class="fa fa-star"> &nbsp; </i> Mark as Important</li>
-                        <li><i class="fa fa-envelope"> &nbsp; </i> Mark as Unread</li>
-                        <li><i class="fa fa-envelope-o"> &nbsp; </i> Mark as Read</li>
+                        <li ng-click="markUnread()"><i class="fa fa-envelope"> &nbsp; </i> Mark as Unread</li>
+                        <li ng-click="markRead()"><i class="fa fa-envelope-o"> &nbsp; </i> Mark as Read</li>
                         <li><i class="fa fa-trash "> &nbsp; </i> Completely Delete</li>
                     </ul>
                 </span>
@@ -187,7 +187,7 @@
                         <span class="dot"></span>
 
                         <div class="checkbox-wrapper">
-                            <input type="checkbox" id="chk{{$index}}" ng-click="clickOnCheckbox($event, $index)">
+                            <input type="checkbox" id="chk{{$index}}" ng-model="data.selectedCheckboxes[$index]" ng-click="clickOnCheckbox($event, $index)">
                             <label for="chk{{$index}}" class="toggle"></label>
                         </div>
                         <span class="star-toggle glyphicon" ng-class="{'glyphicon-star-empty': !isImportant(msg.labels), 'important glyphicon-star': isImportant(msg.labels)}"></span>

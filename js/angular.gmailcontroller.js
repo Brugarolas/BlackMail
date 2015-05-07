@@ -219,7 +219,9 @@ app.controller('GmailMainController', function ($scope, $controller) {
             var indexOf = thread.labels.indexOf('UNREAD');
             if (indexOf > -1) {
                 gmail.readThreads([thread.id], function (response) {
-                    system.deleteLabelFromThread([thread.id], 'UNREAD');
+                    console.log(response);
+                    //system.deleteLabelFromThread([thread.id], 'UNREAD');
+                    system.updateLabels(response);
                     $scope.$apply(function () {
                         $scope.updateMessages();
                     });
@@ -392,6 +394,30 @@ app.controller('GmailMainController', function ($scope, $controller) {
         var threads = [], starting = $scope.data.currentPage * $scope.data.threadsPerPage, label = $scope.data.selectedLabel.id;
         for (n in $scope.data.selectedCheckboxes) threads.push(system.getThreadByIndex(starting + $scope.data.selectedCheckboxes[n], label).id);
         return threads;
+    }
+
+    $scope.markRead = function () {
+        var threads = $scope.getSelectedIds();
+        if (threads.length > 0) gmail.readThreads(threads, function (response) {
+            system.updateLabels(response);
+
+            $scope.$apply(function () {
+                $scope.updateMessages();
+                $scope.data.selectedCheckboxes = [];
+            });
+        });
+    }
+
+    $scope.markUnread = function () {
+        var threads = $scope.getSelectedIds();
+        if (threads.length > 0) gmail.unreadThreads(threads, function (response) {
+            system.updateLabels(response);
+
+            $scope.$apply(function () {
+                $scope.updateMessages();
+                $scope.data.selectedCheckboxes = [];
+            });
+        });
     }
 
 	$scope.selectedToTrash = function () {

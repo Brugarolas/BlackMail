@@ -78,7 +78,10 @@ system.prototype.classifyThreads = function () {
 
     for (i in this.threadList) {
         thread = this.threadList[i];
-        for (n in thread.labels) if (thread.labels[n] in this.threadLabels) this.threadLabels[thread.labels[n]].push(i);
+
+        if (thread.labels.indexOf('TRASH') > -1) this.threadLabels['TRASH'].push(i);
+        else if (thread.labels.indexOf('SPAM') > -1) this.threadLabels['SPAM'].push(i);
+        else for (n in thread.labels) if (thread.labels[n] in this.threadLabels) this.threadLabels[thread.labels[n]].push(i);
     }
 
     /* Then, we classify categories from Inbox threads (so we don't see a deleted thread) */

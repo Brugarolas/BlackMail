@@ -157,9 +157,23 @@ gmail.prototype.readThreads = function(threads, callback) {
     for (i in threads) {
         batchRequest.add(
             gapi.client.gmail.users.threads.modify({
-                'id': threads[i].id,
+                'id': threads[i],
                 'userId': this.email,
                 'removeLabelIds': ['UNREAD']
+            }), {'id': i}
+        );
+    }
+    batchRequest.execute(callback);
+}
+
+gmail.prototype.unreadThreads = function(threads, callback) {
+    var batchRequest = gapi.client.newBatch();
+    for (i in threads) {
+        batchRequest.add(
+            gapi.client.gmail.users.threads.modify({
+                'id': threads[i],
+                'userId': this.email,
+                'addLabelIds': ['UNREAD']
             }), {'id': i}
         );
     }
