@@ -106,7 +106,7 @@
         <div class="menu-segment">
             <ul class="chat">
                 <li class="title">Chat <span class="icon">+</span></li>
-                <li><a><span class="ball green"></span>Laura Turner</a></li>
+                <li><a><span class="ball green"></span>Laura Turner</a></li> <!--style="border-color: white;"-->
                 <li><a><span class="ball green"></span>Kevin Jones</a></li>
                 <li><a><span class="ball blue"></span>John King</a></li>
                 <li><a><span class="ball blue"></span>Jenny Parker</a></li>
@@ -238,6 +238,7 @@
     </div>
 </div>
 
+<!-- Compose message -->
 <div id="compose" perfect-scrollbar>
     <div class="header">
         <h1 class="page-title">
@@ -328,9 +329,7 @@
             <circle class="seq-preload-circle seq-preload-circle-2" cx="17" cy="8" r="6"></circle>
             <circle class="seq-preload-circle seq-preload-circle-3" cx="34" cy="8" r="8"></circle>
         </svg>
-        <div class="seq-text-indicator">
-            {{data.loadingMessage}}
-        </div>
+        <div class="seq-text-indicator" ng-bind="data.loadingMessage"></div>
     </div>
 </div>
 </body>

@@ -50,12 +50,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
         // Step 4: Load the Google+ API and OAtuh2.0
         gapi.client.load('plus', 'v1').then(function () {
             // Step 5: Assemble the API request
-            var request = gapi.client.plus.people.get({
-                'userId': 'me'
-            });
-
-            // Step 6A: Execute the API request and retrieve our profile information
-            request.then(function (resp) {
+            gmail.getPersonalData(function (resp) {
                 var image = resp.result.image.url.slice(0, resp.result.image.url.indexOf('?sz')) + '?sz=150';
 
                 //Step 6B: Apply data
@@ -72,10 +67,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
                     $scope.data.loadingMessage = "Retrieving stored data...";
                     $scope.getListOfLabels();
                 });
-            }, function (reason) {
-                //Some error happened
-                console.error(reason.result.error.message);
-            });
+            }, $scope.defaultErrorCallback);
         });
     }
 
@@ -113,10 +105,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
             if (newMessages.length == 0) $scope.endLoading(1000);
             else $scope.getDataOfNewMessages(newMessages);
 
-        }, function (reason) {
-            //Some error happened
-            console.error(reason.result.error.message);
-        });
+        }, $scope.defaultErrorCallback);
     }
 
     $scope.getDataOfNewMessages = function (newMessages) {
@@ -143,10 +132,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
                 //Step 9D: If we do not, start loading particular threads
                 $scope.getPageThreads();
             }
-        }, function (reason) {
-            //Some error happened
-            console.error(reason.result.error.message);
-        });
+        }, $scope.defaultErrorCallback);
     }
 
     //Get threads
@@ -166,11 +152,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
                     $scope.getPageThreads(page + 1);
                 } else $scope.endLoading(1000);
 
-            }, function (reason) {
-                //Some error happened
-                console.error(reason.result.error.message);
-            }
-        );
+            }, $scope.defaultErrorCallback);
     }
 
     //Function to format date in HTML
@@ -210,10 +192,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
                         $scope.data.showOverlay = true;
                     });
                 }, timeout);
-            }, function (reason) {
-                //Some error happened
-                console.error(reason.result.error.message);
-            });
+            }, $scope.defaultErrorCallback);
 
             //Mark message as read if needed
             if (thread.labels.indexOf('UNREAD') > -1) $scope.modifyThreads([thread.id], [], ['UNREAD']);
@@ -382,7 +361,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
                         $scope.data.showCompose = false;
                     });
                 });
-			});
+			}, $scope.defaultErrorCallback);
 		}
 	}
 
@@ -403,7 +382,15 @@ app.controller('GmailMainController', function ($scope, $controller) {
                 $scope.updateMessages();
                 $scope.data.selectedCheckboxes = [];
             });
+        }, $scope.defaultErrorCallback);
+    }
+
+    /** CALLBACKS **/
+    $scope.defaultErrorCallback = function (response) {
+        $scope.$apply(function () {
+            $scope.data.loadingMessage = "There has been an error. Please check console."
         });
+        console.log(response);
     }
 });
 

@@ -14,6 +14,12 @@ gmail.prototype.getEmail = function () {
     return this.email;
 }
 
+gmail.prototype.getPersonalData = function (callback, error) {
+    gapi.client.plus.people.get({
+        'userId': 'me'
+    }).execute(callback, error);
+}
+
 gmail.prototype.getNewMessagesRequest = function (lastDate, nextPageToken) {
     if (nextPageToken && nextPageToken !== undefined) {
         return gapi.client.gmail.users.messages.list({
@@ -112,7 +118,7 @@ gmail.prototype.getLabelListRequest = function () {
     });
 }
 
-gmail.prototype.sendMessage = function(to, subject, content, callback) {
+gmail.prototype.sendMessage = function(to, subject, content, callback, error) {
     var email = "From: " + this.email + "\r\n" +
         "To:  " + to + "\r\n" +
         "Subject: " + subject + "\r\n" +
@@ -123,10 +129,10 @@ gmail.prototype.sendMessage = function(to, subject, content, callback) {
         'resource': {
             'raw': btoa(email).replace(/\//g, '_').replace(/\+/g, '-')
         }
-    }).execute(callback);
+    }).execute(callback, error);
 }
 
-gmail.prototype.modifyThreads = function (threads, addLabels, removeLabels, callback) {
+gmail.prototype.modifyThreads = function (threads, addLabels, removeLabels, callback, error) {
     var batchRequest = gapi.client.newBatch();
     for (i in threads) {
         batchRequest.add(
@@ -138,7 +144,7 @@ gmail.prototype.modifyThreads = function (threads, addLabels, removeLabels, call
             }), {'id': i}
         );
     }
-    batchRequest.execute(callback);
+    batchRequest.execute(callback, error);
 }
 
 var gmail = new gmail('me');

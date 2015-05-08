@@ -19,14 +19,10 @@ system.prototype.getLastDate = function () {
 
 system.prototype.saveThreads = function () {
     var threads = {'list': this.threadList, 'ids': this.threadIds}
-
-    //var compressed = LZString.compress(JSON.stringify(threads));
     var compressed = LZString.compress(angular.toJson(threads, false));
     localStorage.setItem(this.email, compressed);
 
-    for (i in this.threadList) {
-        this.threadList[i].date = new Date(this.threadList[i].date);
-    }
+    for (i in this.threadList) this.threadList[i].date = new Date(this.threadList[i].date);
 
     return "Saving " + getSizeBytes(compressed.length * 16) + " of data...";
 }
@@ -144,9 +140,7 @@ system.prototype.addNewThreadToListSorted = function (thread) {
     var index = 0, actualThread;
     for (i in this.threadList) {
         actualThread = this.threadList[i];
-        if (Date.compare(thread.date, actualThread.date) == 1) {
-            index = i; break;
-        }
+        if (Date.compare(thread.date, actualThread.date) == 1) { index = i; break; }
     }
 
     this.threadList.splice(index, 0, thread);
