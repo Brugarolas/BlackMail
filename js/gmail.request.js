@@ -88,19 +88,18 @@ gmail.prototype.getNewMessagesBatchRequest = function (newMessages) {
     return batchRequest;
 }
 
-gmail.prototype.getEmailImagesBatchRequest = function (email) {
-    var batchRequest = gapi.client.newBatch();
-
-    for (i in email.images) {
+gmail.prototype.getEmailAttachments = function (email, isImage) {
+    var batchRequest = gapi.client.newBatch(), iterable = (isImage) ? email.images : email.attachments;
+    for (i in iterable) {
+        console.log();
         batchRequest.add(
             gapi.client.gmail.users.messages.attachments.get({
-                'id': email.images[i].body.attachmentId,
+                'id': iterable[i].body.attachmentId,
                 'messageId': email.id,
                 'userId': this.email
             }), {'id': i}
         );
     }
-
     return batchRequest;
 }
 

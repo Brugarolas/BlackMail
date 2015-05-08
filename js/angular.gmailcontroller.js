@@ -2,7 +2,7 @@ var clientId = '845333536022-mgv2v21pvnosl5p7dn3ccvu53hcpt2ga.apps.googleusercon
 var apiKey = 'AIzaSyBWOyx1Ri2q5TkIwO-lMMzUovgUmunDryE';
 var scopes = ['https://www.googleapis.com/auth/plus.me', 'https://www.googleapis.com/auth/gmail.readonly',
     'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/gmail.compose',
-	'https://www.googleapis.com/auth/gmail.modify'];
+	'https://www.googleapis.com/auth/gmail.modify', 'https://www.google.com/m8/feeds'];
 
 var app = angular.module("app", ["styles"]);
 
@@ -184,7 +184,8 @@ app.controller('GmailMainController', function ($scope, $controller) {
             //If not, we need to make a request
             gmail.getThreadRequest(thread.id).execute(function (response) {
                 console.log(response);
-                $scope.getMailHTML(thread, response.messages, 0);
+                //$scope.getMailHTML(thread, response.messages, 0);
+                $scope.showMail(thread, response.messages);
 
                 setTimeout(function () {
                     $scope.$apply(function () {
@@ -199,7 +200,40 @@ app.controller('GmailMainController', function ($scope, $controller) {
         }
     }
 
-    $scope.getMailHTML = function (thread, messages, indexMsg) {
+    $scope.showMail = function (thread, messages) {
+        var email, msg;
+        for (i in messages) {
+            email = { id: messages[i].id, images: [], attachments: [] }; msg = messages[i];
+
+            /* If it is not multipart... */
+            if (!msg.payload.parts) {
+                email.html = ((msg.payload.mimeType == "text/html") ? obtainMainHTML : createMainHTML)(msg.payload.body.data);
+                thread.messages.push(email);
+            } else {
+                parsePayload(email, msg.payload);
+                thread.messages.push(email);
+            }
+        }
+
+        console.log(thread);
+        $scope.$apply(function () {
+            $scope.data.activeThread = thread;
+        });
+    }
+
+    $scope.getAttachments = function (email) {
+        if (email.attachments.length > 0)
+            gmail.getEmailAttachments(email, false).then(function (response) {
+                var data;
+                for (i in response.result) {
+                    data = response.result[i].result.data.replace(/-/g, '+').replace(/_/g, '/');
+                    email.attachments[i].body.data = encodeURIComponent(data);
+                }
+                console.log(email);
+            }, $scope.defaultErrorCallback);
+    }
+
+    /*$scope.getMailHTML = function (thread, messages, indexMsg) {
         if (messages.length == indexMsg) {
             console.log("Finishing...")
             console.log(thread);
@@ -229,10 +263,10 @@ app.controller('GmailMainController', function ($scope, $controller) {
                 }
             }
         }
-    }
+    }*/
 
     $scope.addImages = function (email, thread, messages, indexMsg) {
-        gmail.getEmailImagesBatchRequest(email).then(function (response) {
+        gmail.getEmailAttachments(email, true).then(function (response) {
             var data, src;
             for (i in response.result) {
                 data = response.result[i].result.data.replace(/-/g, '+').replace(/_/g, '/');
@@ -406,6 +440,15 @@ app.directive('ngDownloadButton', function ($compile) {
         controller: function ($scope) { },
         link: function (scope, element, attrs, ctrl) {
             element[0].href = 'data:text/html;charset=utf-8,' + encodeURIComponent(attrs.ngDownloadButton);
+        }
+    }
+});
+
+app.directive('ngDownloadFile', function ($compile) {
+    return {
+        controller: function ($scope) { },
+        link: function (scope, element, attrs, ctrl) {
+            element[0].href = attrs.ngDownloadFile;
         }
     }
 });

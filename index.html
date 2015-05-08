@@ -228,6 +228,7 @@
                         <iframe id="iframe{{$index}}" frameBorder="0" src="about:blank" scrolling="no"
                                 ng-email-iframe="{{msg.html}}" height="0"></iframe>
                         <a ng-download-button="{{msg.html}}">Download Email</a>
+                        <a ng-repeat="file in msg.attachments" ng-download-file="{{file.body.attachmentId}}">{{file.filename}}</a>
                     </div>
                     <div class="tool-box">
                         <a class="circle-icon small glyphicon glyphicon-share-alt"></a>
