@@ -151,8 +151,10 @@
                     <a class="icon circle-icon glyphicon glyphicon-chevron-down"></a>
                     <ul class="sub-list">
                         <li><i class="fa fa-inbox"> &nbsp; </i> Archive Message(s)</li>
-                        <li ng-click="modifySelectedThreads(['IMPORTANT'], [])"><i class="fa fa-star"> &nbsp; </i> Mark as Important</li>
-                        <li ng-click="modifySelectedThreads([], ['IMPORTANT'])"><i class="fa fa-star-o"> &nbsp; </i> Mark as Not Important</li>
+                        <li ng-click="modifySelectedThreads(['IMPORTANT'], [])"><i class="fa fa-bookmark"> &nbsp; </i> Mark as Important</li>
+                        <li ng-click="modifySelectedThreads([], ['IMPORTANT'])"><i class="fa fa-bookmark-o"> &nbsp; </i> Mark as Not Important</li>
+                        <li ng-click="modifySelectedThreads(['STARRED'], [])"><i class="fa fa-star"> &nbsp; </i> Star Message(s)</li>
+                        <li ng-click="modifySelectedThreads([], ['STARRED'])"><i class="fa fa-star-o"> &nbsp; </i> Unstar Message(s)</li>
                         <li ng-click="modifySelectedThreads(['UNREAD'], [])"><i class="fa fa-envelope"> &nbsp; </i> Mark as Unread</li>
                         <li ng-click="modifySelectedThreads([], ['UNREAD'])"><i class="fa fa-envelope-o"> &nbsp; </i> Mark as Read</li>
                         <li><i class="fa fa-trash "> &nbsp; </i> Completely Delete</li>

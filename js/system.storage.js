@@ -118,7 +118,8 @@ system.prototype.getDefaultLabels = function () {
                 'id': 'INBOX', 'name': 'Inbox', 'unread': 0, 'class': 'fa-inbox',
                 'category': {'id': "CATEGORY_PERSONAL", 'name': "Personal", 'class': 'fa-envelope-square'}
             },
-            {'id': 'IMPORTANT', 'name': 'Important', 'class': 'fa-star'},
+            {'id': 'IMPORTANT', 'name': 'Important', 'class': 'fa-bookmark'},
+            {'id': 'STARRED', 'name': 'Starred', 'class': 'fa-star'},
             {'id': 'SENT', 'name': 'Sent', 'class': 'fa-paper-plane'},
             {'id': 'DRAFT', 'name': 'Drafts', 'class': 'fa-file-text'},
             {'id': 'TRASH', 'name': 'Trash', 'class': 'fa-trash'},
