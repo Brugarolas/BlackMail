@@ -216,14 +216,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
             });
 
             //Mark message as read if needed
-            if (thread.labels.indexOf('UNREAD') > -1)
-                gmail.modifyThreads([thread.id], [], ['UNREAD'], function (response) {
-                    system.updateLabels(response);
-                    $scope.$apply(function () {
-                        $scope.updateMessages();
-                        $scope.data.selectedCheckboxes = [];
-                    });
-                });
+            if (thread.labels.indexOf('UNREAD') > -1) $scope.modifyThreads([thread.id], [], ['UNREAD']);
         }
     }
 
@@ -349,6 +342,13 @@ app.controller('GmailMainController', function ($scope, $controller) {
         return false;
     }
 
+    $scope.clickOnStar = function (event, index) {
+        event.stopImmediatePropagation();
+        var thread = system.getThreadByIndex($scope.data.currentPage * $scope.data.threadsPerPage + index, $scope.data.selectedLabel.id);
+        if ($scope.isImportant(thread.labels)) $scope.modifyThreads([thread.id], [], ['IMPORTANT']);
+        else $scope.modifyThreads([thread.id], ['IMPORTANT'], []);
+    }
+
     $scope.clickPreviousPage = function () {
         if ($scope.data.currentPage > 0) {
 			$scope.data.messageList = system.getThreads(--$scope.data.currentPage, $scope.data.threadsPerPage, $scope.data.selectedLabel.id);
@@ -392,8 +392,11 @@ app.controller('GmailMainController', function ($scope, $controller) {
         return threads;
     }
 
-    $scope.modifySelectedThreads = function(addLabels, removeLabels) {
-        var threads = $scope.getSelectedIds();
+    $scope.modifySelectedThreads = function (addLabels, removeLabels) {
+        $scope.modifyThreads($scope.getSelectedIds(), addLabels, removeLabels);
+    }
+
+    $scope.modifyThreads = function (threads, addLabels, removeLabels) {
         if (threads.length > 0) gmail.modifyThreads(threads, addLabels, removeLabels, function (response) {
             system.updateLabels(response);
             $scope.$apply(function () {

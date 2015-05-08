@@ -151,7 +151,8 @@
                     <a class="icon circle-icon glyphicon glyphicon-chevron-down"></a>
                     <ul class="sub-list">
                         <li><i class="fa fa-inbox"> &nbsp; </i> Archive Message(s)</li>
-                        <li><i class="fa fa-star"> &nbsp; </i> Mark as Important</li>
+                        <li ng-click="modifySelectedThreads(['IMPORTANT'], [])"><i class="fa fa-star"> &nbsp; </i> Mark as Important</li>
+                        <li ng-click="modifySelectedThreads([], ['IMPORTANT'])"><i class="fa fa-star-o"> &nbsp; </i> Mark as Not Important</li>
                         <li ng-click="modifySelectedThreads(['UNREAD'], [])"><i class="fa fa-envelope"> &nbsp; </i> Mark as Unread</li>
                         <li ng-click="modifySelectedThreads([], ['UNREAD'])"><i class="fa fa-envelope-o"> &nbsp; </i> Mark as Read</li>
                         <li><i class="fa fa-trash "> &nbsp; </i> Completely Delete</li>
@@ -180,17 +181,14 @@
     <div id="main-nano-wrapper" class="nano">
         <div class="nano-content" perfect-scrollbar>
             <ul class="message-list">
-                <li class="orange-dot" ng-repeat="msg in data.messageList"
-                    ng-class="{unread: isUnread(msg.labels), active: data.messageActive == $index}"
-                    ng-click="clickOnThread($event, $index)">
+                <li class="orange-dot" ng-repeat="msg in data.messageList" ng-class="{unread: isUnread(msg.labels), active: data.messageActive == $index}" ng-click="clickOnThread($event, $index)">
                     <div class="col col-1 col-xs-10 col-sm-3 col-xl-2">
                         <span class="dot"></span>
-
                         <div class="checkbox-wrapper">
                             <input type="checkbox" id="chk{{$index}}" ng-model="data.selectedCheckboxes[$index]" ng-click="clickOnCheckbox($event, $index)">
                             <label for="chk{{$index}}" class="toggle"></label>
                         </div>
-                        <span class="star-toggle glyphicon" ng-class="{'glyphicon-star-empty': !isImportant(msg.labels), 'important glyphicon-star': isImportant(msg.labels)}"></span>
+                        <span class="star-toggle glyphicon" ng-click="clickOnStar($event, $index)" ng-class="{'glyphicon-star-empty': !isImportant(msg.labels), 'important glyphicon-star': isImportant(msg.labels)}"></span>
                         <span class="title">{{msg.sender}} {{msg.numOfMsgs}}</span>
                     </div>
                     <div class="col col-3 col-xs-2 col-sm-1 col-xl-1">
@@ -201,7 +199,6 @@
                             {{msg.subject}}<span ng-hide="!msg.snippet"> &nbsp;&ndash;&nbsp; <span class="teaser">{{msg.snippet}}</span></span>
                         </div>
                     </div>
-
                 </li>
             </ul>
         </div>
