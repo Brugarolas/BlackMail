@@ -201,7 +201,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
     }
 
     $scope.showMail = function (thread, messages) {
-        var email, msg;
+        var email, msg, resources = [];
         for (i in messages) {
             email = { id: messages[i].id, images: [], attachments: [] }; msg = messages[i];
 
@@ -211,9 +211,16 @@ app.controller('GmailMainController', function ($scope, $controller) {
                 thread.messages.push(email);
             } else {
                 parsePayload(email, msg.payload);
+
+                if (email.attachments.length > 0) resources = { func: $scope.getAttachments, mail: email };
+                if (email.images.length > 0) resources = { func: $scope.getImages, mail: email };
+
                 thread.messages.push(email);
             }
         }
+
+        console.log("TODO: ");
+        console.log(resources);
 
         console.log(thread);
         $scope.$apply(function () {
@@ -233,53 +240,18 @@ app.controller('GmailMainController', function ($scope, $controller) {
             }, $scope.defaultErrorCallback);
     }
 
-    /*$scope.getMailHTML = function (thread, messages, indexMsg) {
-        if (messages.length == indexMsg) {
-            console.log("Finishing...")
-            console.log(thread);
+    $scope.getImages = function (email) {
+        if (email.images.length > 0)
+            gmail.getEmailAttachments(email, true).then(function (response) {
+                var data, src;
+                for (i in response.result) {
+                    data = response.result[i].result.data.replace(/-/g, '+').replace(/_/g, '/');
+                    src = getImageSrcToReplace(email.images[i]);
 
-            $scope.$apply(function () {
-                $scope.data.activeThread = thread;
-            });
-        } else {
-            var email = {id: messages[indexMsg].id, html: '', images: [], attachments: []}
-
-            //Si no tiene partes...
-            if (!messages[indexMsg].payload.parts) {
-                var funcHTML = (messages[indexMsg].payload.mimeType == "text/html") ? obtainMainHTML : createMainHTML;
-                email.html = funcHTML(messages[indexMsg].payload.body.data);
-
-                thread.messages.push(email);
-                $scope.getMailHTML(thread, messages, indexMsg + 1);
-            } else {
-                console.log(messages[indexMsg].payload);
-                parsePayload(email, messages[indexMsg].payload);
-
-                if (email.images.length > 0) {
-                    $scope.addImages(email, thread, messages, indexMsg);
-                } else {
-                    thread.messages.push(email);
-                    $scope.getMailHTML(thread, messages, indexMsg + 1);
+                    email.html = email.html.replace(src, 'data:' + email.images[i].mimeType + ';charset=utf-8;base64,' + data);
                 }
-            }
-        }
-    }*/
 
-    $scope.addImages = function (email, thread, messages, indexMsg) {
-        gmail.getEmailAttachments(email, true).then(function (response) {
-            var data, src;
-            for (i in response.result) {
-                data = response.result[i].result.data.replace(/-/g, '+').replace(/_/g, '/');
-                src = getImageSrcToReplace(email.images[i]);
-
-                console.log(src);
-
-                email.html = email.html.replace(src, 'data:' + email.images[i].mimeType + ';charset=utf-8;base64,' + data);
-            }
-
-            thread.messages.push(email);
-            $scope.getMailHTML(thread, messages, indexMsg + 1);
-        });
+            }, $scope.defaultErrorCallback);
     }
 
     $scope.updateCategories = function () {
