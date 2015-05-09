@@ -88,10 +88,9 @@ gmail.prototype.getNewMessagesBatchRequest = function (newMessages) {
     return batchRequest;
 }
 
-gmail.prototype.getEmailAttachments = function (email, isImage) {
+gmail.prototype.getAttachments = function (email, isImage) {
     var batchRequest = gapi.client.newBatch(), iterable = (isImage) ? email.images : email.attachments;
     for (i in iterable) {
-        console.log();
         batchRequest.add(
             gapi.client.gmail.users.messages.attachments.get({
                 'id': iterable[i].body.attachmentId,

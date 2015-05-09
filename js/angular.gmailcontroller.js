@@ -212,46 +212,33 @@ app.controller('GmailMainController', function ($scope, $controller) {
             } else {
                 parsePayload(email, msg.payload);
 
-                if (email.attachments.length > 0) resources = { func: $scope.getAttachments, mail: email };
-                if (email.images.length > 0) resources = { func: $scope.getImages, mail: email };
+                if (email.attachments.length > 0) resources.push({ isImage: false, mail: email });
+                if (email.images.length > 0) resources.push({ isImage: true, mail: email });
 
                 thread.messages.push(email);
             }
         }
 
-        console.log("TODO: ");
-        console.log(resources);
-
-        console.log(thread);
-        $scope.$apply(function () {
-            $scope.data.activeThread = thread;
+        async.forEach(resources, function (item, done) {
+                $scope.getAttachments(item.mail, item.isImage, done);
+        }, function(err) {
+            $scope.$apply(function () {
+                $scope.data.activeThread = thread;
+            });
         });
     }
 
-    $scope.getAttachments = function (email) {
-        if (email.attachments.length > 0)
-            gmail.getEmailAttachments(email, false).then(function (response) {
-                var data;
-                for (i in response.result) {
-                    data = response.result[i].result.data.replace(/-/g, '+').replace(/_/g, '/');
-                    email.attachments[i].body.data = encodeURIComponent(data);
-                }
-                console.log(email);
-            }, $scope.defaultErrorCallback);
-    }
+    $scope.getAttachments = function (email, isImage, finish) {
+        gmail.getAttachments(email, isImage).then(function (response) {
+            var data;
+            for (i in response.result) {
+                data = response.result[i].result.data.replace(/-/g, '+').replace(/_/g, '/');
 
-    $scope.getImages = function (email) {
-        if (email.images.length > 0)
-            gmail.getEmailAttachments(email, true).then(function (response) {
-                var data, src;
-                for (i in response.result) {
-                    data = response.result[i].result.data.replace(/-/g, '+').replace(/_/g, '/');
-                    src = getImageSrcToReplace(email.images[i]);
-
-                    email.html = email.html.replace(src, 'data:' + email.images[i].mimeType + ';charset=utf-8;base64,' + data);
-                }
-
-            }, $scope.defaultErrorCallback);
+                if (isImage) email.html = email.html.replace(getImageSrcToReplace(email.images[i]), 'data:' + email.images[i].mimeType + ';charset=utf-8;base64,' + data);
+                else email.attachments[i].body.data = encodeURIComponent(data);
+            }
+            finish();
+        }, $scope.defaultErrorCallback);
     }
 
     $scope.updateCategories = function () {
