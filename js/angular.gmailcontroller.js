@@ -212,7 +212,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
             } else {
                 parsePayload(email, msg.payload);
 
-                if (email.attachments.length > 0) resources.push({ isImage: false, mail: email });
+                //if (email.attachments.length > 0) resources.push({ isImage: false, mail: email });
                 if (email.images.length > 0) resources.push({ isImage: true, mail: email });
 
                 thread.messages.push(email);
@@ -222,6 +222,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
         async.forEach(resources, function (item, done) {
                 $scope.getAttachments(item.mail, item.isImage, done);
         }, function(err) {
+            console.log(thread);
             $scope.$apply(function () {
                 $scope.data.activeThread = thread;
             });
@@ -407,7 +408,14 @@ app.directive('ngDownloadFile', function ($compile) {
     return {
         controller: function ($scope) { },
         link: function (scope, element, attrs, ctrl) {
-            element[0].href = attrs.ngDownloadFile;
+            //console.log(element[0]);
+            //element[0].href = attrs.ngDownloadFile;
+
+            gmail.getSingleAttachment(attrs.message, attrs.ngDownloadFile, function (response) {
+                console.log(response);
+
+                element[0].innerHTML = attrs.title;
+            });
         }
     }
 });
