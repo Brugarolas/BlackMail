@@ -54,6 +54,15 @@ gmail.prototype.getPageThreads = function (threads, callback, error) {
     batchRequest.execute(callback, error);
 }
 
+gmail.prototype.getNewMessages = function (next, error, lastDate, nextPageToken) {
+    gapi.client.gmail.users.messages.list({
+        'userId': this.email,
+        'pageToken': nextPageToken,
+        'includeSpamTrash': true,
+        'q': '!in:chats after:' + lastDate.toString('yyyy/MM/dd')
+    }).execute(next, error);
+}
+
 
 
 

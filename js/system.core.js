@@ -90,3 +90,24 @@ System.prototype.getPageThreads = function (threadsPerPage, between, end, error)
     }
     system.network.getPageThreads(steps[0], next, error);
 }
+
+System.prototype.performPartialSync = function (between, end, error) {
+    var newMessages = [], next = function (response) {
+        if (response.resultSizeEstimate != 0) {
+            var nuevos = system.storage.addMessagesToList(response.result.messages);
+            newMessages = newMessages.concat(nuevos);
+
+            if (nuevos.length == response.result.messages.length && response.nextPageToken)
+                system.network.getNewMessages(next, error, system.prototype.getLastDate(), response.nextPageToken);
+            else { console.log(newMessages); end(); }//system.storage.mergeThreadList(newMessages);
+
+            /*if (newMessages.length == 0) $scope.endLoading(1000);
+            else $scope.getDataOfNewMessages(newMessages);*/
+        }
+    }
+    system.network.getNewMessages(next, error, system.storage.getLastDate());
+}
+
+System.prototype.getNewMessages = function (newMessages) {
+
+}
