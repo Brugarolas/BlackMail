@@ -1,6 +1,8 @@
 /**
  * Created by Andrés on 07/04/2015.
  */
+"use strict";
+
 function setThreadMetadata(thread, result) {
     var firstMessage = result.messages[0];
     var lastMessage = result.messages[result.messages.length - 1];
@@ -24,7 +26,7 @@ function updateThreadMetadata(thread, message) {
     if (!thread.labels) {
         thread.labels = message.labelIds;
     } else {
-        for (i in message.labelIds) {
+        for (var i in message.labelIds) {
             var label = message.labelIds[i];
             if (thread.labels.indexOf(label) == -1) thread.labels.push(label);
         }
@@ -36,7 +38,7 @@ function updateThreadMetadata(thread, message) {
 
 function getMessageSubject(message) {
     var headers = message.payload.headers;
-    for (i in headers) if (headers[i].name == "Subject") return headers[i].value;
+    for (var i in headers) if (headers[i].name == "Subject") return headers[i].value;
     return "(No subject)";
 }
 
@@ -47,22 +49,22 @@ function getMessageSnippet(message) {
 
 function getMessageDate(message) {
     var headers = message.payload.headers;
-    for (i in headers) if (headers[i].name == "Date") return formatDate(headers[i].value);
+    for (var i in headers) if (headers[i].name == "Date") return formatDate(headers[i].value);
     return "(No date)";
 }
 
 function getMessageSender(message) {
     var headers = message.payload.headers;
-    for (i in headers) if (headers[i].name == "From") return formatSender(headers[i].value);
+    for (var i in headers) if (headers[i].name == "From") return formatSender(headers[i].value);
     return "(No sender)";
 }
 
 function getThreadLabels(response) {
     var message, label, labels = [];
-    for (i in response.messages) {
+    for (var i in response.messages) {
         message = response.messages[i];
 
-        for (n in message.labelIds) {
+        for (var n in message.labelIds) {
             label = message.labelIds[n];
             if (labels.indexOf(label) == -1) labels.push(label);
         }

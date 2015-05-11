@@ -1,8 +1,7 @@
 /**
  * Created by Andrés on 27/04/2015.
  */
-
-var system = new system();
+"use strict";
 
 angular.module("styles", ['scrollbar', 'email'])
     .controller('StylesController', function ($scope, $controller) {

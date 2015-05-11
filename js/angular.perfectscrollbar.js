@@ -1,6 +1,7 @@
 /**
  * Created by Andrés on 27/04/2015.
  */
+"use strict";
 
 angular.module("scrollbar", []).
     directive('perfectScrollbar', function ($compile) {

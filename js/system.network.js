@@ -1,6 +1,7 @@
 /**
  * Created by Andrés on 22/04/2015.
  */
+"use strict";
 
 function gmail(email) {
     this.email = email;
@@ -14,10 +15,64 @@ gmail.prototype.getEmail = function () {
     return this.email;
 }
 
+gmail.prototype.loadAPI = function (name, version, callback, error) {
+    gapi.client.load(name, version).then(callback, error);
+}
+
 gmail.prototype.getPersonalData = function (callback, error) {
     gapi.client.plus.people.get({
         'userId': 'me'
     }).execute(callback, error);
+}
+
+gmail.prototype.getLabelList = function (callback, error) {
+    gapi.client.gmail.users.labels.list({
+        'userId': this.email
+    }).execute(callback, error);
+}
+
+gmail.prototype.getAllThreadsIds = function (next, error, nextPageToken) {
+    gapi.client.gmail.users.threads.list({
+        'userId': this.email,
+        'pageToken': nextPageToken,
+        'includeSpamTrash': true,
+        'q': '!in:chats'
+    }).execute(next, error);
+}
+
+gmail.prototype.getPageThreads = function (threads, callback, error) {
+    var batchRequest = gapi.client.newBatch();
+    for (var i in threads) {
+        batchRequest.add(
+            gapi.client.gmail.users.threads.get({
+                'userId': this.email,
+                'id': threads[i].id,
+                'format': 'metadata'
+            }), {'id': threads[i].id}
+        );
+    }
+    batchRequest.execute(callback, error);
+}
+
+
+
+
+gmail.prototype.getPageThreadsBatchRequest = function (currentPage, threadsPerPage) {
+    var startingThread = currentPage * threadsPerPage;
+    var lastPage = Math.min(startingThread + threadsPerPage, system.getNumOfThreads());
+    var batchRequest = gapi.client.newBatch();
+
+    for (i = startingThread; i < lastPage; i++) {
+        batchRequest.add(
+            gapi.client.gmail.users.threads.get({
+                'userId': this.email,
+                'id': system.getThreadByIndex(i).id,
+                'format': 'metadata'
+            }), {'id': i}
+        );
+    }
+
+    return batchRequest;
 }
 
 gmail.prototype.getNewMessagesRequest = function (lastDate, nextPageToken) {
@@ -37,7 +92,7 @@ gmail.prototype.getNewMessagesRequest = function (lastDate, nextPageToken) {
     }
 }
 
-gmail.prototype.getAllThreadsRequest = function (nextPageToken) {
+/*gmail.prototype.getAllThreadsRequest = function (nextPageToken) {
     if (nextPageToken === undefined) {
         return gapi.client.gmail.users.threads.list({
             'userId': this.email,
@@ -52,25 +107,7 @@ gmail.prototype.getAllThreadsRequest = function (nextPageToken) {
             'q': '!in:chats'
         });
     }
-}
-
-gmail.prototype.getPageThreadsBatchRequest = function (currentPage, threadsPerPage) {
-    var startingThread = currentPage * threadsPerPage;
-    var lastPage = Math.min(startingThread + threadsPerPage, system.getNumOfThreads());
-    var batchRequest = gapi.client.newBatch();
-
-    for (i = startingThread; i < lastPage; i++) {
-        batchRequest.add(
-            gapi.client.gmail.users.threads.get({
-                'userId': this.email,
-                'id': system.getThreadByIndex(i).id,
-                'format': 'metadata'
-            }), {'id': i}
-        );
-    }
-
-    return batchRequest;
-}
+}*/
 
 gmail.prototype.getNewMessagesBatchRequest = function (newMessages) {
     var batchRequest = gapi.client.newBatch();
@@ -118,12 +155,6 @@ gmail.prototype.getThreadRequest = function (id) {
     });
 }
 
-gmail.prototype.getLabelListRequest = function () {
-    return gapi.client.gmail.users.labels.list({
-        'userId': this.email
-    });
-}
-
 gmail.prototype.sendMessage = function(to, subject, content, callback, error) {
     var email = "From: " + this.email + "\r\n" +
         "To:  " + to + "\r\n" +
@@ -152,5 +183,3 @@ gmail.prototype.modifyThreads = function (threads, addLabels, removeLabels, call
     }
     batchRequest.execute(callback, error);
 }
-
-var gmail = new gmail('me');

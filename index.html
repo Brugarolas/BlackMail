@@ -45,16 +45,18 @@
     <!-- Prefix Free plugin -->
     <script src="js/libs/prefixfree.min.js"></script>
 
-    <!-- Our mail plugin -->
-    <script src="js/system.core.js"></script>
-    <script src="js/system.notifications.js"></script>
-    <script src="js/system.storage.js"></script>
+    <!-- Our aux scripts-->
     <script src="js/message.methods.js"></script>
     <script src="js/thread.methods.js"></script>
-    <script src="js/gmail.request.js"></script>
     <script src="js/methods.iframe.js"></script>
 
-    <!-- Angular plugins -->
+    <!-- Our system methodss -->
+    <script src="js/system.notifications.js"></script>
+    <script src="js/system.network.js"></script>
+    <script src="js/system.storage.js"></script>
+    <script src="js/system.core.js"></script>
+
+    <!-- Our Angular plugins -->
     <script src='js/angular.perfectscrollbar.js'></script>
     <script src='js/angular.stylescontroller.js'></script>
     <script src="js/libs/angular.off-click.js"></script>
@@ -73,8 +75,8 @@
 <aside id="sidebar" class="nano">
     <div class="nano-content" perfect-scrollbar>
         <div class="personal-container">
-            <img id="personalPhoto" ng-src="{{data.personalPhoto}}"/>
-            <div id="personalName">{{data.personalName}}</div>
+            <img id="personalPhoto" ng-src="{{data.personal.photo}}"/>
+            <div id="personalName">{{data.personal.name}}</div>
         </div>
         <div class="separator"></div>
 

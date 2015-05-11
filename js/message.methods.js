@@ -1,6 +1,7 @@
 /**
  * Created by Andrés on 06/04/2015.
  */
+"use strict";
 
 function obtainMainHTML(content) {
     var html = Base64.decode(content);
@@ -77,7 +78,7 @@ function getSizeBytes(size) {
     var metrics = ['bytes', 'kilobytes', 'megabytes', 'gigabytes', 'terabytes',
         'petabytes', 'exabytes', 'zettabytes'];
 
-    for (i in metrics) {
+    for (var i in metrics) {
         if (size < 1024) return roundToTwo(size) + ' ' + metrics[i];
         size = size / 1024;
     }
@@ -92,7 +93,7 @@ function parsePayload(email, payload) {
         // Si es multiparte, debemos comprobar qué tipo de multiparte es..
         if (payload.mimeType.endsWith('alternative')) {
             //Dos partes: Una texto simple y otra texto html
-            for (i in parts) {
+            for (var i in parts) {
                 if (parts[i].mimeType == 'text/html') {
                     email.html = obtainMainHTML(parts[i].body.data);
                 } else if (parts[i].mimeType.indexOf('multipart') == 0) {
@@ -103,12 +104,12 @@ function parsePayload(email, payload) {
             //La primera parte contiene más partes, el resto de elementos son adjuntos
             parsePayload(email, parts[0]);
 
-            for (i = 1; i < parts.length; i++) {
-                if (parts[i].mimeType.indexOf('application') == 0) {
+            for (var i = 1; i < parts.length; i++) {
+                if (parts[i].mimeType.indexOf('application') == 0 || parts[i].mimeType.indexOf('text') == 0) {
                     email.attachments.push(parts[i]);
                 } else {
                     console.log("Current mixed multipart mime not supported yet...");
-                    console.dir(parts[i]);
+                    console.log(parts[i]);
                 }
             }
 
@@ -116,17 +117,17 @@ function parsePayload(email, payload) {
             //La primera parte contiene más partes, el resto de elementos son imágenes
             parsePayload(email, parts[0]);
 
-            for (i = 1; i < parts.length; i++) {
+            for (var i = 1; i < parts.length; i++) {
                 if (parts[i].mimeType.indexOf('image') == 0) {
                     email.images.push(parts[i]);
                 } else {
                     console.log("Current related multipart mime not supported yet...");
-                    console.dir(parts[i]);
+                    console.log(parts[i]);
                 }
             }
         } else {
             console.log("Current multipart not supported yet...");
-            console.dir(payload);
+            console.log(payload);
         }
 
     } else if (payload.mimeType == 'text/html') {
@@ -134,14 +135,14 @@ function parsePayload(email, payload) {
         email.html = obtainMainHTML(payload.body.data);
     } else {
         console.log("Current mimetype not supported yet...");
-        console.dir(payload);
+        console.log(payload);
     }
 }
 
 function getImageSrcToReplace(image) {
     console.log(image);
 
-    for (i in image.headers) if (image.headers[i].name == "Content-ID") {
+    for (var i in image.headers) if (image.headers[i].name == "Content-ID") {
         var value = image.headers[i].value;
         return "cid:" + value.substring(1, value.length - 1);
     }

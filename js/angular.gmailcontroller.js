@@ -6,10 +6,6 @@ var scopes = ['https://www.googleapis.com/auth/plus.me', 'https://www.googleapis
 
 var app = angular.module("app", ["styles"]);
 
-//Init notifications & storage
-system.initNotificationSystem();
-system.initStorage();
-
 app.controller('GmailMainController', function ($scope, $controller) {
     $controller('StylesController', {$scope: $scope});
     $scope.data = {
@@ -47,17 +43,43 @@ app.controller('GmailMainController', function ($scope, $controller) {
     $scope.makeApiCall = function () {
         $scope.data.loadingMessage = "Loading profile information..."
 
+        /* Load Google+ API*/
+        system.loadGoogleAPI('plus', 'v1', function() {
+            /* Get personal data */
+            system.getPersonalData(150, function(personalData) {
+                $scope.safeApply(function () {
+                    $scope.data.personal = personalData;
+                    $scope.data.loading = false;
+                });
+
+                /* Load Gmail API */
+                system.loadGoogleAPI('gmail', 'v1', function() {
+                    $scope.data.loadingMessage = "Retrieving stored data...";
+                    $scope.getListOfLabels();
+                }, $scope.defaultErrorCallback);
+            }, $scope.defaultErrorCallback);
+        }, $scope.defaultErrorCallback);
+
+        /*gapi.client.load('plus', 'v1').then(function () {
+            system.getPersonalData(150, function(personalData) {
+                $scope.$apply(function () {
+                    $scope.data.personal = personalData;
+                    $scope.data.loading = false;
+                });
+            }, $scope.defaultErrorCallback);
+        });*/
+
+
         // Step 4: Load the Google+ API and OAtuh2.0
-        gapi.client.load('plus', 'v1').then(function () {
+        /*gapi.client.load('plus', 'v1').then(function () {
             // Step 5: Assemble the API request
-            gmail.getPersonalData(function (resp) {
+            system.getPersonalData(function (resp) {
                 var image = resp.result.image.url.slice(0, resp.result.image.url.indexOf('?sz')) + '?sz=150';
 
                 //Step 6B: Apply data
                 $scope.$apply(function () {
                     $scope.data.personalPhoto = image;
                     $scope.data.personalEmail = resp.result.emails[0].value;
-                    gmail.setEmail($scope.data.personalEmail);
                     system.setEmail($scope.data.personalEmail);
                     $scope.data.personalName = resp.result.displayName || $scope.data.personalEmail.substring(0, $scope.data.personalEmail.indexOf('@'));
                 });
@@ -68,24 +90,35 @@ app.controller('GmailMainController', function ($scope, $controller) {
                     $scope.getListOfLabels();
                 });
             }, $scope.defaultErrorCallback);
-        });
+        });*/
     }
 
     $scope.getListOfLabels = function () {
-        gmail.getLabelListRequest().execute(function (response) {
+        system.getLabelList(function (labels) {
+
+            system.retrieveThreads(
+                function() {
+                    console.log("We have threads")
+                },
+                $scope.getListOfAllThreads
+            );
+        })
+        /*system.getLabelListRequest().execute(function (response) {
             system.saveLabels(response.result.labels);
 
             if (system.retrieveThreads($scope.data.personalEmail)) $scope.getListOfNewMessages();
             else $scope.getListOfAllThreads();
-        });
+        });*/
     }
 
     //Get list of new threads
     $scope.getListOfNewMessages = function (nextPageToken, newMessages) {
         if (newMessages === undefined) newMessages = [];
 
+        console.log("We have threads")
+
         //Step 8: Assemble the API request & Step 9A: Execute API request and retrieve list of threads
-        gmail.getNewMessagesRequest(system.getLastDate(), nextPageToken).execute(function (response) {
+        system.getNewMessagesRequest(system.getLastDate(), nextPageToken).execute(function (response) {
             $scope.data.loadingMessage = "Getting new emails...";
 
             if (response.resultSizeEstimate != 0) {
@@ -109,7 +142,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
     }
 
     $scope.getDataOfNewMessages = function (newMessages) {
-        gmail.getNewMessagesBatchRequest(newMessages).execute(function (response) {
+        system.getNewMessagesBatchRequest(newMessages).execute(function (response) {
             for (i in response) system.addMessageToThread(response[i].result);
             $scope.endLoading(1000);
         });
@@ -117,8 +150,24 @@ app.controller('GmailMainController', function ($scope, $controller) {
 
     // Get list of threads
     $scope.getListOfAllThreads = function (nextPageToken) {
-        //Step 8: Assemble the API request & Step 9A: Execute API request and retrieve list of threads
-        gmail.getAllThreadsRequest(nextPageToken).execute(function (response) {
+        /*system.performFullSync(
+            function () {
+                console.log("PASO")
+            },
+            function () {
+                console.log("END")
+            }, $scope.defaultErrorCallback
+        );*/
+
+        system.performFullSync(function () {
+            $scope.safeApply(function() {
+                $scope.data.loadingMessage = "Indexing threads (" + system.storage.getNumOfThreads() + " threads indexed)...";
+            });
+            console.log($scope.data.loadingMessage)
+        }, $scope.getPageThreads, $scope.defaultErrorCallback);
+
+        /*//Step 8: Assemble the API request & Step 9A: Execute API request and retrieve list of threads
+        system.getAllThreadsRequest(nextPageToken).execute(function (response) {
             //Step 9B. Save threads
             system.addNewThreadsToList(response.threads);
 
@@ -132,15 +181,28 @@ app.controller('GmailMainController', function ($scope, $controller) {
                 //Step 9D: If we do not, start loading particular threads
                 $scope.getPageThreads();
             }
-        }, $scope.defaultErrorCallback);
+        }, $scope.defaultErrorCallback);*/
     }
 
     //Get threads
-    $scope.getPageThreads = function (page) {
-        if (!page) page = 0;
+    $scope.getPageThreads = function () {
+        var threadsPerPage = 50;
+
+        system.getPageThreads(threadsPerPage, function (actualPage) {
+            var porc = roundToPorc((threadsPerPage * actualPage) / system.storage.getNumOfThreads());
+            $scope.safeApply(function () {
+                $scope.data.loadingMessage = "Loading threads (" + porc + "% threads loaded)...";
+            });
+            console.log($scope.data.loadingMessage);
+        }, function() {
+            $scope.endLoading(1000);
+        }, $scope.defaultErrorCallback);
+
+
+        /*if (!page) page = 0;
         var pagesToLoad = 100, numOfPages = Math.ceil(system.getNumOfThreads() / pagesToLoad);
 
-        gmail.getPageThreadsBatchRequest(page, pagesToLoad).then(
+        system.getPageThreadsBatchRequest(page, pagesToLoad).then(
             function (response) {
                 system.addPageThreads(response.result);
 
@@ -152,7 +214,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
                     $scope.getPageThreads(page + 1);
                 } else $scope.endLoading(1000);
 
-            }, $scope.defaultErrorCallback);
+            }, $scope.defaultErrorCallback);*/
     }
 
     //Function to format date in HTML
@@ -182,7 +244,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
             }, timeout);
         } else {
             //If not, we need to make a request
-            gmail.getThreadRequest(thread.id).execute(function (response) {
+            system.getThreadRequest(thread.id).execute(function (response) {
                 console.log(response);
                 //$scope.getMailHTML(thread, response.messages, 0);
                 $scope.showMail(thread, response.messages);
@@ -230,7 +292,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
     }
 
     $scope.getAttachments = function (email, isImage, finish) {
-        gmail.getAttachments(email, isImage).then(function (response) {
+        system.getAttachments(email, isImage).then(function (response) {
             var data;
             for (i in response.result) {
                 data = response.result[i].result.data.replace(/-/g, '+').replace(/_/g, '/');
@@ -243,7 +305,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
     }
 
     $scope.updateCategories = function () {
-        $scope.data.categories = system.getCategories();
+        $scope.data.categories = system.storage.getCategories();
         for (i in $scope.data.categories) {
             if ($scope.data.categories[i].id == $scope.data.selectedLabel.id) {
                 $scope.data.categories.splice(i, 1); break;
@@ -252,8 +314,8 @@ app.controller('GmailMainController', function ($scope, $controller) {
     }
 
     $scope.updateMessages = function () {
-        $scope.data.messageList = system.getThreads($scope.data.currentPage, $scope.data.threadsPerPage, $scope.data.selectedLabel.id);
-        $scope.data.numOfThreads = system.getNumOfThreads($scope.data.selectedLabel.id);
+        $scope.data.messageList = system.storage.getThreads($scope.data.currentPage, $scope.data.threadsPerPage, $scope.data.selectedLabel.id);
+        $scope.data.numOfThreads = system.storage.getNumOfThreads($scope.data.selectedLabel.id);
         $scope.data.numOfPages = Math.ceil($scope.data.numOfThreads / $scope.data.threadsPerPage);
         if ($scope.data.currentPage >= $scope.data.numOfPages) $scope.data.currentPage = $scope.data.numOfPages - 1;
 		$scope.data.selectedCheckboxes = [];
@@ -295,19 +357,20 @@ app.controller('GmailMainController', function ($scope, $controller) {
     }
 
     $scope.endLoading = function (timeout) {
-        system.classifyThreads();
-        $scope.$apply(function () {
-            $scope.data.loadingMessage = system.saveThreads();
+        console.log("FINISHED");
+
+        system.storage.classifyThreads();
+        $scope.safeApply(function () {
+            $scope.data.loadingMessage = system.storage.saveThreads();
             $scope.setCategory({'id': "CATEGORY_PERSONAL", 'name': "Personal", 'class': 'fa-envelope-square'});
         });
 
-        $scope.data.labels = system.getDefaultLabels();
-        if (!timeout) timeout = 0;
+        $scope.data.labels = system.storage.getDefaultLabels();
         setTimeout(function () {
             $scope.$apply(function () {
                 $scope.data.loading = false;
             });
-        }, timeout);
+        }, (!timeout) ? 0 : timeout);
     }
 
     $scope.isImportant = function (labels) {
@@ -344,8 +407,8 @@ app.controller('GmailMainController', function ($scope, $controller) {
 	$scope.sendEmail = function () {
 		if ($scope.data.newMessage.email && $scope.data.newMessage.subject && $scope.data.newMessage.message) {
 			$scope.data.sendingEmail = true;
-			gmail.sendMessage($scope.data.newMessage.email, $scope.data.newMessage.subject, $scope.data.newMessage.message, function (message) {
-                gmail.getThreadRequest(message.threadId).execute(function(response) {
+            system.sendMessage($scope.data.newMessage.email, $scope.data.newMessage.subject, $scope.data.newMessage.message, function (message) {
+                system.getThreadRequest(message.threadId).execute(function(response) {
                     system.addOrUpdateThread(response.result);
 
                     $scope.$apply(function () {
@@ -370,7 +433,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
     }
 
     $scope.modifyThreads = function (threads, addLabels, removeLabels) {
-        if (threads.length > 0) gmail.modifyThreads(threads, addLabels, removeLabels, function (response) {
+        if (threads.length > 0) system.modifyThreads(threads, addLabels, removeLabels, function (response) {
             system.updateLabels(response);
             $scope.$apply(function () {
                 $scope.updateMessages();
@@ -380,10 +443,15 @@ app.controller('GmailMainController', function ($scope, $controller) {
     }
 
     /** CALLBACKS **/
+    $scope.safeApply = function (callback) {
+        setTimeout($scope.$apply(callback));
+    }
+
     $scope.defaultErrorCallback = function (response) {
         $scope.$apply(function () {
             $scope.data.loadingMessage = "There has been an error. Please check console."
         });
+        console.log("***** ERROR *****")
         console.log(response);
     }
 });
@@ -408,13 +476,13 @@ app.directive('ngDownloadFile', function ($compile) {
     return {
         controller: function ($scope) { },
         link: function (scope, element, attrs, ctrl) {
-            //console.log(element[0]);
-            //element[0].href = attrs.ngDownloadFile;
+            system.getSingleAttachment(attrs.message, attrs.ngDownloadFile, function (response) {
+                console.log(element[0]);
 
-            gmail.getSingleAttachment(attrs.message, attrs.ngDownloadFile, function (response) {
-                console.log(response);
-
+                element[0].href = 'data:application/octet-stream;base64,' + response.data;
                 element[0].innerHTML = attrs.title;
+                element[0].download = attrs.title;
+
             });
         }
     }

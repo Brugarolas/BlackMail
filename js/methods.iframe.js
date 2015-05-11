@@ -1,6 +1,7 @@
 /**
  * Created by Usuario on 04/05/2015.
  */
+"use strict";
 
 function setIframeData(iframe, content, margin) {
     iframe.contentWindow.document.open('text/html', 'replace');

@@ -1,6 +1,7 @@
 /**
  * Created by Andrés on 02/05/2015.
  */
+"use strict";
 
 angular.module("email", ['offClick', 'monospaced.elastic'])
     .directive('ngEmailIframe', function ($compile) {
