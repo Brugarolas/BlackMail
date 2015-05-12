@@ -44,21 +44,39 @@ function getOS() {
     else return "Other";
 }
 
+/**
+ * Load a Google API.
+ * @param apiName Name of the API to load
+ * @param version Version of the API to load
+ * @param callback Method that will be executed when the API load
+ * @param error Method that will be executed if the load fails
+ */
 System.prototype.loadGoogleAPI = function (apiName, version, callback, error) {
     system.network.loadAPI(apiName, version, callback, error);
 }
 
+/**
+ * Get Google+ personal data
+ * @param imageSize Size in pixels of your profile image
+ * @param callback Method that will be executed when data is received
+ * @param error
+ */
 System.prototype.getPersonalData = function (imageSize, callback, error) {
+    //If we don't have data in storage, we will need to load from network
     if (!this.storage.getPersonalData())
         system.network.getPersonalData(function(response) {
             system.storage.savePersonalData(response.result, imageSize);
             system.network.setEmail(system.storage.getEmail());
-
             callback(system.storage.getPersonalData());
         }, error);
     else callback(system.storage.getPersonalData());
 }
 
+/**
+ *
+ * @param callback
+ * @param error
+ */
 System.prototype.getLabelList = function (callback, error) {
     if (system.storage.labels.length == 0)
         system.network.getLabelList(function(response) {
@@ -68,11 +86,22 @@ System.prototype.getLabelList = function (callback, error) {
     else callback(system.storage.getLabels());
 }
 
+/**
+ *
+ * @param callbackRetrieve
+ * @param callbackInexistant
+ */
 System.prototype.retrieveThreads = function (callbackRetrieve, callbackInexistant) {
     if (system.storage.retrieveThreads()) callbackRetrieve();
     else callbackInexistant();
 }
 
+/**
+ *
+ * @param between
+ * @param end
+ * @param error
+ */
 System.prototype.performFullSync = function (between, end, error) {
     var next = function (response) {
         system.storage.addNewThreadsToList(response.threads); between();
@@ -81,6 +110,13 @@ System.prototype.performFullSync = function (between, end, error) {
     system.network.getAllThreadsIds(next, error);
 }
 
+/**
+ *
+ * @param threadsPerPage
+ * @param between
+ * @param end
+ * @param error
+ */
 System.prototype.getPageThreads = function (threadsPerPage, between, end, error) {
     var numOfPages = Math.ceil(system.storage.getNumOfThreads() / threadsPerPage), steps = [], actualPage = 0;
     for (var page = 0; page < numOfPages; page++) steps.push(system.storage.getThreads(page, threadsPerPage));
@@ -91,7 +127,13 @@ System.prototype.getPageThreads = function (threadsPerPage, between, end, error)
     system.network.getPageThreads(steps[0], next, error);
 }
 
-System.prototype.performPartialSync = function (between, end, error) {
+/**
+ *
+ * @param threadsPerPage
+ * @param end
+ * @param error
+ */
+System.prototype.performPartialSync = function (threadsPerPage, end, error) {
     var newMessages = [], next = function (response) {
         if (response.resultSizeEstimate != 0) {
             var nuevos = system.storage.addMessagesToList(response.result.messages);
@@ -99,15 +141,94 @@ System.prototype.performPartialSync = function (between, end, error) {
 
             if (nuevos.length == response.result.messages.length && response.nextPageToken)
                 system.network.getNewMessages(next, error, system.prototype.getLastDate(), response.nextPageToken);
-            else { console.log(newMessages); end(); }//system.storage.mergeThreadList(newMessages);
-
-            /*if (newMessages.length == 0) $scope.endLoading(1000);
-            else $scope.getDataOfNewMessages(newMessages);*/
+            else if (newMessages.length == 0) end();
+            else {
+                system.storage.mergeThreadList(newMessages);
+                system.getNewMessagesData(newMessages, threadsPerPage, end, error);
+            }
         }
     }
     system.network.getNewMessages(next, error, system.storage.getLastDate());
 }
 
-System.prototype.getNewMessages = function (newMessages) {
+/**
+ *
+ * @param newMessages
+ * @param threadsPerPage
+ * @param end
+ * @param error
+ */
+System.prototype.getNewMessagesData = function (newMessages, threadsPerPage, end, error) {
+    var numOfPages = Math.ceil(newMessages.length / threadsPerPage), steps = [], actualPage = 0, starting = 0;
+    for (var page = 0; page < numOfPages; page++) {
+        steps.push(newMessages.slice(starting, starting + threadsPerPage));
+        starting += threadsPerPage;
+    }
 
+    var next = function (response) {
+        for (var i in response) system.storage.addMessageToThread(response[i].result); actualPage += 1;
+        if (actualPage < numOfPages) system.network.getNewMessagesData(steps[actualPage], next, error); else end();
+    }
+
+    system.network.getNewMessagesData(steps[0], next, error);
+}
+
+/**
+ *
+ * @param index
+ * @param label
+ * @param callback
+ * @param unread
+ * @param error
+ */
+System.prototype.getThread = function (index, label, callback, unreadMth, error) {
+    var thread = system.storage.getThreadByIndex(index, label);
+    if (thread.messages.length > 0) callback(thread);
+    else system.network.getThread(thread.id, function (response) {
+        //Mark message as read if needed
+        if (thread.labels.indexOf('UNREAD') > -1) system.modifyThreads([thread.id], [], ['UNREAD'], unreadMth, error);
+
+        //Do the rest
+        var email, msg, resources = [];
+        for (var i in response.messages) {
+            msg = response.messages[i]; email = { id: msg.id, images: [], attachments: [] };
+
+            // If it is not multipart...
+            if (!msg.payload.parts) email.html = ((msg.payload.mimeType == "text/html") ? obtainMainHTML : createMainHTML)(msg.payload.body.data);
+            else parsePayload(email, msg.payload);
+
+            //if (email.attachments.length > 0) resources.push({ isImage: false, mail: email });
+            if (email.images.length > 0) resources.push({ isImage: true, mail: email });
+            thread.messages.push(email);
+        }
+
+        async.forEach(resources, function (item, done) {
+            system.network.getAttachments(item.mail, item.isImage, function (response) {
+                var data, email = item.mail, isImg = item.isImage;
+                for (var i in response) {
+                    data = response[i].result.data.replace(/-/g, '+').replace(/_/g, '/');
+
+                    if (isImg) email.html = email.html.replace(getImageSrcToReplace(email.images[i]), 'data:' + email.images[i].mimeType + ';charset=utf-8;base64,' + data);
+                    else email.attachments[i].body.data = encodeURIComponent(data);
+                }
+                done();
+            }, error);
+        }, function(err) {
+            callback(thread);
+        });
+
+    }, error);
+}
+
+/**
+ *
+ * @param threads
+ * @param addLabels
+ * @param removeLabels
+ */
+System.prototype.modifyThreads = function (threads, addLabels, removeLabels, callback, error) {
+    system.network.modifyThreads(threads, addLabels, removeLabels, function (response) {
+        system.storage.updateLabels(response);
+        callback();
+    }, error);
 }

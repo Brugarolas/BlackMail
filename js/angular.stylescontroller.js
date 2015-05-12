@@ -21,12 +21,12 @@ angular.module("styles", ['scrollbar', 'email'])
             //If we...
             if ($scope.data.messageActive != -1 && $scope.data.messageActive == index) {
                 //Click on selected thread, we should unselect it
-                $scope.showThread(-1);
+                $scope.unselectThread();
             } else {
                 //If not, if...
                 if ($scope.data.messageActive != -1) {
                     //If there is a selected thread, we should unselect it and show new thread in 300ms
-                    $scope.showThread(-1);
+                    $scope.unselectThread();
                     setTimeout(function () {
                         $scope.$apply(function () {
                             $scope.showThread(index);
@@ -39,19 +39,23 @@ angular.module("styles", ['scrollbar', 'email'])
             }
         }
 
+        $scope.clickOnHideThread = function () {
+            $scope.unselectThread();
+        }
+
+        $scope.unselectThread = function () {
+            $scope.data.messageActive = -1;
+            $scope.data.showOverlay = false;
+        }
+
         $scope.showThread = function (index) {
             $scope.data.messageActive = index;
-            $scope.data.showOverlay = (index > -1);
+            $scope.data.showOverlay = true;
         }
 
         $scope.isUnread = function (labels) {
             for (var i in labels) if (labels[i] === "UNREAD") return true;
             return false;
-        }
-
-        $scope.clickOnHideThread = function () {
-            $scope.data.messageActive = -1;
-            $scope.data.showOverlay = false;
         }
 
         $scope.clickOnToggleSidebar = function () {

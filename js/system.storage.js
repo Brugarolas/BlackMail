@@ -170,7 +170,7 @@ storage.prototype.mergeThreadList = function (messages) {
 
     for (var i in this.threadList) this.threadIds[this.threadList[i].id] = i;
 
-    if (messages.length > 0) this.newNotification(messages.length + " new messages.");
+    if (messages.length > 0) system.notificationSystem.newNotification(messages.length + " new messages.");
 }
 
 storage.prototype.addMessagesToList = function (messages) {

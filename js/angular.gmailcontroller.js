@@ -66,56 +66,12 @@ app.controller('GmailMainController', function ($scope, $controller) {
         });
     }
 
-    /*//Get list of new threads
-    $scope.getListOfNewMessages = function (nextPageToken, newMessages) {
-        if (newMessages === undefined) newMessages = [];
-
-        console.log("We have threads")
-
-        //Step 8: Assemble the API request & Step 9A: Execute API request and retrieve list of threads
-        system.getNewMessagesRequest(system.getLastDate(), nextPageToken).execute(function (response) {
-            $scope.data.loadingMessage = "Getting new emails...";
-
-            if (response.resultSizeEstimate != 0) {
-                //Step 9A: Execute API request and retrieve list of threads
-                var nuevos = system.addMessagesToList(response.result.messages);
-
-                //Step 9C: If we have more pages with threads, request them
-                if (nuevos.length == response.result.messages.length && response.nextPageToken) {
-                    $scope.getListOfNewMessages(response.nextPageToken, newMessages.concat(nuevos));
-                } else {
-                    newMessages = newMessages.concat(nuevos);
-                    system.mergeThreadList(newMessages);
-                }
-            }
-
-            // Check if we need to update some messages
-            if (newMessages.length == 0) $scope.endLoading(1000);
-            else $scope.getDataOfNewMessages(newMessages);
-
-        }, $scope.defaultErrorCallback);
-    }*/
-
-    /*$scope.getDataOfNewMessages = function (newMessages) {
-        system.getNewMessagesBatchRequest(newMessages).execute(function (response) {
-            for (i in response) system.addMessageToThread(response[i].result);
-            $scope.endLoading(1000);
-        });
-    }*/
-
     $scope.partialSync = function() {
         $scope.safeApply(function() {
             $scope.data.loadingMessage = "Getting new emails...";
         });
 
-        system.performPartialSync(function() {
-            console.log("New mail");
-
-        }, function() {
-            console.log("Finished");
-            $scope.endLoading(1000);
-
-        }, $scope.defaultErrorCallback);
+        system.performPartialSync(100, function() { $scope.endLoading(1000); }, $scope.defaultErrorCallback);
     }
 
     // Get list of threads
@@ -154,79 +110,29 @@ app.controller('GmailMainController', function ($scope, $controller) {
     }
 
     $scope.showThread = function (index, timeout) {
-        var thread = system.getThreadByIndex($scope.data.currentPage * $scope.data.threadsPerPage + index, $scope.data.selectedLabel.id);
-        if (!timeout) timeout = 0;
-
-        if (index < 0 || thread.messages.length > 0) {
-            //If thread is currently in memory, we don't have to make a new API request
-            setTimeout(function () {
-                $scope.$apply(function () {
-                    if (index > -1) $scope.data.activeThread = thread;
-                    $scope.data.messageActive = index;
-                    $scope.data.showOverlay = (index > -1);
+        var threadIndex = $scope.data.currentPage * $scope.data.threadsPerPage + index;
+        system.getThread(threadIndex, $scope.data.selectedLabel.id,
+            function () {
+                $scope.safeApply(function () {
+                    $scope.updateMessages();
+                    $scope.data.selectedCheckboxes = [];
                 });
-            }, timeout);
-        } else {
-            //If not, we need to make a request
-            system.getThreadRequest(thread.id).execute(function (response) {
-                console.log(response);
-                //$scope.getMailHTML(thread, response.messages, 0);
-                $scope.showMail(thread, response.messages);
-
+            },
+            function (thread) {
+                $scope.safeApply(function () {
+                    $scope.data.activeThread = thread;
+                });
                 setTimeout(function () {
                     $scope.$apply(function () {
                         $scope.data.messageActive = index;
                         $scope.data.showOverlay = true;
                     });
-                }, timeout);
-            }, $scope.defaultErrorCallback);
-
-            //Mark message as read if needed
-            if (thread.labels.indexOf('UNREAD') > -1) $scope.modifyThreads([thread.id], [], ['UNREAD']);
-        }
+                }, (!timeout) ? 0 : timeout);
+            },
+        $scope.defaultErrorCallback);
     }
 
-    $scope.showMail = function (thread, messages) {
-        var email, msg, resources = [];
-        for (i in messages) {
-            email = { id: messages[i].id, images: [], attachments: [] }; msg = messages[i];
 
-            /* If it is not multipart... */
-            if (!msg.payload.parts) {
-                email.html = ((msg.payload.mimeType == "text/html") ? obtainMainHTML : createMainHTML)(msg.payload.body.data);
-                thread.messages.push(email);
-            } else {
-                parsePayload(email, msg.payload);
-
-                //if (email.attachments.length > 0) resources.push({ isImage: false, mail: email });
-                if (email.images.length > 0) resources.push({ isImage: true, mail: email });
-
-                thread.messages.push(email);
-            }
-        }
-
-        async.forEach(resources, function (item, done) {
-                $scope.getAttachments(item.mail, item.isImage, done);
-        }, function(err) {
-            console.log(thread);
-            $scope.$apply(function () {
-                $scope.data.activeThread = thread;
-            });
-        });
-    }
-
-    $scope.getAttachments = function (email, isImage, finish) {
-        system.getAttachments(email, isImage).then(function (response) {
-            var data;
-            for (i in response.result) {
-                data = response.result[i].result.data.replace(/-/g, '+').replace(/_/g, '/');
-
-                if (isImage) email.html = email.html.replace(getImageSrcToReplace(email.images[i]), 'data:' + email.images[i].mimeType + ';charset=utf-8;base64,' + data);
-                else email.attachments[i].body.data = encodeURIComponent(data);
-            }
-            finish();
-        }, $scope.defaultErrorCallback);
-    }
 
     $scope.updateCategories = function () {
         $scope.data.categories = system.storage.getCategories();
@@ -398,14 +304,14 @@ app.directive('ngDownloadFile', function ($compile) {
     return {
         controller: function ($scope) { },
         link: function (scope, element, attrs, ctrl) {
-            system.getSingleAttachment(attrs.message, attrs.ngDownloadFile, function (response) {
+            /*system.getSingleAttachment(attrs.message, attrs.ngDownloadFile, function (response) {
                 console.log(element[0]);
 
                 element[0].href = 'data:application/octet-stream;base64,' + response.data;
                 element[0].innerHTML = attrs.title;
                 element[0].download = attrs.title;
 
-            });
+            });*/
         }
     }
 });

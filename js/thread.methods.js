@@ -13,7 +13,7 @@ function setThreadMetadata(thread, result) {
     thread.sender = getMessageSender(lastMessage);
     thread.labels = getThreadLabels(result);
 
-    thread.numOfMsgs = getNumOfMessages(result);
+    thread.numOfMsgs = result.messages.length
     thread.messages = [];
 }
 
@@ -70,10 +70,6 @@ function getThreadLabels(response) {
         }
     }
     return labels;
-}
-
-function getNumOfMessages(response) {
-    return (response.messages.length > 1) ? '(' + response.messages.length + ')' : '';
 }
 
 function formatSender(sender) {
