@@ -86,7 +86,6 @@ app.controller('GmailMainController', function ($scope, $controller) {
     //Get threads
     $scope.getPageThreads = function () {
         var threadsPerPage = 100;
-
         system.getPageThreads(threadsPerPage, function (actualPage) {
             var porc = roundToPorc((threadsPerPage * actualPage) / system.storage.getNumOfThreads());
             $scope.safeApply(function () {
@@ -286,14 +285,17 @@ app.directive('ngDownloadFile', function ($compile) {
     return {
         controller: function ($scope) { },
         link: function (scope, element, attrs, ctrl) {
-            /*system.getSingleAttachment(attrs.message, attrs.ngDownloadFile, function (response) {
-                console.log(element[0]);
+            system.getFileAttachment(attrs.ngDownloadFile, function (attachment) {
+                element[0].innerHTML = attachment.name;
+                element[0].download = attachment.name;
 
-                element[0].href = 'data:application/octet-stream;base64,' + response.data;
-                element[0].innerHTML = attrs.title;
-                element[0].download = attrs.title;
-
-            });*/
+                if (attachment.mime.indexOf('text') != 0)
+                    element[0].href = 'data:' + attachment.mime + ';charset=utf-8;' + attachment.encoding + ',' + attachment.data;
+                else element[0].href = 'data:' + attachment.mime + ';charset=utf-8;' + attachment.encoding + ',' + attachment.data;
+            }, function (error) {
+                element[0].innerHTML = "** ERROR **";
+                console.log(error);
+            });
         }
     }
 });

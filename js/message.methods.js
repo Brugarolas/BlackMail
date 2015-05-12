@@ -140,8 +140,6 @@ function parsePayload(email, payload) {
 }
 
 function getImageSrcToReplace(image) {
-    console.log(image);
-
     for (var i in image.headers) if (image.headers[i].name == "Content-ID") {
         var value = image.headers[i].value;
         return "cid:" + value.substring(1, value.length - 1);

@@ -8,6 +8,8 @@ function storage () {
     this.threadIds = {};
     this.threadLabels = {};
     this.labels = [];
+    this.attachmentList = [];
+    this.attachmentIds = {};
 }
 
 storage.prototype.savePersonalData = function (result, imageSize) {
@@ -239,4 +241,27 @@ storage.prototype.getThreads = function (page, num, labelId) {
         for (var i in threadLabels) threads.push(this.threadList[threadLabels[i]]);
         return threads;
     }
+}
+
+storage.prototype.addAttachments = function (messageId, attachments) {
+    var attachment, header;
+    for (var i in attachments) {
+        attachment = {
+            id: attachments[i].body.attachmentId,
+            msgId: messageId,
+            name: attachments[i].filename,
+            mime: attachments[i].mimeType
+        };
+        for (var n in attachments[i].headers) {
+            header = attachments[i].headers[n];
+            if (header.name == 'Content-Transfer-Encoding') attachment.encoding = header.value;
+        }
+
+        this.attachmentList.push(attachment);
+        this.attachmentIds[attachment.id] = this.attachmentList.length - 1;
+    }
+}
+
+storage.prototype.getAttachment = function (attachId) {
+    return this.attachmentList[this.attachmentIds[attachId]];
 }

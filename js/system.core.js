@@ -197,7 +197,7 @@ System.prototype.getThread = function (index, label, unreadMth, callback, error)
             if (!msg.payload.parts) email.html = ((msg.payload.mimeType == "text/html") ? obtainMainHTML : createMainHTML)(msg.payload.body.data);
             else parsePayload(email, msg.payload);
 
-            //if (email.attachments.length > 0) resources.push({ isImage: false, mail: email });
+            if (email.attachments.length > 0) system.storage.addAttachments(email.id, email.attachments);
             if (email.images.length > 0) resources.push({ isImage: true, mail: email });
             thread.messages.push(email);
         }
@@ -235,7 +235,6 @@ System.prototype.modifyThreads = function (threads, addLabels, removeLabels, cal
     }, error);
 }
 
-
 /**
  *
  * @param to
@@ -256,4 +255,15 @@ System.prototype.sendMessage = function (to, subject, message, callback, error) 
             callback();
         }, error);
     }, error);
+}
+
+System.prototype.getFileAttachment = function (attachId, callback, error) {
+    var attachment = system.storage.getAttachment(attachId);
+    if (attachment.data) callback(attachment);
+    else {
+        system.network.getSingleAttachment(attachment.msgId, attachment.id, function (response) {
+            attachment.data = response.data;
+            callback(attachment);
+        }, error);
+    }
 }

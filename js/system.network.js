@@ -99,12 +99,12 @@ gmail.prototype.getAttachments = function (email, isImage, callback, error) {
     batchRequest.execute(callback, error);
 }
 
-gmail.prototype.getSingleAttachment = function(messageId, id, callback) {
+gmail.prototype.getSingleAttachment = function(messageId, id, callback, error) {
     gapi.client.gmail.users.messages.attachments.get({
         'id': id,
         'messageId': messageId,
         'userId': this.email
-    }).execute(callback);
+    }).execute(callback, error);
 }
 
 gmail.prototype.sendMessage = function(content, callback, error) {

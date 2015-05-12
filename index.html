@@ -217,7 +217,7 @@
     <div class="header">
         <div class="page-title">
             <a class="icon circle-icon glyphicon glyphicon-chevron-left" ng-click="clickOnHideThread()"></a>
-            {{data.activeThread.subject}} <span class="grey">{{data.activeThread.numOfMsgs}}</span>
+            {{data.activeThread.subject}} <span class="grey" ng-show="data.activeThread.numOfMsgs > 1">({{data.activeThread.numOfMsgs}})</span>
         </div>
         <p>From <a>You</a> to <a>Scott Waite</a>, started on <a>March 2, 2014</a> at 2:14 pm est.</p>
     </div>
@@ -230,10 +230,9 @@
                         <div class="right">March 6, 2014, 20:08 pm</div>
                     </div>
                     <div class="message">
-                        <iframe id="iframe{{$index}}" frameBorder="0" src="about:blank" scrolling="no"
-                                ng-email-iframe="{{msg.html}}" height="0"></iframe>
+                        <iframe id="iframe{{$index}}" frameBorder="0" src="about:blank" scrolling="no" ng-email-iframe="{{msg.html}}" height="0"></iframe>
                         <a ng-download-button="{{msg.html}}">Download Email</a>
-                        <a ng-repeat="file in msg.attachments" ng-download-file="{{file.body.attachmentId}}" message="{{msg.id}}" title="{{file.filename}}">Not ready yet</a>
+                        <a ng-repeat="file in msg.attachments" ng-download-file="{{file.body.attachmentId}}">Not ready yet</a>
                     </div>
                     <div class="tool-box">
                         <a class="circle-icon small glyphicon glyphicon-share-alt"></a>
