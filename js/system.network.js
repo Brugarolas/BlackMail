@@ -99,105 +99,12 @@ gmail.prototype.getAttachments = function (email, isImage, callback, error) {
     batchRequest.execute(callback, error);
 }
 
-
-
-
-gmail.prototype.getPageThreadsBatchRequest = function (currentPage, threadsPerPage) {
-    var startingThread = currentPage * threadsPerPage;
-    var lastPage = Math.min(startingThread + threadsPerPage, system.getNumOfThreads());
-    var batchRequest = gapi.client.newBatch();
-
-    for (i = startingThread; i < lastPage; i++) {
-        batchRequest.add(
-            gapi.client.gmail.users.threads.get({
-                'userId': this.email,
-                'id': system.getThreadByIndex(i).id,
-                'format': 'metadata'
-            }), {'id': i}
-        );
-    }
-
-    return batchRequest;
-}
-
-gmail.prototype.getNewMessagesRequest = function (lastDate, nextPageToken) {
-    if (nextPageToken && nextPageToken !== undefined) {
-        return gapi.client.gmail.users.messages.list({
-            'userId': this.email,
-            'pageToken': nextPageToken,
-            'includeSpamTrash': true,
-            'q': '!in:chats after:' + lastDate.toString('yyyy/MM/dd')
-        });
-    } else {
-        return gapi.client.gmail.users.messages.list({
-            'userId': this.email,
-            'includeSpamTrash': true,
-            'q': '!in:chats after:' + lastDate.toString('yyyy/MM/dd')
-        });
-    }
-}
-
-/*gmail.prototype.getAllThreadsRequest = function (nextPageToken) {
-    if (nextPageToken === undefined) {
-        return gapi.client.gmail.users.threads.list({
-            'userId': this.email,
-            'includeSpamTrash': true,
-            'q': '!in:chats'
-        });
-    } else {
-        return gapi.client.gmail.users.threads.list({
-            'userId': this.email,
-            'pageToken': nextPageToken,
-            'includeSpamTrash': true,
-            'q': '!in:chats'
-        });
-    }
-}*/
-
-gmail.prototype.getNewMessagesBatchRequest = function (newMessages) {
-    var batchRequest = gapi.client.newBatch();
-
-    for (i in newMessages) {
-        batchRequest.add(
-            gapi.client.gmail.users.messages.get({
-                'userId': this.email,
-                'id': newMessages[i].id,
-                'format': 'metadata'
-            }), {'id': newMessages[i].id}
-        );
-    }
-
-    return batchRequest;
-}
-
 gmail.prototype.getSingleAttachment = function(messageId, id, callback) {
     gapi.client.gmail.users.messages.attachments.get({
         'id': id,
         'messageId': messageId,
         'userId': this.email
     }).execute(callback);
-}
-
-/*gmail.prototype.getAttachments = function (email, isImage) {
-    var batchRequest = gapi.client.newBatch(), iterable = (isImage) ? email.images : email.attachments;
-    for (i in iterable) {
-        batchRequest.add(
-            gapi.client.gmail.users.messages.attachments.get({
-                'id': iterable[i].body.attachmentId,
-                'messageId': email.id,
-                'userId': this.email
-            }), {'id': i}
-        );
-    }
-    return batchRequest;
-}*/
-
-gmail.prototype.getThreadRequest = function (id) {
-    return gapi.client.gmail.users.threads.get({
-        'userId': this.email,
-        'id': id,
-        'format': 'full'
-    });
 }
 
 gmail.prototype.sendMessage = function(to, subject, content, callback, error) {

@@ -181,7 +181,7 @@ System.prototype.getNewMessagesData = function (newMessages, threadsPerPage, end
  * @param unread
  * @param error
  */
-System.prototype.getThread = function (index, label, callback, unreadMth, error) {
+System.prototype.getThread = function (index, label, unreadMth, callback, error) {
     var thread = system.storage.getThreadByIndex(index, label);
     if (thread.messages.length > 0) callback(thread);
     else system.network.getThread(thread.id, function (response) {

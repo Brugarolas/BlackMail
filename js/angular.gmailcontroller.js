@@ -111,25 +111,17 @@ app.controller('GmailMainController', function ($scope, $controller) {
 
     $scope.showThread = function (index, timeout) {
         var threadIndex = $scope.data.currentPage * $scope.data.threadsPerPage + index;
-        system.getThread(threadIndex, $scope.data.selectedLabel.id,
-            function () {
-                $scope.safeApply(function () {
-                    $scope.updateMessages();
-                    $scope.data.selectedCheckboxes = [];
+        system.getThread(threadIndex, $scope.data.selectedLabel.id, $scope.safeUpdateMessages, function (thread) {
+            $scope.safeApply(function () {
+                $scope.data.activeThread = thread;
+            });
+            setTimeout(function () {
+                $scope.$apply(function () {
+                    $scope.data.messageActive = index;
+                    $scope.data.showOverlay = true;
                 });
-            },
-            function (thread) {
-                $scope.safeApply(function () {
-                    $scope.data.activeThread = thread;
-                });
-                setTimeout(function () {
-                    $scope.$apply(function () {
-                        $scope.data.messageActive = index;
-                        $scope.data.showOverlay = true;
-                    });
-                }, (!timeout) ? 0 : timeout);
-            },
-        $scope.defaultErrorCallback);
+            }, (!timeout) ? 0 : timeout);
+        }, $scope.defaultErrorCallback);
     }
 
 
@@ -149,6 +141,10 @@ app.controller('GmailMainController', function ($scope, $controller) {
         $scope.data.numOfPages = Math.ceil($scope.data.numOfThreads / $scope.data.threadsPerPage);
         if ($scope.data.currentPage >= $scope.data.numOfPages) $scope.data.currentPage = $scope.data.numOfPages - 1;
 		$scope.data.selectedCheckboxes = [];
+    }
+
+    $scope.safeUpdateMessages = function() {
+        $scope.safeApply($scope.updateMessages);
     }
 
     $scope.showCategoryMenu = function () {
@@ -252,22 +248,12 @@ app.controller('GmailMainController', function ($scope, $controller) {
 
     $scope.getSelectedIds = function () {
         var threads = [], starting = $scope.data.currentPage * $scope.data.threadsPerPage, label = $scope.data.selectedLabel.id;
-        for (var n = 0; n < $scope.data.threadsPerPage; n++) if ($scope.data.selectedCheckboxes[n]) threads.push(system.getThreadByIndex(starting + n, label).id);
+        for (var n = 0; n < $scope.data.threadsPerPage; n++) if ($scope.data.selectedCheckboxes[n]) threads.push(system.storage.getThreadByIndex(starting + n, label).id);
         return threads;
     }
 
     $scope.modifySelectedThreads = function (addLabels, removeLabels) {
-        $scope.modifyThreads($scope.getSelectedIds(), addLabels, removeLabels);
-    }
-
-    $scope.modifyThreads = function (threads, addLabels, removeLabels) {
-        if (threads.length > 0) system.modifyThreads(threads, addLabels, removeLabels, function (response) {
-            system.updateLabels(response);
-            $scope.$apply(function () {
-                $scope.updateMessages();
-                $scope.data.selectedCheckboxes = [];
-            });
-        }, $scope.defaultErrorCallback);
+        system.modifyThreads($scope.getSelectedIds(), addLabels, removeLabels, $scope.safeUpdateMessages, $scope.defaultErrorCallback);
     }
 
     /** CALLBACKS **/
