@@ -5,10 +5,9 @@ Javascript Gmail client made with Google API for my final project.
 Clone this repository on your computer:
 ```
 git clone https://github.com/Brugarolas/BlackMail.git
-cd BlackMail
 ```
 
-Create a localhost on port 3000 to serve static files. In Node.js with Express:
+Create and start a local server on port 3000 to serve static files. In Node.js with Express:
 ```
 console.log("Loading server...");
 var express = require('express');

@@ -97,18 +97,6 @@ app.controller('GmailMainController', function ($scope, $controller) {
         }, $scope.defaultErrorCallback);
     }
 
-    //Function to format date in HTML
-    $scope.formatDateShort = function (date) {
-        var today = Date.today();
-
-        if (today.toString("yyyy") != date.toString("yyyy")) {
-            return date.toString("MMMM").substr(0, 3) + ' ' + date.toString("yyyy");
-        } else if (today.toString("dd") != date.toString("dd")) {
-            return date.toString("dd MMMM");
-        }
-        return date.toString("hh:mm tt");
-    }
-
     $scope.showThread = function (index, timeout) {
         var threadIndex = $scope.data.currentPage * $scope.data.threadsPerPage + index;
         system.getThread(threadIndex, $scope.data.selectedLabel.id, $scope.safeUpdateMessages, function (thread) {
@@ -124,8 +112,6 @@ app.controller('GmailMainController', function ($scope, $controller) {
         }, $scope.defaultErrorCallback);
     }
 
-
-
     $scope.updateCategories = function () {
         $scope.data.categories = system.storage.getCategories();
         for (i in $scope.data.categories) {
@@ -135,25 +121,8 @@ app.controller('GmailMainController', function ($scope, $controller) {
         }
     }
 
-    $scope.updateMessages = function () {
-        $scope.data.messageList = system.storage.getThreads($scope.data.currentPage, $scope.data.threadsPerPage, $scope.data.selectedLabel.id);
-        $scope.data.numOfThreads = system.storage.getNumOfThreads($scope.data.selectedLabel.id);
-        $scope.data.numOfPages = Math.ceil($scope.data.numOfThreads / $scope.data.threadsPerPage);
-        if ($scope.data.currentPage >= $scope.data.numOfPages) $scope.data.currentPage = $scope.data.numOfPages - 1;
-		$scope.data.selectedCheckboxes = [];
-    }
-
-    $scope.safeUpdateMessages = function() {
-        $scope.safeApply($scope.updateMessages);
-    }
-
     $scope.showCategoryMenu = function () {
         return ($scope.data.selectedLabel && $scope.data.selectedLabel.id.indexOf('CATEGORY_') == 0);
-    }
-
-    $scope.isActiveLabel = function (label) {
-        if (label.id == "INBOX") return ($scope.data.selectedLabel.id.indexOf('CATEGORY_') == 0);
-        else return (label.id == $scope.data.selectedLabel.id);
     }
 
     $scope.setCategory = function (category) {
@@ -166,13 +135,6 @@ app.controller('GmailMainController', function ($scope, $controller) {
         else $scope.updateLabel(label);
     }
 
-    $scope.updateLabel = function (label) {
-        $scope.data.selectedLabel = label;
-        $scope.data.showMenu = false;
-        $scope.data.currentPage = 0;
-        $scope.updateMessages();
-    }
-
     $scope.getActualPageTextBig = function () {
         return ($scope.data.numOfPages == 0) ? "No messages" : "Showing " + Math.min($scope.data.numOfThreads, $scope.data.threadsPerPage) +
             " out of " + $scope.data.numOfThreads + " messages (page " + ($scope.data.currentPage+1) + " of " + $scope.data.numOfPages + ")";
@@ -180,26 +142,6 @@ app.controller('GmailMainController', function ($scope, $controller) {
 
     $scope.getActualPageTextSmall = function () {
         return ($scope.data.numOfPages == 0) ? "0/0" : ($scope.data.currentPage+1) + "/" + $scope.data.numOfPages;
-    }
-
-    $scope.endLoading = function (timeout) {
-        system.storage.classifyThreads();
-        $scope.safeApply(function () {
-            $scope.data.loadingMessage = system.storage.saveThreads();
-            $scope.setCategory({'id': "CATEGORY_PERSONAL", 'name': "Personal", 'class': 'fa-envelope-square'});
-        });
-
-        $scope.data.labels = system.storage.getDefaultLabels();
-        setTimeout(function () {
-            $scope.$apply(function () {
-                $scope.data.loading = false;
-            });
-        }, (!timeout) ? 0 : timeout);
-    }
-
-    $scope.isImportant = function (labels) {
-        for (i in labels) if (labels[i] === "IMPORTANT") return true;
-        return false;
     }
 
     $scope.clickOnStar = function (event, index) {
@@ -228,23 +170,12 @@ app.controller('GmailMainController', function ($scope, $controller) {
         else $scope.data.newMailValid = false;
     }
 
-	$scope.sendEmail = function () {
-		if ($scope.data.newMessage.email && $scope.data.newMessage.subject && $scope.data.newMessage.message) {
-			$scope.data.sendingEmail = true;
-            system.sendMessage($scope.data.newMessage.email, $scope.data.newMessage.subject, $scope.data.newMessage.message, function (message) {
-                system.getThreadRequest(message.threadId).execute(function(response) {
-                    system.addOrUpdateThread(response.result);
-
-                    $scope.$apply(function () {
-                        $scope.updateMessages();
-                        $scope.data.newMessage = {};
-                        $scope.data.sendingEmail = false;
-                        $scope.data.showCompose = false;
-                    });
-                });
-			}, $scope.defaultErrorCallback);
-		}
-	}
+    $scope.sendEmail = function () {
+        if ($scope.data.newMailValid) {
+            $scope.data.sendingEmail = true;
+            system.sendMessage($scope.data.newMessage.email, $scope.data.newMessage.subject, $scope.data.newMessage.message, $scope.sentNewMessage, $scope.defaultErrorCallback);
+        }
+    }
 
     $scope.getSelectedIds = function () {
         var threads = [], starting = $scope.data.currentPage * $scope.data.threadsPerPage, label = $scope.data.selectedLabel.id;
@@ -256,9 +187,74 @@ app.controller('GmailMainController', function ($scope, $controller) {
         system.modifyThreads($scope.getSelectedIds(), addLabels, removeLabels, $scope.safeUpdateMessages, $scope.defaultErrorCallback);
     }
 
+    /** FORMAT FUNCTIONS **/
+    //Function to format date in HTML
+    $scope.formatDateShort = function (date) {
+        var today = Date.today();
+        if (today.toString("yyyy") != date.toString("yyyy")) {
+            return date.toString("MMMM").substr(0, 3) + ' ' + date.toString("yyyy");
+        } else if (today.toString("dd") != date.toString("dd")) {
+            return date.toString("dd MMMM");
+        }
+        return date.toString("hh:mm tt");
+    }
+
+    $scope.isImportant = function (labels) {
+        for (i in labels) if (labels[i] === "IMPORTANT") return true;
+        return false;
+    }
+
+    $scope.isActiveLabel = function (label) {
+        if (label.id == "INBOX") return ($scope.data.selectedLabel.id.indexOf('CATEGORY_') == 0);
+        else return (label.id == $scope.data.selectedLabel.id);
+    }
+
     /** CALLBACKS **/
     $scope.safeApply = function (callback) {
         setTimeout($scope.$apply(callback));
+    }
+
+    $scope.updateMessages = function () {
+        $scope.data.messageList = system.storage.getThreads($scope.data.currentPage, $scope.data.threadsPerPage, $scope.data.selectedLabel.id);
+        $scope.data.numOfThreads = system.storage.getNumOfThreads($scope.data.selectedLabel.id);
+        $scope.data.numOfPages = Math.ceil($scope.data.numOfThreads / $scope.data.threadsPerPage);
+        if ($scope.data.currentPage >= $scope.data.numOfPages) $scope.data.currentPage = $scope.data.numOfPages - 1;
+        $scope.data.selectedCheckboxes = [];
+    }
+
+    $scope.updateLabel = function (label) {
+        $scope.data.selectedLabel = label;
+        $scope.data.showMenu = false;
+        $scope.data.currentPage = 0;
+        $scope.updateMessages();
+    }
+
+    $scope.endLoading = function (timeout) {
+        system.storage.classifyThreads();
+        $scope.safeApply(function () {
+            $scope.data.loadingMessage = system.storage.saveThreads();
+            $scope.setCategory({'id': "CATEGORY_PERSONAL", 'name': "Personal", 'class': 'fa-envelope-square'});
+        });
+
+        $scope.data.labels = system.storage.getDefaultLabels();
+        setTimeout(function () {
+            $scope.$apply(function () {
+                $scope.data.loading = false;
+            });
+        }, (!timeout) ? 0 : timeout);
+    }
+
+    $scope.safeUpdateMessages = function() {
+        $scope.safeApply($scope.updateMessages);
+    }
+
+    $scope.sentNewMessage = function () {
+        $scope.safeApply(function () {
+            $scope.updateMessages();
+            $scope.data.newMessage = {};
+            $scope.data.sendingEmail = false;
+            $scope.data.showCompose = false;
+        });
     }
 
     $scope.defaultErrorCallback = function (response) {

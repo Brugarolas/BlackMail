@@ -225,10 +225,35 @@ System.prototype.getThread = function (index, label, unreadMth, callback, error)
  * @param threads
  * @param addLabels
  * @param removeLabels
+ * @param callback
+ * @param error
  */
 System.prototype.modifyThreads = function (threads, addLabels, removeLabels, callback, error) {
     system.network.modifyThreads(threads, addLabels, removeLabels, function (response) {
         system.storage.updateLabels(response);
         callback();
+    }, error);
+}
+
+
+/**
+ *
+ * @param to
+ * @param subject
+ * @param message
+ * @param callback
+ * @param error
+ */
+System.prototype.sendMessage = function (to, subject, message, callback, error) {
+    var raw = "From: " + this.email + "\r\n" +
+        "To:  " + to + "\r\n" +
+        "Subject: " + subject + "\r\n" +
+        "\r\n" + utf8_encode(message);
+
+    system.network.sendMessage(btoa(raw).replace(/\//g, '_').replace(/\+/g, '-'), function (response) {
+        system.network.getThread(response.threadId, function (response) {
+            system.storage.addOrUpdateThread(response.result);
+            callback();
+        }, error);
     }, error);
 }

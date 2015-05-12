@@ -139,7 +139,6 @@ storage.prototype.getDefaultLabels = function () {
             {'id': 'SPAM', 'name': 'Spam', 'class': 'fa-bolt '}
         ];
     }
-
     return this.defaultLabels;
 }
 
@@ -156,7 +155,6 @@ storage.prototype.addNewThreadToListSorted = function (thread) {
         actualThread = this.threadList[i];
         if (Date.compare(thread.date, actualThread.date) == 1) { index = i; break; }
     }
-
     this.threadList.splice(index, 0, thread);
 }
 
@@ -175,14 +173,10 @@ storage.prototype.mergeThreadList = function (messages) {
 
 storage.prototype.addMessagesToList = function (messages) {
     var threadsAux = [];
-
     for (var i in messages) {
-        console.log(messages[i]);
-
         if (this.threadIds[messages[i].threadId] === undefined) threadsAux.push({id: messages[i].threadId});
         else {
             var threadIndex = this.threadIds[messages[i].threadId];
-
             if (threadIndex == 0) break;
             else {
                 threadsAux.push({id: messages[i].threadId});
@@ -190,7 +184,6 @@ storage.prototype.addMessagesToList = function (messages) {
             }
         }
     }
-
     return threadsAux;
 }
 
@@ -217,12 +210,7 @@ storage.prototype.updateLabels = function (response) {
 
 storage.prototype.addMetadataToThreads = function (response) {
     for (var i in response) setThreadMetadata(this.getThread(i), response[i].result);
-
 }
-
-/*storage.prototype.addPageThreads = function (result) {
-    for (var i in result) setThreadMetadata(this.getThreadByIndex(i), result[i].result);
-}*/
 
 storage.prototype.addMessageToThread = function (message) {
     var thread = this.threadList[this.threadIds[message.threadId]];

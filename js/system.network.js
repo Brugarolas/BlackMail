@@ -107,16 +107,11 @@ gmail.prototype.getSingleAttachment = function(messageId, id, callback) {
     }).execute(callback);
 }
 
-gmail.prototype.sendMessage = function(to, subject, content, callback, error) {
-    var email = "From: " + this.email + "\r\n" +
-        "To:  " + to + "\r\n" +
-        "Subject: " + subject + "\r\n" +
-        "\r\n" + utf8_encode(content);
-
+gmail.prototype.sendMessage = function(content, callback, error) {
     gapi.client.gmail.users.messages.send({
         'userId': 'me',
         'resource': {
-            'raw': btoa(email).replace(/\//g, '_').replace(/\+/g, '-')
+            'raw': content
         }
     }).execute(callback, error);
 }
