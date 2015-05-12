@@ -15,9 +15,9 @@ function System() {
     }
 
     //Init sub-systems
-    this.notificationSystem = new notificationSystem();
-    this.network = new gmail('me');
-    this.storage = new storage();
+    if (typeof notificationSystem == 'function') this.notificationSystem = new notificationSystem();
+    if (typeof gmail == 'function') this.network = new gmail('me');
+    if (typeof storage == 'function') this.storage = new storage();
 }
 
 /** Singleton **/

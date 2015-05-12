@@ -45,7 +45,7 @@ angular.module("styles", ['scrollbar', 'email'])
         }
 
         $scope.isUnread = function (labels) {
-            for (i in labels) if (labels[i] === "UNREAD") return true;
+            for (var i in labels) if (labels[i] === "UNREAD") return true;
             return false;
         }
 
