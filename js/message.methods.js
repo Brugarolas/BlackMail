@@ -66,14 +66,6 @@ function createMainHTML(content) {
             </html>";
 }
 
-function getLink(find) {
-    /*console.log(find);
-
-     if (find.indexOf('http') == 0) return "<a href=" + find + ">" + find + "</a>";
-     if (find.indexOf('www') != 0 && find.indexOf('@') > -1) return "<a href=mailto:" + find + ">" + find + "</a>";
-     return "<a href=http://" + find + ">" + find + "</a>";*/
-}
-
 function getSizeBytes(size) {
     var metrics = ['bytes', 'kilobytes', 'megabytes', 'gigabytes', 'terabytes',
         'petabytes', 'exabytes', 'zettabytes'];
@@ -86,13 +78,13 @@ function getSizeBytes(size) {
 }
 
 function parsePayload(email, payload) {
-    //Comprobar el tipo de payload
+    /* Check payload type... */
     if (payload.mimeType.indexOf('multipart') == 0) {
         var parts = payload.parts;
 
-        // Si es multiparte, debemos comprobar qué tipo de multiparte es..
+        /* If it is multipart, we should check type... */
         if (payload.mimeType.endsWith('alternative')) {
-            //Dos partes: Una texto simple y otra texto html
+            /* It will have two parts: text/simple and text/html. Occasionally it contains another multipart */
             for (var i in parts) {
                 if (parts[i].mimeType == 'text/html') {
                     email.html = obtainMainHTML(parts[i].body.data);
@@ -101,20 +93,15 @@ function parsePayload(email, payload) {
                 }
             }
         } else if (payload.mimeType.endsWith('mixed')) {
-            //La primera parte contiene más partes, el resto de elementos son adjuntos
+            /* The first parte contains more parts, the rest are attachments */
             parsePayload(email, parts[0]);
 
             for (var i = 1; i < parts.length; i++) {
-                if (parts[i].mimeType.indexOf('application') == 0 || parts[i].mimeType.indexOf('text') == 0) {
-                    email.attachments.push(parts[i]);
-                } else {
-                    console.log("Current mixed multipart mime not supported yet...");
-                    console.log(parts[i]);
-                }
+                email.attachments.push(parts[i]);
             }
 
         } else if (payload.mimeType.endsWith('related')) {
-            //La primera parte contiene más partes, el resto de elementos son imágenes
+            /* The first part contains more parts, the rest of the parts are files embedded in html, usually images */
             parsePayload(email, parts[0]);
 
             for (var i = 1; i < parts.length; i++) {
@@ -131,7 +118,7 @@ function parsePayload(email, payload) {
         }
 
     } else if (payload.mimeType == 'text/html') {
-        //Si es HTML, lo guardamos
+        /* If it is HTML, store it */
         email.html = obtainMainHTML(payload.body.data);
     } else {
         console.log("Current mimetype not supported yet...");
