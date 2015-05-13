@@ -112,15 +112,20 @@ storage.prototype.classifyThreads = function () {
         if (!hasCategories) this.threadLabels['CATEGORY_PERSONAL'].push(inboxLabels[i]);
 
         /* Sort array of sent messages */
-        this.threadLabels['SENT'] = this.threadLabels['SENT'].sort(function (a, b) {
-            return (system.storage.threadList[a].dateSent > system.storage.threadList[b].dateSent);
-            //return Date.compare(system.storage.threadList[a].dateSent, system.storage.threadList[b].dateSent);
-        });
-
+        this.sortSentMessages();
     }
 
     /* Count unread personal messages */
     this.countUnread();
+}
+
+storage.prototype.sortSentMessages = function() {
+    if (!this.sentSorted) {
+        this.sentSorted = true;
+        this.threadLabels['SENT'] = this.threadLabels['SENT'].sort(function (a, b) {
+            return (system.storage.threadList[a].dateSent < system.storage.threadList[b].dateSent);
+        });
+    }
 }
 
 storage.prototype.countUnread = function() {
@@ -159,10 +164,11 @@ storage.prototype.addNewThreadsToList = function (threads) {
 }
 
 storage.prototype.addNewThreadToListSorted = function (thread) {
-    var index = 0, actualThread;
+    var index = 0, date;
     for (var i in this.threadList) {
-        actualThread = this.threadList[i];
-        if (Date.compare(thread.date, actualThread.date) == 1) { index = i; break; }
+        date = this.threadList[i].date || this.threadList[i].dateSent;
+        console.log(this.threadList[i]);
+        if (Date.compare(thread.date, date) == 1) { index = i; break; }
     }
     this.threadList.splice(index, 0, thread);
 }
@@ -201,17 +207,22 @@ storage.prototype.addOrUpdateThread = function (result) {
     if (index !== undefined) this.threadList.splice(index, 1);
 
     setThreadMetadata(thread, result);
+    console.log("addNewThreadToListSorted");
     this.addNewThreadToListSorted(thread);
+    console.log("sortThreadIds");
     this.sortThreadIds();
+    console.log("saveThreads");
     this.saveThreads();
+    console.log("classifyThreads");
     this.classifyThreads();
+    console.log("end");
 }
 
 storage.prototype.updateLabels = function (response) {
     var thread;
     for (var i in response) {
         thread = this.threadList[this.threadIds[response[i].result.id]];
-        thread.labels = getThreadLabels(response[i].result);
+        thread.labels = getThreadDateLabels(response[i].result)[0];
     }
     this.saveThreads()
     this.classifyThreads();

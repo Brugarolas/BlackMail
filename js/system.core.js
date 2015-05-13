@@ -146,7 +146,7 @@ System.prototype.performPartialSync = function (threadsPerPage, end, error) {
                 system.storage.mergeThreadList(newMessages);
                 system.getNewMessagesData(newMessages, threadsPerPage, end, error);
             }
-        }
+        } else end();
     }
     system.network.getNewMessages(next, error, system.storage.getLastDate());
 }

@@ -92,7 +92,6 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
         $scope.safeApply(function() {
             $scope.data.loadingMessage = "Getting new emails...";
         });
-
         system.performPartialSync(100, function() { $scope.endLoading(1000); }, $scope.defaultErrorCallback);
     }
 
@@ -188,10 +187,10 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
     /** FORMAT FUNCTIONS **/
     //Function to format date in HTML
     $scope.formatDateThread = function (thread) {
-        var date = (!$scope.data.selectedLabel.id.indexOf('SENT')) ? thread.dateSent : thread.date, today = Date.today();
+        var date = (!$scope.data.selectedLabel.id.indexOf('SENT')) ? hread.dateSent : thread.date, today = new Date();
 
         if (today.toString("yyyy") != date.toString("yyyy")) return date.toString("MMMM").substr(0, 3) + ' ' + date.toString("yyyy");
-        else if (today.toString("dd") != date.toString("dd")) return date.toString("dd MMMM");
+        else if (today.add(-1).days() > date) return date.toString("dd MMMM");
         return date.toString("hh:mm tt");
     }
 
