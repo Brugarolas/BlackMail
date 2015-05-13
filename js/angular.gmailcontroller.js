@@ -286,12 +286,8 @@ app.directive('ngDownloadFile', function ($compile) {
         controller: function ($scope) { },
         link: function (scope, element, attrs, ctrl) {
             system.getFileAttachment(attrs.ngDownloadFile, function (attachment) {
-                element[0].innerHTML = attachment.name;
-                element[0].download = attachment.name;
-
-                if (attachment.mime.indexOf('text') != 0)
-                    element[0].href = 'data:' + attachment.mime + ';charset=utf-8;' + attachment.encoding + ',' + attachment.data;
-                else element[0].href = 'data:' + attachment.mime + ';charset=utf-8;' + attachment.encoding + ',' + attachment.data;
+                element[0].href = 'data:' + attachment.mime + ';' + attachment.encoding + ',' + attachment.data;
+                element[0].innerHTML = attachment.name; element[0].download = attachment.name;
             }, function (error) {
                 element[0].innerHTML = "** ERROR **";
                 console.log(error);
