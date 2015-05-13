@@ -6,12 +6,14 @@
 function setThreadMetadata(thread, result) {
     var firstMessage = result.messages[0];
     var lastMessage = result.messages[result.messages.length - 1];
+    var dateLabels = getThreadDateLabels(result);
 
     thread.subject = getMessageSubject(firstMessage);
     thread.snippet = getMessageSnippet(lastMessage);
-    thread.date = new Date(getMessageDate(lastMessage));
     thread.sender = getMessageSender(lastMessage);
-    thread.labels = getThreadLabels(result);
+    thread.labels = dateLabels[0];
+    thread.date = dateLabels[1];
+    thread.dateSent = dateLabels[2];
 
     thread.numOfMsgs = result.messages.length
     thread.messages = [];
@@ -59,17 +61,18 @@ function getMessageSender(message) {
     return "(No sender)";
 }
 
-function getThreadLabels(response) {
-    var message, label, labels = [];
+function getThreadDateLabels(response) {
+    var dateSent, date, label, labels = [];
     for (var i in response.messages) {
-        message = response.messages[i];
+        for (var n in response.messages[i].labelIds) {
+            label = response.messages[i].labelIds[n];
+            if (!label.indexOf('SENT')) dateSent = new Date(getMessageDate(response.messages[i]));
+            else date = new Date(getMessageDate(response.messages[i]));
 
-        for (var n in message.labelIds) {
-            label = message.labelIds[n];
             if (labels.indexOf(label) == -1) labels.push(label);
         }
     }
-    return labels;
+    return [labels, date, dateSent];
 }
 
 function formatSender(sender) {
