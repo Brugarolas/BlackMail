@@ -12,6 +12,11 @@ angular.module("scrollbar", []).
                     wheelPropagation: true,
                     swipePropagation: true
                 });
+
+                if (attrs.perfectScrollbar) scope.$on(attrs.perfectScrollbar, function(event, args) {
+                    element[0].scrollTop = 0;
+                    Ps.update(element[0]);
+                });
             }
         }
     });

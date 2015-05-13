@@ -99,6 +99,7 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
     $scope.showThread = function (index, timeout) {
         var threadIndex = $scope.data.currentPage * $scope.data.threadsPerPage + index;
         system.getThread(threadIndex, $scope.data.selectedLabel.id, $scope.safeUpdateMessages, function (thread) {
+            $scope.$broadcast('rebuild-scrollbar-thread');
             $scope.safeApply(function () {
                 $scope.data.activeThread = thread;
             });
@@ -150,15 +151,15 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
 
     $scope.clickPreviousPage = function () {
         if ($scope.data.currentPage > 0) {
-			$scope.data.messageList = system.getThreads(--$scope.data.currentPage, $scope.data.threadsPerPage, $scope.data.selectedLabel.id);
-			$scope.data.selectedCheckboxes = [];
+			$scope.data.messageList = system.storage.getThreads(--$scope.data.currentPage, $scope.data.threadsPerPage, $scope.data.selectedLabel.id);
+			$scope.changePageOrLabel();
 		}
     }
 
     $scope.clickNextPage = function () {
         if ($scope.data.currentPage < $scope.data.numOfPages - 1) {
-			$scope.data.messageList = system.getThreads(++$scope.data.currentPage, $scope.data.threadsPerPage, $scope.data.selectedLabel.id);
-			$scope.data.selectedCheckboxes = [];
+			$scope.data.messageList = system.storage.getThreads(++$scope.data.currentPage, $scope.data.threadsPerPage, $scope.data.selectedLabel.id);
+            $scope.changePageOrLabel();
 		}
     }
 
@@ -216,7 +217,6 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
         $scope.data.numOfThreads = system.storage.getNumOfThreads($scope.data.selectedLabel.id);
         $scope.data.numOfPages = Math.ceil($scope.data.numOfThreads / $scope.data.threadsPerPage);
         if ($scope.data.currentPage >= $scope.data.numOfPages) $scope.data.currentPage = $scope.data.numOfPages - 1;
-        $scope.data.selectedCheckboxes = [];
     }
 
     $scope.updateLabel = function (label) {
@@ -224,6 +224,12 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
         $scope.data.showMenu = false;
         $scope.data.currentPage = 0;
         $scope.updateMessages();
+        $scope.changePageOrLabel();
+    }
+
+    $scope.changePageOrLabel = function () {
+        $scope.$broadcast('rebuild-scrollbar-list');
+        $scope.data.selectedCheckboxes = [];
     }
 
     $scope.endLoading = function (timeout) {

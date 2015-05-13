@@ -186,7 +186,7 @@
     </div>
 
     <div id="main-nano-wrapper" class="nano">
-        <div class="nano-content" perfect-scrollbar>
+        <div class="nano-content" perfect-scrollbar="rebuild-scrollbar-list">
             <ul class="message-list">
                 <li class="orange-dot" ng-repeat="msg in data.messageList" ng-class="{unread: isUnread(msg.labels), active: data.messageActive == $index}" ng-click="clickOnThread($event, $index)">
                     <div class="col col-1 col-xs-10 col-sm-3 col-xl-2">
@@ -222,7 +222,7 @@
         <p>From <a>You</a> to <a>Scott Waite</a>, started on <a>March 2, 2014</a> at 2:14 pm est.</p>
     </div>
     <div id="message-nano-wrapper" class="nano">
-        <div class="nano-content" perfect-scrollbar>
+        <div class="nano-content" perfect-scrollbar="rebuild-scrollbar-thread">
             <ul class="message-container">
                 <li ng-repeat="msg in data.activeThread.messages" ng-class="{sent: $even, received: $odd}">
                     <div class="details">
