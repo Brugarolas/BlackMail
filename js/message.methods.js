@@ -46,7 +46,6 @@ function createMainHTML(content) {
     );
 
     var text = Base64.decode(content).replace(/(\n)/g, '<br>');
-    getLink(text);
     //var text = Base64.decode(content).replace(/(\n)/g, '<br>').replace(re_weburl, getLink("$1"));
     // ("$1".indexOf("http") == 0) ? "<a href='$1'>$1</a>" :
     //     (("$1".indexOf("@") > -1) ? "<a href='mailto:$1'>$1</a>" : "<a href='http://$1'>$1</a>"));

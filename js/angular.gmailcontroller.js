@@ -6,7 +6,7 @@ var scopes = ['https://www.googleapis.com/auth/plus.me', 'https://www.googleapis
 
 var app = angular.module("app", ["styles"]);
 
-app.controller('GmailMainController', function ($scope, $controller) {
+app.controller('GmailMainController', function ($scope, $controller, $timeout) {
     $controller('StylesController', {$scope: $scope});
     $scope.data = {
         loading: true,
@@ -102,11 +102,9 @@ app.controller('GmailMainController', function ($scope, $controller) {
             $scope.safeApply(function () {
                 $scope.data.activeThread = thread;
             });
-            setTimeout(function () {
-                $scope.$apply(function () {
-                    $scope.data.messageActive = index;
-                    $scope.data.showOverlay = true;
-                });
+            $timeout(function () {
+                $scope.data.messageActive = index;
+                $scope.data.showOverlay = true;
             }, (!timeout) ? 0 : timeout);
         }, $scope.defaultErrorCallback);
     }
@@ -204,13 +202,13 @@ app.controller('GmailMainController', function ($scope, $controller) {
     }
 
     $scope.isActiveLabel = function (label) {
-        if (label.id == "INBOX") return ($scope.data.selectedLabel.id.indexOf('CATEGORY_') == 0);
-        else return (label.id == $scope.data.selectedLabel.id);
+        if (label.id == "INBOX") return ($scope.data.selectedLabel && $scope.data.selectedLabel.id.indexOf('CATEGORY_') == 0);
+        else return ($scope.data.selectedLabel && label.id == $scope.data.selectedLabel.id);
     }
 
     /** CALLBACKS **/
     $scope.safeApply = function (callback) {
-        setTimeout($scope.$apply(callback));
+        $timeout(callback, 5);
     }
 
     $scope.updateMessages = function () {
@@ -236,11 +234,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
         });
 
         $scope.data.labels = system.storage.getDefaultLabels();
-        setTimeout(function () {
-            $scope.$apply(function () {
-                $scope.data.loading = false;
-            });
-        }, (!timeout) ? 0 : timeout);
+        $timeout(function () { $scope.data.loading = false; }, (!timeout) ? 0 : timeout);
     }
 
     $scope.safeUpdateMessages = function() {
@@ -257,7 +251,7 @@ app.controller('GmailMainController', function ($scope, $controller) {
     }
 
     $scope.defaultErrorCallback = function (response) {
-        $scope.$apply(function () {
+        $scope.safeApply(function () {
             $scope.data.loadingMessage = "There has been an error. Please check console."
         });
         console.log("***** ERROR *****");
