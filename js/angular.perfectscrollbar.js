@@ -10,7 +10,8 @@ angular.module("scrollbar", []).
             link: function (scope, element, attrs, ctrl) {
                 Ps.initialize(element[0], {
                     wheelPropagation: true,
-                    swipePropagation: true
+                    swipePropagation: true,
+                    useKeyboard: true
                 });
 
                 if (attrs.perfectScrollbar) scope.$on(attrs.perfectScrollbar, function(event, args) {

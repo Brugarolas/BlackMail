@@ -90,7 +90,7 @@ storage.prototype.classifyThreads = function () {
     for (var i in this.threadList) {
         thread = this.threadList[i];
 
-        if (thread.labels.indexOf('TRASH') > -1) this.threadLabels['TRASH'].push(i);
+        if (thread.labels.indexOf('TRASH') > -1) { if (!isAttachment(thread)) this.threadLabels['TRASH'].push(i); else console.log(thread); }
         else if (thread.labels.indexOf('SPAM') > -1) this.threadLabels['SPAM'].push(i);
         else for (n in thread.labels) if (thread.labels[n] in this.threadLabels) this.threadLabels[thread.labels[n]].push(i);
     }

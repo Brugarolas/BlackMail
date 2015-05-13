@@ -66,14 +66,6 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
         });
     }
 
-    $scope.partialSync = function() {
-        $scope.safeApply(function() {
-            $scope.data.loadingMessage = "Getting new emails...";
-        });
-
-        system.performPartialSync(100, function() { $scope.endLoading(1000); }, $scope.defaultErrorCallback);
-    }
-
     // Get list of threads
     $scope.fullSync = function () {
         system.performFullSync(function () {
@@ -94,6 +86,14 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
         }, function() {
             $scope.endLoading(1000);
         }, $scope.defaultErrorCallback);
+    }
+
+    $scope.partialSync = function() {
+        $scope.safeApply(function() {
+            $scope.data.loadingMessage = "Getting new emails...";
+        });
+
+        system.performPartialSync(100, function() { $scope.endLoading(1000); }, $scope.defaultErrorCallback);
     }
 
     $scope.showThread = function (index, timeout) {

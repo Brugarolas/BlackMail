@@ -105,6 +105,10 @@ function formatDate(date) {
     return date;
 }
 
+function isAttachment(thread) {
+    return (thread.labels.length == 1 && (thread.subject.indexOf('Archivo adjunto') || thread.subject.indexOf('Attachment')));
+}
+
 function htmlspecialchars_decode(string, quote_style) {
     // discuss at: http://phpjs.org/functions/htmlspecialchars_decode/
     var optTemp = 0, i = 0, noquotes = false;
