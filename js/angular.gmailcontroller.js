@@ -187,16 +187,11 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
 
     /** FORMAT FUNCTIONS **/
     //Function to format date in HTML
-    $scope.formatDateShort = function (thread) {
-        //var date = ($scope.data.selectedLabel.id.indexOf('CATEGORY_') == 0) ? thread.dates['INBOX'] : thread.dates[$scope.data.selectedLabel.id];
-        var date = (!$scope.data.selectedLabel.id.indexOf('SENT')) ? thread.dateSent : thread.date;
+    $scope.formatDateThread = function (thread) {
+        var date = (!$scope.data.selectedLabel.id.indexOf('SENT')) ? thread.dateSent : thread.date, today = Date.today();
 
-        var today = Date.today();
-        if (today.toString("yyyy") != date.toString("yyyy")) {
-            return date.toString("MMMM").substr(0, 3) + ' ' + date.toString("yyyy");
-        } else if (today.toString("dd") != date.toString("dd")) {
-            return date.toString("dd MMMM");
-        }
+        if (today.toString("yyyy") != date.toString("yyyy")) return date.toString("MMMM").substr(0, 3) + ' ' + date.toString("yyyy");
+        else if (today.toString("dd") != date.toString("dd")) return date.toString("dd MMMM");
         return date.toString("hh:mm tt");
     }
 

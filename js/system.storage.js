@@ -110,6 +110,13 @@ storage.prototype.classifyThreads = function () {
 
         /* If message don't have a category, it will be in personal category */
         if (!hasCategories) this.threadLabels['CATEGORY_PERSONAL'].push(inboxLabels[i]);
+
+        /* Sort array of sent messages */
+        this.threadLabels['SENT'] = this.threadLabels['SENT'].sort(function (a, b) {
+            return (system.storage.threadList[a].dateSent > system.storage.threadList[b].dateSent);
+            //return Date.compare(system.storage.threadList[a].dateSent, system.storage.threadList[b].dateSent);
+        });
+
     }
 
     /* Count unread personal messages */
