@@ -19,22 +19,20 @@ function setThreadMetadata(thread, result) {
     thread.messages = [];
 }
 
-function updateThreadMetadata(thread, message) { //TODO
+function updateThreadMetadata(thread, message) {
     if (!thread.subject) thread.subject = getMessageSubject(message);
 
-    console.log(message);
     thread.snippet = getMessageSnippet(message);
-    //thread.date = new Date(getMessageDate(message));
     thread.sender = getMessageSender(message);
 
-    if (!thread.labels) {
-        thread.labels = message.labelIds;
-    } else {
+    if (!thread.labels) thread.labels = message.labelIds;
+    else {
         for (var i in message.labelIds) {
             var label = message.labelIds[i];
             if (thread.labels.indexOf(label) == -1) thread.labels.push(label);
 
-            //if (!label.indexOf('SENT')) thread.dateSent = new Date()
+            if (!label.indexOf('SENT')) thread.dateSent = new Date(getMessageDate(message));
+            else thread.date = new Date(getMessageDate(message));
         }
     }
 
@@ -81,11 +79,14 @@ function getThreadDateLabels(response) {
     for (var i in response.messages) {
         for (var n in response.messages[i].labelIds) {
             label = response.messages[i].labelIds[n];
-            if (!label.indexOf('SENT')) dateSent = new Date(getMessageDate(response.messages[i]));
-            else date = new Date(getMessageDate(response.messages[i]));
-
             if (labels.indexOf(label) == -1) labels.push(label);
         }
+
+        if (!response.messages[i].labelIds.indexOf('SENT')) {
+            dateSent = new Date(getMessageDate(response.messages[i]));
+            if (response.messages[i].labelIds.length > 1) date = new Date(getMessageDate(response.messages[i]));
+        } else date = new Date(getMessageDate(response.messages[i]));
+
     }
     return [labels, date, dateSent];
 }
