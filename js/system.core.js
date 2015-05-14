@@ -188,6 +188,8 @@ System.prototype.getThread = function (index, label, unreadMth, callback, error)
         //Mark message as read if needed
         if (thread.labels.indexOf('UNREAD') > -1) system.modifyThreads([thread.id], [], ['UNREAD'], unreadMth, error);
 
+        console.log(response);
+
         //Do the rest
         var email, msg, resources = [];
         for (var i in response.messages) {

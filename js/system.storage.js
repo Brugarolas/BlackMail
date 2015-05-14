@@ -100,8 +100,7 @@ storage.prototype.classifyAllThreads = function () {
 
     var inboxLabels = this.threadLabels['INBOX'], hasCategories;
     for (var i in inboxLabels) {
-        hasCategories = false;
-        thread = this.threadList[inboxLabels[i]];
+        hasCategories = false; thread = this.threadList[inboxLabels[i]];
 
         for (var n in thread.labels) if (thread.labels[n].indexOf('CATEGORY_') == 0) {
             hasCategories = true;
@@ -110,22 +109,19 @@ storage.prototype.classifyAllThreads = function () {
 
         /* If message don't have a category, it will be in personal category */
         if (!hasCategories) this.threadLabels['CATEGORY_PERSONAL'].push(inboxLabels[i]);
-
-        /* Sort array of sent messages */
-        this.sortSentMessages();
     }
+
+    /* Sort array of sent messages */
+    this.sortMessages('SENT');
 
     /* Count unread personal messages */
     this.countUnread();
 }
 
-storage.prototype.sortSentMessages = function() {
-    if (!this.sentSorted) {
-        //this.sentSorted = true;
-        this.threadLabels['SENT'] = this.threadLabels['SENT'].sort(function (a, b) {
-            return (system.storage.threadList[a].dateSent < system.storage.threadList[b].dateSent);
-        });
-    }
+storage.prototype.sortMessages = function(label) {
+    this.threadLabels[label] = this.threadLabels[label].sort(function (a, b) {
+        return (system.storage.threadList[a].dateSent < system.storage.threadList[b].dateSent);
+    });
 }
 
 storage.prototype.countUnread = function() {
@@ -215,10 +211,9 @@ storage.prototype.addOrUpdateThread = function (result) {
 
 storage.prototype.updateLabels = function (response) {
     var thread;
-    console.log(response);
     for (var i in response) {
         thread = this.threadList[this.threadIds[response[i].result.id]];
-        thread.labels = getThreadLabels(response[i].result)[0];
+        thread.labels = getThreadLabels(response[i].result);
     }
     this.saveThreads();
     // TODO this.classifyThreads();

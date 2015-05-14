@@ -204,6 +204,7 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
         $scope.data.numOfThreads = system.storage.getNumOfThreads($scope.data.selectedLabel.id);
         $scope.data.numOfPages = Math.ceil($scope.data.numOfThreads / $scope.data.threadsPerPage);
         if ($scope.data.currentPage >= $scope.data.numOfPages) $scope.data.currentPage = $scope.data.numOfPages - 1;
+        $scope.data.selectedCheckboxes = [];
     }
 
     $scope.updateLabel = function (label) {

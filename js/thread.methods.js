@@ -44,7 +44,7 @@ function updateThreadMetadata(thread, message) {
 
 function getMessageSubject(message) {
     var headers = message.payload.headers;
-    for (var i in headers) if (headers[i].name == "Subject") return headers[i].value;
+    for (var i in headers) if (headers[i].name.toLowerCase() == "subject") return headers[i].value;
     return "(No subject)";
 }
 
@@ -55,13 +55,13 @@ function getMessageSnippet(message) {
 
 function getMessageDate(message) {
     var headers = message.payload.headers;
-    for (var i in headers) if (headers[i].name == "Date") return formatDate(headers[i].value);
+    for (var i in headers) if (headers[i].name.toLowerCase() == "date") return formatDate(headers[i].value);
     return "(No date)";
 }
 
 function getMessageSender(message) {
     var headers = message.payload.headers;
-    for (var i in headers) if (headers[i].name == "From") return formatSender(headers[i].value);
+    for (var i in headers) if (headers[i].name.toLowerCase() == "from") return formatSender(headers[i].value);
     return "(No sender)";
 }
 
