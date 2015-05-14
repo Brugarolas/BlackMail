@@ -109,22 +109,12 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
         }, $scope.defaultErrorCallback);
     }
 
-    $scope.updateCategories = function () {
-        $scope.data.categories = system.storage.getCategories();
-        for (i in $scope.data.categories) {
-            if ($scope.data.categories[i].id == $scope.data.selectedLabel.id) {
-                $scope.data.categories.splice(i, 1); break;
-            }
-        }
-    }
-
     $scope.showCategoryMenu = function () {
         return ($scope.data.selectedLabel && $scope.data.selectedLabel.id.indexOf('CATEGORY_') == 0);
     }
 
     $scope.setCategory = function (category) {
         $scope.updateLabel(category);
-        $scope.updateCategories();
     }
 
     $scope.setLabel = function (label) {
@@ -187,7 +177,7 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
     /** FORMAT FUNCTIONS **/
     //Function to format date in HTML
     $scope.formatDateThread = function (thread) {
-        var date = (!$scope.data.selectedLabel.id.indexOf('SENT')) ? hread.dateSent : thread.date, today = new Date();
+        var date = (!$scope.data.selectedLabel.id.indexOf('SENT')) ? thread.dateSent : thread.date, today = new Date();
 
         if (today.toString("yyyy") != date.toString("yyyy")) return date.toString("MMMM").substr(0, 3) + ' ' + date.toString("yyyy");
         else if (today.add(-1).days() > date) return date.toString("dd MMMM");
@@ -230,7 +220,8 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
     }
 
     $scope.endLoading = function (timeout) {
-        system.storage.classifyThreads();
+        system.endLoading();
+        $scope.data.categories = system.storage.getCategories();
         $scope.safeApply(function () {
             $scope.data.loadingMessage = system.storage.saveThreads();
             $scope.setCategory({'id': "CATEGORY_PERSONAL", 'name': "Personal", 'class': 'fa-envelope-square'});

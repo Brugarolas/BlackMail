@@ -267,3 +267,7 @@ System.prototype.getFileAttachment = function (attachId, callback, error) {
         }, error);
     }
 }
+
+System.prototype.endLoading = function () {
+    system.storage.classifyAllThreads();
+}

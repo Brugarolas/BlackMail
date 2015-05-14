@@ -21,8 +21,10 @@ function setThreadMetadata(thread, result) {
 
 function updateThreadMetadata(thread, message) {
     if (!thread.subject) thread.subject = getMessageSubject(message);
+
+    console.log(message);
     thread.snippet = getMessageSnippet(message);
-    thread.date = new Date(getMessageDate(message));
+    //thread.date = new Date(getMessageDate(message));
     thread.sender = getMessageSender(message);
 
     if (!thread.labels) {
@@ -31,6 +33,8 @@ function updateThreadMetadata(thread, message) {
         for (var i in message.labelIds) {
             var label = message.labelIds[i];
             if (thread.labels.indexOf(label) == -1) thread.labels.push(label);
+
+            //if (!label.indexOf('SENT')) thread.dateSent = new Date()
         }
     }
 
@@ -59,6 +63,17 @@ function getMessageSender(message) {
     var headers = message.payload.headers;
     for (var i in headers) if (headers[i].name == "From") return formatSender(headers[i].value);
     return "(No sender)";
+}
+
+function getThreadLabels(response) {
+    var label, labels = [];
+    for (var i in response.messages) {
+        for (var n in response.messages[i].labelIds) {
+            label = response.messages[i].labelIds[n];
+            if (labels.indexOf(label) == -1) labels.push(label);
+        }
+    }
+    return labels;
 }
 
 function getThreadDateLabels(response) {

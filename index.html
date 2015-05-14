@@ -142,7 +142,7 @@
 			<span class="menu" ng-show="showCategoryMenu()">
 				<a ng-click="clickShowMenu()"><span class="icon selectable-menu glyphicon" ng-class="{'glyphicon-chevron-down': !data.showMenu, 'glyphicon-chevron-up': data.showMenu}"></span></a>
 				<ul class="sub-menu" ng-class="{'show-menu': data.showMenu}">
-                    <li ng-repeat="category in data.categories" ng-click="setCategory(category)">
+                    <li ng-repeat="category in data.categories" ng-click="setCategory(category)" ng-hide="category.id == data.selectedLabel.id">
                         <i class="fa" ng-class="category.class"> &nbsp; </i>{{category.name}}
                     </li>
                 </ul>

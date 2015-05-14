@@ -82,7 +82,7 @@ storage.prototype.retrieveThreads = function () {
     return true;
 }
 
-storage.prototype.classifyThreads = function () {
+storage.prototype.classifyAllThreads = function () {
     /* First, we classify only default labels */
     var defaultLabels = this.getDefaultLabels(), thread, categories = this.getCategories();
     for (var i in defaultLabels) this.threadLabels[defaultLabels[i].id] = [];
@@ -121,7 +121,7 @@ storage.prototype.classifyThreads = function () {
 
 storage.prototype.sortSentMessages = function() {
     if (!this.sentSorted) {
-        this.sentSorted = true;
+        //this.sentSorted = true;
         this.threadLabels['SENT'] = this.threadLabels['SENT'].sort(function (a, b) {
             return (system.storage.threadList[a].dateSent < system.storage.threadList[b].dateSent);
         });
@@ -207,25 +207,21 @@ storage.prototype.addOrUpdateThread = function (result) {
     if (index !== undefined) this.threadList.splice(index, 1);
 
     setThreadMetadata(thread, result);
-    console.log("addNewThreadToListSorted");
     this.addNewThreadToListSorted(thread);
-    console.log("sortThreadIds");
     this.sortThreadIds();
-    console.log("saveThreads");
     this.saveThreads();
-    console.log("classifyThreads");
-    this.classifyThreads();
-    console.log("end");
+    // TODO this.classifyThreads();
 }
 
 storage.prototype.updateLabels = function (response) {
     var thread;
+    console.log(response);
     for (var i in response) {
         thread = this.threadList[this.threadIds[response[i].result.id]];
-        thread.labels = getThreadDateLabels(response[i].result)[0];
+        thread.labels = getThreadLabels(response[i].result)[0];
     }
-    this.saveThreads()
-    this.classifyThreads();
+    this.saveThreads();
+    // TODO this.classifyThreads();
 }
 
 storage.prototype.addMetadataToThreads = function (response) {
