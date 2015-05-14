@@ -178,8 +178,7 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
     //Function to format date in HTML
     $scope.formatDateThread = function (thread) {
         var date = (!$scope.data.selectedLabel.id.indexOf('SENT')) ? thread.dateSent : thread.date, today = new Date();
-
-        if (today.toString("yyyy") != date.toString("yyyy")) return date.toString("MMMM").substr(0, 3) + ' ' + date.toString("yyyy");
+        if (today.toString("yyyy") != date.toString("yyyy")) return date.toString("MMMM").substr(0, 3) + date.toString(" yyyy");
         else if (today.add(-1).days() > date) return date.toString("dd MMMM");
         return date.toString("hh:mm tt");
     }

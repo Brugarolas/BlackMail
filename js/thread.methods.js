@@ -19,7 +19,7 @@ function setThreadMetadata(thread, result) {
     thread.messages = [];
 }
 
-function updateThreadMetadata(thread, message) {
+function updateThreadMetadata(thread, message) { //TODO
     if (!thread.subject) thread.subject = getMessageSubject(message);
 
     console.log(message);
