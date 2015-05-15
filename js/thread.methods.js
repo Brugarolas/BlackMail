@@ -135,8 +135,7 @@ function htmlspecialchars_decode(string, quote_style) {
 
     string = string.toString().replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#39;/g, "'");
 
-    var OPTS = { 'ENT_NOQUOTES': 0, 'ENT_HTML_QUOTE_SINGLE': 1, 'ENT_HTML_QUOTE_DOUBLE': 2,
-        'ENT_COMPAT': 2, 'ENT_QUOTES': 3, 'ENT_IGNORE': 4 };
+    var OPTS = { 'ENT_NOQUOTES': 0, 'ENT_HTML_QUOTE_SINGLE': 1, 'ENT_HTML_QUOTE_DOUBLE': 2,  'ENT_COMPAT': 2, 'ENT_QUOTES': 3, 'ENT_IGNORE': 4 };
     if (quote_style === 0) noquotes = true;
 
     if (typeof quote_style !== 'number') {
@@ -155,27 +154,19 @@ function htmlspecialchars_decode(string, quote_style) {
         string = string.replace(/&apos;|&#x0*27;/g, "'"); // This would also be useful here, but not a part of PHP
     }
 
-    if (!noquotes) {
-        string = string.replace(/&quot;/g, '"');
-    }
+    if (!noquotes) string = string.replace(/&quot;/g, '"');
 
     // Put this in last place to avoid escape being double-decoded
-    string = string.replace(/&amp;/g, '&');
-
-    return string;
+    return string.replace(/&amp;/g, '&');
 }
 
 function utf8_encode(argString) {
     //discuss at: http://phpjs.org/functions/utf8_encode/
-
-    if (argString === null || typeof argString === 'undefined') {
-        return '';
-    }
+    if (argString === null || typeof argString === 'undefined') return '';
 
     // .replace(/\r\n/g, "\n").replace(/\r/g, "\n");
     var string = (argString + '');
-    var utftext = '',
-        start, end, stringl = 0;
+    var utftext = '', start, end, stringl = 0;
 
     start = end = 0;
     stringl = string.length;
@@ -183,42 +174,27 @@ function utf8_encode(argString) {
         var c1 = string.charCodeAt(n);
         var enc = null;
 
-        if (c1 < 128) {
-            end++;
-        } else if (c1 > 127 && c1 < 2048) {
-            enc = String.fromCharCode(
-                (c1 >> 6) | 192, (c1 & 63) | 128
-            );
-        } else if ((c1 & 0xF800) != 0xD800) {
-            enc = String.fromCharCode(
-                (c1 >> 12) | 224, ((c1 >> 6) & 63) | 128, (c1 & 63) | 128
-            );
-        } else {
+        if (c1 < 128) end++;
+        else if (c1 > 127 && c1 < 2048) enc = String.fromCharCode((c1 >> 6) | 192, (c1 & 63) | 128);
+        else if ((c1 & 0xF800) != 0xD800) enc = String.fromCharCode((c1 >> 12) | 224, ((c1 >> 6) & 63) | 128, (c1 & 63) | 128);
+        else {
             // surrogate pairs
-            if ((c1 & 0xFC00) != 0xD800) {
-                throw new RangeError('Unmatched trail surrogate at ' + n);
-            }
+            if ((c1 & 0xFC00) != 0xD800) throw new RangeError('Unmatched trail surrogate at ' + n);
+
             var c2 = string.charCodeAt(++n);
-            if ((c2 & 0xFC00) != 0xDC00) {
-                throw new RangeError('Unmatched lead surrogate at ' + (n - 1));
-            }
+            if ((c2 & 0xFC00) != 0xDC00) throw new RangeError('Unmatched lead surrogate at ' + (n - 1));
+
             c1 = ((c1 & 0x3FF) << 10) + (c2 & 0x3FF) + 0x10000;
-            enc = String.fromCharCode(
-                (c1 >> 18) | 240, ((c1 >> 12) & 63) | 128, ((c1 >> 6) & 63) | 128, (c1 & 63) | 128
-            );
+            enc = String.fromCharCode((c1 >> 18) | 240, ((c1 >> 12) & 63) | 128, ((c1 >> 6) & 63) | 128, (c1 & 63) | 128);
         }
         if (enc !== null) {
-            if (end > start) {
-                utftext += string.slice(start, end);
-            }
+            if (end > start) utftext += string.slice(start, end);
+
             utftext += enc;
             start = end = n + 1;
         }
     }
 
-    if (end > start) {
-        utftext += string.slice(start, stringl);
-    }
-
+    if (end > start) utftext += string.slice(start, stringl);
     return utftext;
 }

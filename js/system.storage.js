@@ -213,13 +213,25 @@ storage.prototype.addOrUpdateThread = function (result) {
 }
 
 storage.prototype.updateLabels = function (response) {
-    var thread;
+    var thread, label, labels = [];
     for (var i in response) {
         thread = this.threadList[this.threadIds[response[i].result.id]];
+        label = { old: thread.labels };
+
         thread.labels = getThreadLabels(response[i].result);
+        label.new = thread.labels;
+
+        labels.push({
+            toAdd: label.new.filter( function (el) { return label.old.indexOf( el ) < 0; }),
+            toDelete: label.old.filter( function (el) { return label.new.indexOf( el ) < 0; })
+        });
     }
-    this.saveThreads();
-    // TODO this.classifyThreads();
+
+    console.log(labels);
+    //TODO add and remove to threadLabels
+
+    //this.saveThreads();
+    // TODO remove this.classifyThreads();
 }
 
 storage.prototype.addMetadataToThreads = function (response) {
