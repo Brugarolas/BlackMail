@@ -215,23 +215,62 @@ storage.prototype.addOrUpdateThread = function (result) {
 storage.prototype.updateLabels = function (response) {
     var thread, label, labels = [];
     for (var i in response) {
+        /* Get old labels */
         thread = this.threadList[this.threadIds[response[i].result.id]];
         label = { old: thread.labels };
 
+        /* Get new labels */
         thread.labels = getThreadLabels(response[i].result);
         label.new = thread.labels;
 
+        /* Get the difference between old and new labels */
         labels.push({
+            id: thread.id,
             toAdd: label.new.filter( function (el) { return label.old.indexOf( el ) < 0; }),
             toDelete: label.old.filter( function (el) { return label.new.indexOf( el ) < 0; })
         });
+        var lastDifference = labels[labels.length - 1], hasCategories;
+
+        /* If we are going to remove Inbox label, remove Categories too */
+        if (lastDifference.toDelete.indexOf('INBOX') > -1) {
+            hasCategories = false;
+            for (var n in thread.labels) {
+                if (!thread.labels[n].indexOf('CATEGORY_')) { lastDifference.toDelete.push(thread.labels[n]); hasCategories = true; }
+            }
+            if (!hasCategories) lastDifference.toDelete.push('CATEGORY_PERSONAL');
+        }
+
+        /* If we are going to add Inbox label, add Categories too */
+        if (lastDifference.toAdd.indexOf('INBOX') > -1) {
+            hasCategories = false;
+            for (var i in thread.labels) {
+                if (!thread.labels[i].indexOf('CATEGORY_')) { lastDifference.toAdd.push(thread.labels[i]); hasCategories = true; }
+            }
+            if (!hasCategories) lastDifference.toAdd.push('CATEGORY_PERSONAL');
+        }
     }
 
-    console.log(labels);
-    //TODO add and remove to threadLabels
+    /* Update labels */
+    for (var i in labels) {
+        for (var n in labels[i].toDelete) this.removeFromLabel(labels[i].toDelete[n], labels[i].id);
+        for (var n in labels[i].toAdd) this.addToLabel(labels[i].toAdd[n], labels[i].id);
+    }
 
-    //this.saveThreads();
-    // TODO remove this.classifyThreads();
+    /* Save changes */
+    this.saveThreads();
+}
+
+storage.prototype.removeFromLabel = function (label, threadId) {
+    var num = parseInt(this.threadIds[threadId]), threads = this.threadLabels[label];
+    for (var i in threads) if (parseInt(threads[i]) == num) { threads.splice(i, 1); break; }
+}
+
+storage.prototype.addToLabel = function (label, threadId) {
+    var num = this.threadIds[threadId], threads = this.threadLabels[label], thread = this.threadList[num], threadAux;
+    for (var i in threads) {
+        threadAux = this.threadList[threads[i]];
+        if (threadAux.date < thread.date) { threads.splice(i, 0, num); break; }
+    }
 }
 
 storage.prototype.addMetadataToThreads = function (response) {
