@@ -45,8 +45,22 @@ storage.prototype.getLastDate = function () {
 }
 
 storage.prototype.saveThreads = function () {
-    var threads = { 'list': this.threadList }
-    var compressed = LZString.compress(angular.toJson(threads, false));
+    var threadList = [], actualThread;
+    for (var i in this.threadList) {
+        actualThread = this.threadList[i];
+        threadList.push({
+            id: actualThread.id,
+            subject: actualThread.subject,
+            snippet: actualThread.snippet,
+            sender: actualThread.sender,
+            labels: actualThread.labels,
+            date: actualThread.date,
+            dateSent: actualThread.dateSent,
+            numOfMsgs: actualThread.numOfMsgs
+        });
+    }
+
+    var compressed = LZString.compress(JSON.stringify(threadList));
     localStorage.setItem(this.getEmail(), compressed);
 
     for (var i in this.threadList) {
@@ -80,7 +94,8 @@ storage.prototype.retrieveThreads = function () {
     item = JSON.parse(LZString.decompress(item));
     if (!item) return false;
 
-    this.threadList = item.list;
+    this.threadList = item;
+    for (var i in this.threadList) this.threadList[i].messages = [];
     this.sortThreadIds();
     return true;
 }

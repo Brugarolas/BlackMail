@@ -87,7 +87,7 @@ gmail.prototype.getThread = function (id, callback, error) {
 
 gmail.prototype.getAttachments = function (email, isImage, callback, error) {
     var batchRequest = gapi.client.newBatch(), iterable = (isImage) ? email.images : email.attachments;
-    for (i in iterable) {
+    for (var i in iterable) {
         batchRequest.add(
             gapi.client.gmail.users.messages.attachments.get({
                 'id': iterable[i].body.attachmentId,
@@ -118,7 +118,7 @@ gmail.prototype.sendMessage = function(content, callback, error) {
 
 gmail.prototype.modifyThreads = function (threads, addLabels, removeLabels, callback, error) {
     var batchRequest = gapi.client.newBatch();
-    for (i in threads) {
+    for (var i in threads) {
         batchRequest.add(
             gapi.client.gmail.users.threads.modify({
                 'id': threads[i],
