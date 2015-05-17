@@ -45,7 +45,7 @@ storage.prototype.getLastDate = function () {
 }
 
 storage.prototype.saveThreads = function () {
-    var threads = {'list': this.threadList, 'ids': this.threadIds}
+    var threads = { 'list': this.threadList }
     var compressed = LZString.compress(angular.toJson(threads, false));
     localStorage.setItem(this.getEmail(), compressed);
 
@@ -81,7 +81,7 @@ storage.prototype.retrieveThreads = function () {
     if (!item) return false;
 
     this.threadList = item.list;
-    this.threadIds = item.ids;
+    this.sortThreadIds();
     return true;
 }
 
