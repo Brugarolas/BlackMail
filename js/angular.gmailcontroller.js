@@ -174,6 +174,10 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
         system.modifyThreads($scope.getSelectedIds(), addLabels, removeLabels, $scope.safeUpdateMessages, $scope.defaultErrorCallback);
     }
 
+    $scope.updateRefresh = function () {
+       system.updateRefresh($scope.defaultErrorCallback);
+    }
+
     /** FORMAT FUNCTIONS **/
     //Function to format date in HTML
     $scope.formatDateThread = function (thread) {

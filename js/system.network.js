@@ -21,7 +21,7 @@ gmail.prototype.loadAPI = function (name, version, callback, error) {
 
 gmail.prototype.getPersonalData = function (callback, error) {
     gapi.client.plus.people.get({
-        'userId': 'me'
+        'userId': this.email
     }).execute(callback, error);
 }
 
@@ -38,6 +38,14 @@ gmail.prototype.getAllThreadsIds = function (next, error, nextPageToken) {
         'includeSpamTrash': true,
         'q': '!in:chats'
     }).execute(next, error);
+}
+
+gmail.prototype.getSingleThread = function (threadId, callback, error) {
+    gapi.client.gmail.users.threads.get({
+        'userId': this.email,
+        'id': threadId,
+        'format': 'metadata'
+    }).execute(callback, error);
 }
 
 gmail.prototype.getPageThreads = function (threads, callback, error) {
@@ -109,7 +117,7 @@ gmail.prototype.getSingleAttachment = function(messageId, id, callback, error) {
 
 gmail.prototype.sendMessage = function(content, callback, error) {
     gapi.client.gmail.users.messages.send({
-        'userId': 'me',
+        'userId': this.email,
         'resource': {
             'raw': content
         }
@@ -129,4 +137,12 @@ gmail.prototype.modifyThreads = function (threads, addLabels, removeLabels, call
         );
     }
     batchRequest.execute(callback, error);
+}
+
+gmail.prototype.getHistoryList = function (historyId, callback, error) {
+    console.log("Loading with : " + historyId);
+    gapi.client.gmail.users.history.list({
+        'userId': this.email,
+        'startHistoryId': historyId
+    }).execute(callback, error);
 }

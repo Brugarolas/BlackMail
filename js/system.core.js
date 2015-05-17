@@ -121,6 +121,8 @@ System.prototype.getPageThreads = function (threadsPerPage, between, end, error)
     var numOfPages = Math.ceil(system.storage.getNumOfThreads() / threadsPerPage), steps = [], actualPage = 0;
     for (var page = 0; page < numOfPages; page++) steps.push(system.storage.getThreads(page, threadsPerPage));
     var next = function (response) {
+        if (actualPage == 0) system.storage.setHistoryId(response[system.storage.getThreadByIndex(0).id].result.historyId);
+
         system.storage.addMetadataToThreads(response); actualPage += 1; between(actualPage);
         if (actualPage < numOfPages) system.network.getPageThreads(steps[actualPage], next, error); else end();
     }
@@ -232,8 +234,18 @@ System.prototype.getThread = function (index, label, unreadMth, callback, error)
  */
 System.prototype.modifyThreads = function (threads, addLabels, removeLabels, callback, error) {
     system.network.modifyThreads(threads, addLabels, removeLabels, function (response) {
+        /* Get and update last history Id */
+        system.updateHistoryId(response[Object.keys(response).length - 1].result.id, error);
+
+        /* Update labels and execute callback */
         system.storage.updateLabels(response);
         callback();
+    }, error);
+}
+
+System.prototype.updateHistoryId = function (threadId, error) {
+    system.network.getSingleThread(threadId, function (response) {
+        system.storage.setHistoryId(response.result.historyId);
     }, error);
 }
 
@@ -255,6 +267,7 @@ System.prototype.sendMessage = function (name, to, subject, message, callback, e
     system.network.sendMessage(btoa(raw).replace(/\//g, '_').replace(/\+/g, '-'), function (response) {
         system.network.getThread(response.threadId, function (response) {
             system.storage.addOrUpdateThread(response.result);
+            //TODO get history id
             callback();
         }, error);
     }, error);
@@ -269,6 +282,12 @@ System.prototype.getFileAttachment = function (attachId, callback, error) {
             callback(attachment);
         }, error);
     }
+}
+
+System.prototype.updateRefresh = function (error) {
+    system.network.getHistoryList(system.storage.getHistoryId(), function (response) {
+        console.log(response);
+    }, error);
 }
 
 System.prototype.endLoading = function () {

@@ -29,6 +29,14 @@ storage.prototype.getEmail = function () {
     return (this.personal) ? this.personal.email : undefined;
 }
 
+storage.prototype.setHistoryId = function (historyId) {
+    this.historyId = historyId;
+}
+
+storage.prototype.getHistoryId = function () {
+    return this.historyId;
+}
+
 storage.prototype.saveLabels = function (labels) {
     for (var i in labels) this.labels.push(labels[i]);
 }
@@ -61,7 +69,7 @@ storage.prototype.saveThreads = function () {
         });
     }
 
-    var compressed = LZString.compress(JSON.stringify(threadList));
+    var compressed = LZString.compress(JSON.stringify({ list: threadList, history: this.historyId }));
     localStorage.setItem(this.getEmail(), compressed);
 
     for (var i in this.threadList) {
@@ -95,7 +103,8 @@ storage.prototype.retrieveThreads = function () {
     item = JSON.parse(LZString.decompress(item));
     if (!item) return false;
 
-    this.threadList = item;
+    this.threadList = item.list;
+    this.setHistoryId(item.history);
     for (var i in this.threadList) this.threadList[i].messages = [];
     this.sortThreadIds();
     return true;
