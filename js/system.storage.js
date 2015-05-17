@@ -93,9 +93,9 @@ storage.prototype.classifyAllThreads = function () {
     for (var i in this.threadList) {
         thread = this.threadList[i];
 
-        if (thread.labels.indexOf('TRASH') > -1) { if (!isAttachment(thread)) this.threadLabels['TRASH'].push(i); else console.log(thread); }
-        else if (thread.labels.indexOf('SPAM') > -1) this.threadLabels['SPAM'].push(i);
-        else for (n in thread.labels) if (thread.labels[n] in this.threadLabels) this.threadLabels[thread.labels[n]].push(i);
+        if (thread.labels.indexOf('TRASH') > -1) { if (!isAttachment(thread)) this.threadLabels['TRASH'].push(thread.id); else console.log(thread); }
+        else if (thread.labels.indexOf('SPAM') > -1) this.threadLabels['SPAM'].push(thread.id);
+        else for (n in thread.labels) if (thread.labels[n] in this.threadLabels) this.threadLabels[thread.labels[n]].push(thread.id);
     }
 
     /* Then, we classify categories from Inbox threads (so we don't see a deleted thread) */
@@ -103,7 +103,7 @@ storage.prototype.classifyAllThreads = function () {
 
     var inboxLabels = this.threadLabels['INBOX'], hasCategories;
     for (var i in inboxLabels) {
-        hasCategories = false; thread = this.threadList[inboxLabels[i]];
+        hasCategories = false; thread = this.getThread(inboxLabels[i]);
 
         for (var n in thread.labels) if (thread.labels[n].indexOf('CATEGORY_') == 0) {
             hasCategories = true;
@@ -123,7 +123,7 @@ storage.prototype.classifyAllThreads = function () {
 
 storage.prototype.sortMessages = function(label) {
     this.threadLabels[label] = this.threadLabels[label].sort(function (a, b) {
-        return (system.storage.threadList[a].dateSent < system.storage.threadList[b].dateSent);
+        return (system.storage.threadList[system.storage.threadIds[a]].dateSent < system.storage.threadList[system.storage.threadIds[b]].dateSent);
     });
 }
 
@@ -132,7 +132,7 @@ storage.prototype.countUnread = function() {
     var personal = this.threadLabels['CATEGORY_PERSONAL'], thread;
     this.defaultLabels[0].unread = 0;
     for (var i in personal) {
-        thread = this.getThreadByIndex(personal[i]);
+        thread = this.getThread(personal[i]);
         if (thread.labels.indexOf('UNREAD') > -1) this.defaultLabels[0].unread += 1;
     }
 }
@@ -166,7 +166,6 @@ storage.prototype.addNewThreadToListSorted = function (thread) {
     var index = 0, date;
     for (var i in this.threadList) {
         date = this.threadList[i].date || this.threadList[i].dateSent;
-        console.log(this.threadList[i]);
         if (Date.compare(thread.date, date) == 1) { index = i; break; }
     }
     this.threadList.splice(index, 0, thread);
@@ -205,11 +204,25 @@ storage.prototype.addOrUpdateThread = function (result) {
     var index = this.threadIds[result.id], thread = { id: result.id };
     if (index !== undefined) this.threadList.splice(index, 1);
 
+    /* Set metadata */
     setThreadMetadata(thread, result);
+
+    /* Add new thread to list and sort id list*/
     this.addNewThreadToListSorted(thread);
     this.sortThreadIds();
+
+    /* Add thread to labels */
+    var isInbox = false, hasCategories = false;
+    for (var i in thread.labels) {
+        if (!thread.labels[i].indexOf('INBOX')) isInbox = true;
+        if (!thread.labels[i].indexOf('CATEGORY_')) hasCategories = true;
+
+        this.addToLabel(thread.labels[i], thread.id);
+    }
+    if (isInbox && !hasCategories) this.addToLabel('CATEGORY_PERSONAL', thread.id);
+
+    /* Save changes */
     this.saveThreads();
-    // TODO this.classifyThreads();
 }
 
 storage.prototype.updateLabels = function (response) {
@@ -261,15 +274,27 @@ storage.prototype.updateLabels = function (response) {
 }
 
 storage.prototype.removeFromLabel = function (label, threadId) {
-    var num = parseInt(this.threadIds[threadId]), threads = this.threadLabels[label];
-    for (var i in threads) if (parseInt(threads[i]) == num) { threads.splice(i, 1); break; }
+    var threads = this.threadLabels[label];
+    if (label == 'UNREAD') this.addOrRemoveUnread(this.getThread(threadId), true);
+    else for (var i in threads) if (threads[i] == threadId) { threads.splice(i, 1); break; }
 }
 
 storage.prototype.addToLabel = function (label, threadId) {
-    var num = this.threadIds[threadId], threads = this.threadLabels[label], thread = this.threadList[num], threadAux;
-    for (var i in threads) {
-        threadAux = this.threadList[threads[i]];
-        if (threadAux.date < thread.date) { threads.splice(i, 0, num); break; }
+    var threads = this.threadLabels[label], thread = this.getThread(threadId), threadAux;
+    if (label == 'UNREAD') this.addOrRemoveUnread(thread, false);
+    else for (var i in threads) {
+        threadAux = this.getThread(threads[i]);
+        if (threadAux.date < thread.date) { threads.splice(i, 0, threadId); break; }
+    }
+}
+
+storage.prototype.addOrRemoveUnread = function (thread, removing) {
+    var isInbox = (thread.labels.indexOf('INBOX') > -1), isPersonal = (thread.labels.indexOf('CATEGORY_PERSONAL') > -1);
+    if (isPersonal) this.defaultLabels[0].unread += (removing) ? -1 : 1;
+    else if (isInbox) {
+        var hasCategories = false;
+        for (var i in thread.labels) if (!thread.labels[i].indexOf('CATEGORY_')) { hasCategories = true; break; }
+        if (!hasCategories) this.defaultLabels[0].unread += (removing) ? -1 : 1;
     }
 }
 
@@ -293,7 +318,7 @@ storage.prototype.getThread = function (id) {
 
 storage.prototype.getThreadByIndex = function (index, labelId) {
     if (!labelId) return this.threadList[index];
-    else return this.threadList[this.threadLabels[labelId][index]];
+    else return this.getThread(this.threadLabels[labelId][index]);
 }
 
 storage.prototype.getThreads = function (page, num, labelId) {
@@ -301,7 +326,7 @@ storage.prototype.getThreads = function (page, num, labelId) {
     if (!labelId) return this.threadList.slice(startingThread, startingThread + num);
     else {
         var threads = [], threadLabels = this.threadLabels[labelId].slice(startingThread, startingThread + num);
-        for (var i in threadLabels) threads.push(this.threadList[threadLabels[i]]);
+        for (var i in threadLabels) threads.push(this.getThread(threadLabels[i]));
         return threads;
     }
 }
