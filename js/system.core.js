@@ -245,8 +245,9 @@ System.prototype.modifyThreads = function (threads, addLabels, removeLabels, cal
  * @param callback
  * @param error
  */
-System.prototype.sendMessage = function (to, subject, message, callback, error) {
-    var raw = "From: " + this.email + "\r\n" +
+System.prototype.sendMessage = function (name, to, subject, message, callback, error) {
+    var email = (name) ? name+" <"+system.storage.getEmail()+">" : system.storage.getEmail();
+    var raw = "From: " + email + "\r\n" +
         "To:  " + to + "\r\n" +
         "Subject: " + subject + "\r\n" +
         "\r\n" + utf8_encode(message);

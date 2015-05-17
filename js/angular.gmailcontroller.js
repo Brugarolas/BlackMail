@@ -160,7 +160,7 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
     $scope.sendEmail = function () {
         if ($scope.data.newMailValid) {
             $scope.data.sendingEmail = true;
-            system.sendMessage($scope.data.newMessage.email, $scope.data.newMessage.subject, $scope.data.newMessage.message, $scope.sentNewMessage, $scope.defaultErrorCallback);
+            system.sendMessage($scope.data.personal.realName, $scope.data.newMessage.email, $scope.data.newMessage.subject, $scope.data.newMessage.message, $scope.sentNewMessage, $scope.defaultErrorCallback);
         }
     }
 
