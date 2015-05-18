@@ -266,8 +266,11 @@ System.prototype.sendMessage = function (name, to, subject, message, callback, e
 
     system.network.sendMessage(btoa(raw).replace(/\//g, '_').replace(/\+/g, '-'), function (response) {
         system.network.getThread(response.threadId, function (response) {
+            /* Save history Id */
+            system.storage.setHistoryId(response.result.historyId);
+
+            /* Save thread */
             system.storage.addOrUpdateThread(response.result);
-            //TODO get history id
             callback();
         }, error);
     }, error);

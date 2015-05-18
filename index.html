@@ -231,7 +231,7 @@
                     </div>
                     <div class="message">
                         <iframe id="iframe{{$index}}" frameBorder="0" src="about:blank" scrolling="no" ng-email-iframe="{{msg.html}}" height="0"></iframe>
-                        <a ng-download-button="{{msg.html}}">Download Email</a>
+                        <a ng-download-button="{{msg.html}}" download-name="{{msg.id}}">Download Email</a>
                         <a ng-repeat="file in msg.attachments" ng-download-file="{{file.body.attachmentId}}">Not ready yet</a>
                     </div>
                     <div class="tool-box">

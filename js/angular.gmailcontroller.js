@@ -268,7 +268,12 @@ app.directive('ngDownloadButton', function ($compile) {
     return {
         controller: function ($scope) { },
         link: function (scope, element, attrs, ctrl) {
-            element[0].href = 'data:text/html;charset=utf-8,' + encodeURIComponent(attrs.ngDownloadButton);
+            var data = 'data:text/html;charset=utf-8,' + encodeURIComponent(attrs.ngDownloadButton),
+                name = attrs.downloadName + '.html';
+
+            element[0].onclick = function () {
+                downloadFile(name, data);
+            }
         }
     }
 });
@@ -278,8 +283,13 @@ app.directive('ngDownloadFile', function ($compile) {
         controller: function ($scope) { },
         link: function (scope, element, attrs, ctrl) {
             system.getFileAttachment(attrs.ngDownloadFile, function (attachment) {
-                element[0].href = 'data:' + attachment.mime + ';' + attachment.encoding + ',' + attachment.data;
-                element[0].innerHTML = attachment.name; element[0].download = attachment.name;
+
+                var data = 'data:' + attachment.mime + ';' + attachment.encoding + ',' + attachment.data;
+                element[0].innerHTML = attachment.name;
+
+                element[0].onclick = function () {
+                    downloadFile(attachment.name, data);
+                }
             }, function (error) {
                 element[0].innerHTML = "** ERROR **";
                 console.log(error);
@@ -287,4 +297,20 @@ app.directive('ngDownloadFile', function ($compile) {
         }
     }
 });
+
+function downloadFile (name, content) {
+    //Create element and set main attributes
+    var dl = document.createElement('a');
+    dl.setAttribute('href', content);
+    dl.setAttribute('download', name);
+
+    // Set hidden so the element doesn't disrupt your page
+    dl.setAttribute('visibility', 'hidden');
+    dl.setAttribute('display', 'none');
+
+    // Append to page and click
+    document.body.appendChild(dl);
+    dl.click();
+    document.body.removeChild(dl);
+}
 
