@@ -287,9 +287,17 @@ System.prototype.getFileAttachment = function (attachId, callback, error) {
     }
 }
 
-System.prototype.updateRefresh = function (error) {
+System.prototype.updateRefresh = function (callback, error) {
     system.network.getHistoryList(system.storage.getHistoryId(), function (response) {
-        console.log(response);
+        for (var i in response.result.history) system.storage.addHistory(response.result.history[i]);
+
+        /* Save history Id */
+        system.storage.setHistoryId(response.result.historyId);
+
+        /* Save changes */
+        //TODO (at the end save threads)
+        //system.storage.saveThreads();
+        callback();
     }, error);
 }
 

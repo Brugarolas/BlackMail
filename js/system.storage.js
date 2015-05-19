@@ -300,16 +300,32 @@ storage.prototype.updateLabels = function (response) {
 
 storage.prototype.removeFromLabel = function (label, threadId) {
     var threads = this.threadLabels[label];
+
+    /* Check if we need to update unread */
     if (label == 'UNREAD') this.addOrRemoveUnread(this.getThread(threadId), true);
-    else for (var i in threads) if (threads[i] == threadId) { threads.splice(i, 1); break; }
+    else {
+        /* Check if we need to update unread */
+        if (label == 'CATEGORY_PERSONAL' && isUnread(this.getThread(threadId))) this.defaultLabels[0].unread -= 1;
+
+        /* Remove labels */
+        for (var i in threads) if (threads[i] == threadId) { threads.splice(i, 1); break; }
+    }
 }
 
 storage.prototype.addToLabel = function (label, threadId) {
     var threads = this.threadLabels[label], thread = this.getThread(threadId), threadAux;
+
+    /* Check if we need to update unread */
     if (label == 'UNREAD') this.addOrRemoveUnread(thread, false);
-    else for (var i in threads) {
-        threadAux = this.getThread(threads[i]);
-        if (threadAux.date < thread.date) { threads.splice(i, 0, threadId); break; }
+    else {
+        /* Check if we need to update unread */
+        if (label == 'CATEGORY_PERSONAL' && isUnread(thread)) this.defaultLabels[0].unread += 1;
+
+        /* Add labels */
+        for (var i in threads) {
+            threadAux = this.getThread(threads[i]);
+            if (threadAux.date < thread.date) { threads.splice(i, 0, threadId); break; }
+        }
     }
 }
 
@@ -320,6 +336,85 @@ storage.prototype.addOrRemoveUnread = function (thread, removing) {
         var hasCategories = false;
         for (var i in thread.labels) if (!thread.labels[i].indexOf('CATEGORY_')) { hasCategories = true; break; }
         if (!hasCategories) this.defaultLabels[0].unread += (removing) ? -1 : 1;
+    }
+}
+
+storage.prototype.addHistory = function (history) {
+    console.log(history);
+    if (history.labelsAdded) this.addHistoryLabels(history.labelsAdded);
+    else if (history.labelsRemoved) this.removeHistoryLabels(history.labelsRemoved);
+    else if (history.messagesAdded) this.addHistoryMessage(history.messagesAdded);
+    else if (history.messagesDeleted) this.removeHistoryMessage(history.messagesDeleted);
+}
+
+storage.prototype.addHistoryLabels = function (labelsAdded) {
+    var thread, label;
+    for (var i in labelsAdded) {
+        /* Get thread */
+        thread = this.getThread(labelsAdded[i].message.threadId);
+
+        for (var n in labelsAdded[i].labelIds) {
+            /* Get each label to add*/
+            label = labelsAdded[i].labelIds[n];
+
+            /* If it does not exist, add it */
+            if (thread.labels.indexOf(label) == -1) {
+                thread.labels.push(label);
+                this.addToLabel(label, thread.id);
+
+                /* If we are adding Inbox... */
+                if (label == 'INBOX') {
+                    var categories = getCategories(thread);
+
+                    /* ...and thread has no categories, add to Personal; else to Categories */
+                    if (categories.length == 0) this.addToLabel('CATEGORY_PERSONAL', thread.id)
+                    else for (var x in categories) this.addToLabel(categories[x], thread.id);
+                }
+            }
+        }
+    }
+}
+
+storage.prototype.removeHistoryLabels = function (labelsRemoved) {
+    var thread, label, index;
+    for (var i in labelsRemoved) {
+        /* Get thread */
+        thread = this.getThread(labelsRemoved[i].message.threadId);
+
+        for (var n in labelsRemoved[i].labelIds) {
+            /* Get each label to remove*/
+            label = labelsRemoved[i].labelIds[n];
+
+            /* If it does not exist, remove it */
+            index = thread.labels.indexOf(label);
+            if (index > -1) {
+                thread.labels.splice(index, 1);
+                this.removeFromLabel(label, thread.id);
+
+                /* If we are removing Inbox */
+                if (label == 'INBOX') {
+                    var categories = getCategories(thread);
+
+                    /* ...and thread has no categories, remove also Personal; else to Categories */
+                    if (categories.length == 0) this.removeFromLabel('CATEGORY_PERSONAL', thread.id);
+                    else for (var x in categories) this.removeFromLabel(categories[x], thread.id);
+                }
+            }
+        }
+    }
+}
+
+//TODO
+storage.prototype.addHistoryMessage = function (messagesAdded) {
+    for (var i in messagesAdded) {
+        console.log(messagesAdded[i])
+    }
+}
+
+//TODO
+storage.prototype.removeHistoryMessage = function (messagesDeleted) {
+    for (var i in messagesDeleted) {
+        console.log(messagesDeleted[i])
     }
 }
 

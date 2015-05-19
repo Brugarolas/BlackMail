@@ -166,7 +166,7 @@
                     </ul>
                 </span>
             </li>
-            <li><a class="icon circle-icon glyphicon glyphicon-refresh" ng-click="updateRefresh()"></a></li>
+            <li><a class="icon circle-icon glyphicon glyphicon-refresh" ng-class="{'faa-spin animated': data.refreshing}" ng-click="updateRefresh()"></a></li>
             <li><a class="icon circle-icon glyphicon glyphicon-share-alt"></a></li>
             <li>
                 <a ng-hide="data.selectedLabel.id == 'TRASH'" class="icon circle-icon red glyphicon glyphicon-remove" ng-click="modifySelectedThreads(['TRASH'], [])"></a>

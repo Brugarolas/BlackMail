@@ -175,7 +175,8 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
     }
 
     $scope.updateRefresh = function () {
-       system.updateRefresh($scope.defaultErrorCallback);
+       $scope.data.refreshing = true;
+       system.updateRefresh($scope.safeUpdateMessages, $scope.defaultErrorCallback);
     }
 
     /** FORMAT FUNCTIONS **/
@@ -208,6 +209,7 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
         $scope.data.numOfPages = Math.ceil($scope.data.numOfThreads / $scope.data.threadsPerPage);
         if ($scope.data.currentPage >= $scope.data.numOfPages) $scope.data.currentPage = $scope.data.numOfPages - 1;
         $scope.data.selectedCheckboxes = [];
+        $scope.data.refreshing = false;
     }
 
     $scope.updateLabel = function (label) {

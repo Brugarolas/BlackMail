@@ -124,8 +124,20 @@ function formatDate(date) {
     return date;
 }
 
-function isAttachment(thread) {
+function isAttachment (thread) {
     return (thread.labels.length == 1 && (thread.subject.indexOf('Archivo adjunto') || thread.subject.indexOf('Attachment')));
+}
+
+function isUnread (thread) {
+    for (var i in thread.labels) if (thread.labels[i] == 'UNREAD') return true;
+    return false;
+}
+
+function getCategories (thread) {
+    var categories = [];
+    for (var i in thread.labels) if (!thread.labels[i].indexOf('CATEGORY_')) categories.push(thread.labels[i]);
+
+    return categories;
 }
 
 function htmlspecialchars_decode(string, quote_style) {
