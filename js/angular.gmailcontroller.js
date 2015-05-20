@@ -133,9 +133,9 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
 
     $scope.clickOnStar = function (event, index) {
         event.stopImmediatePropagation();
-        var thread = system.getThreadByIndex($scope.data.currentPage * $scope.data.threadsPerPage + index, $scope.data.selectedLabel.id);
-        if ($scope.isImportant(thread.labels)) $scope.modifyThreads([thread.id], [], ['IMPORTANT']);
-        else $scope.modifyThreads([thread.id], ['IMPORTANT'], []);
+        var thread = system.storage.getThreadByIndex($scope.data.currentPage * $scope.data.threadsPerPage + index, $scope.data.selectedLabel.id);
+        if ($scope.isImportant(thread.labels)) system.modifyThreads([thread.id], [], ['IMPORTANT'], $scope.safeUpdateMessages, $scope.defaultErrorCallback);
+        else system.modifyThreads([thread.id], ['IMPORTANT'], [], $scope.safeUpdateMessages, $scope.defaultErrorCallback);
     }
 
     $scope.clickPreviousPage = function () {
