@@ -111,6 +111,14 @@ function parsePayload(email, payload) {
                     console.log(parts[i]);
                 }
             }
+        } else if (payload.mimeType.endsWith('signed')) {
+            /* Signed... WTF is the difference? */
+            for (var i = 0; i < parts.length; i++) {
+                if (parts[i].mimeType.indexOf('application') == 0) email.attachments.push(parts[i]); //TODO bug with attachments
+                else parsePayload(email, parts[i]);
+
+            }
+
         } else {
             console.log("Current multipart not supported yet...");
             console.log(payload);
