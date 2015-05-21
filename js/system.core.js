@@ -281,7 +281,7 @@ System.prototype.getFileAttachment = function (attachId, callback, error) {
     if (attachment.data) callback(attachment);
     else {
         system.network.getSingleAttachment(attachment.msgId, attachment.id, function (response) {
-            attachment.data = response.data.replace(/-/g, '+').replace(/_/g, '/');
+            attachment.data = (attachment.encoding.toLocaleLowerCase() == "base64") ? response.data.replace(/-/g, '+').replace(/_/g, '/') : response.data;
             callback(attachment);
         }, error);
     }

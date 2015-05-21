@@ -116,7 +116,6 @@ function parsePayload(email, payload) {
             for (var i = 0; i < parts.length; i++) {
                 if (parts[i].mimeType.indexOf('application') == 0) email.attachments.push(parts[i]); //TODO bug with attachments
                 else parsePayload(email, parts[i]);
-
             }
 
         } else {

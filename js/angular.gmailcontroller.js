@@ -285,7 +285,6 @@ app.directive('ngDownloadFile', function ($compile) {
         controller: function ($scope) { },
         link: function (scope, element, attrs, ctrl) {
             system.getFileAttachment(attrs.ngDownloadFile, function (attachment) {
-
                 var data = 'data:' + attachment.mime + ';' + attachment.encoding + ',' + attachment.data;
                 element[0].innerHTML = attachment.name;
 
