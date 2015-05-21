@@ -299,13 +299,14 @@ storage.prototype.updateLabels = function (response) {
 }
 
 storage.prototype.removeFromLabel = function (label, threadId) {
-    var threads = this.threadLabels[label];
+    var that = system.storage;
+    var threads = that.threadLabels[label];
 
     /* Check if we need to update unread */
-    if (label == 'UNREAD') this.addOrRemoveUnread(this.getThread(threadId), true);
+    if (label == 'UNREAD') that.addOrRemoveUnread(that.getThread(threadId), true);
     else {
         /* Check if we need to update unread */
-        if (label == 'CATEGORY_PERSONAL' && isUnread(this.getThread(threadId))) this.defaultLabels[0].unread -= 1;
+        if (label == 'CATEGORY_PERSONAL' && isUnread(that.getThread(threadId))) that.defaultLabels[0].unread -= 1;
 
         /* Remove labels */
         for (var i in threads) if (threads[i] == threadId) { threads.splice(i, 1); break; }
@@ -313,17 +314,18 @@ storage.prototype.removeFromLabel = function (label, threadId) {
 }
 
 storage.prototype.addToLabel = function (label, threadId) {
-    var threads = this.threadLabels[label], thread = this.getThread(threadId), threadAux;
+    var that = system.storage;
+    var threads = that.threadLabels[label], thread = that.getThread(threadId), threadAux;
 
     /* Check if we need to update unread */
-    if (label == 'UNREAD') this.addOrRemoveUnread(thread, false);
+    if (label == 'UNREAD') that.addOrRemoveUnread(thread, false);
     else {
         /* Check if we need to update unread */
-        if (label == 'CATEGORY_PERSONAL' && isUnread(thread)) this.defaultLabels[0].unread += 1;
+        if (label == 'CATEGORY_PERSONAL' && isUnread(thread)) that.defaultLabels[0].unread += 1;
 
         /* Add labels */
         for (var i in threads) {
-            threadAux = this.getThread(threads[i]);
+            threadAux = that.getThread(threads[i]);
             if (threadAux.date < thread.date) { threads.splice(i, 0, threadId); break; }
         }
     }
@@ -339,15 +341,7 @@ storage.prototype.addOrRemoveUnread = function (thread, removing) {
     }
 }
 
-storage.prototype.addHistory = function (history) {
-    console.log(history);
-    if (history.labelsAdded) this.addHistoryLabels(history.labelsAdded);
-    else if (history.labelsRemoved) this.removeHistoryLabels(history.labelsRemoved);
-    else if (history.messagesAdded) this.addHistoryMessage(history.messagesAdded);
-    else if (history.messagesDeleted) this.removeHistoryMessage(history.messagesDeleted);
-}
-
-storage.prototype.addHistoryLabels = function (labelsAdded) {
+storage.prototype.addHistoryLabels = function (labelsAdded, callback) {
     var thread, label;
     for (var i in labelsAdded) {
         /* Get thread */
@@ -371,11 +365,13 @@ storage.prototype.addHistoryLabels = function (labelsAdded) {
                     else for (var x in categories) this.addToLabel(categories[x], thread.id);
                 }
             }
+
+            if (typeof callback == "function") callback();
         }
     }
 }
 
-storage.prototype.removeHistoryLabels = function (labelsRemoved) {
+storage.prototype.removeHistoryLabels = function (labelsRemoved, callback) {
     var thread, label, index;
     for (var i in labelsRemoved) {
         /* Get thread */
@@ -400,22 +396,66 @@ storage.prototype.removeHistoryLabels = function (labelsRemoved) {
                     else for (var x in categories) this.removeFromLabel(categories[x], thread.id);
                 }
             }
+
+            if (typeof callback == "function") callback();
         }
     }
 }
 
 //TODO
-storage.prototype.addHistoryMessage = function (messagesAdded) {
+storage.prototype.addHistoryMessage = function (messagesAdded, callback) {
+    var that = system.storage;
+
+    console.log("Messages added")
+    var thread, threadId, messageId, label;
     for (var i in messagesAdded) {
-        console.log(messagesAdded[i])
+        console.log(messagesAdded[i].message.threadId);
+        threadId = messagesAdded[i].message.threadId, thread = that.getThread(threadId);
+
+        if (thread) that.removeThread(thread.id);
+
+        system.network.getSingleThread(threadId, function (response) {
+            thread = { id: threadId }; that.threadList.push(thread);
+            that.threadIds[thread.id] = that.threadList.length - 1;
+
+            setThreadMetadata(thread, response.result);
+            that.addToAllLabels(thread);
+            
+            if (typeof callback == "function") callback();
+        });
     }
 }
 
 //TODO
-storage.prototype.removeHistoryMessage = function (messagesDeleted) {
+storage.prototype.removeHistoryMessage = function (messagesDeleted, callback) {
+    console.log("Messages deleted")
     for (var i in messagesDeleted) {
         console.log(messagesDeleted[i])
     }
+
+    if (typeof callback == "function") callback();
+}
+
+//FIXME AUX
+storage.prototype.addToAllLabels = function (thread) {
+    this.addOrRemoveAllLabels(thread, true);
+}
+
+//FIXME AUX
+storage.prototype.removeFromAllLabels = function (thread) {
+    this.addOrRemoveAllLabels(thread, false);
+}
+
+//FIXME AUX
+storage.prototype.addOrRemoveAllLabels = function (thread, add) {
+    var hasInbox, hasCategories, label, func = (add) ? system.storage.addToLabel : system.storage.removeFromLabel;
+    for (var i in thread.labels) {
+        label = thread.labels[i];
+        if (label == 'INBOX') hasInbox = true;
+        else if (!label.indexOf('CATEGORY_')) hasCategories = true;
+        func(label, thread.id);
+    }
+    if (hasInbox && !hasCategories) func('CATEGORY_PERSONAL', thread.id);
 }
 
 storage.prototype.addMetadataToThreads = function (response) {
@@ -434,6 +474,14 @@ storage.prototype.getNumOfThreads = function (labelId) {
 
 storage.prototype.getThread = function (id) {
     return this.threadList[this.threadIds[id]];
+}
+
+storage.prototype.removeThread = function (id) {
+    var index = this.threadIds[id], thread = this.threadList[index];
+
+    this.removeFromAllLabels(thread);
+    this.threadIds[id] = undefined;
+    this.threadList.splice(index, 1);
 }
 
 storage.prototype.getThreadByIndex = function (index, labelId) {

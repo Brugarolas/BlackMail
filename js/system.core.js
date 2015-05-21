@@ -289,7 +289,18 @@ System.prototype.getFileAttachment = function (attachId, callback, error) {
 
 System.prototype.updateRefresh = function (callback, error) {
     system.network.getHistoryList(system.storage.getHistoryId(), function (response) {
-        for (var i in response.result.history) system.storage.addHistory(response.result.history[i]);
+        var history, func, lastHistoryId = (response.result.history) ? response.result.history[response.result.history.length - 1].id : callback();
+        for (var i in response.result.history) {
+            history = response.result.history[i];
+            func = (history.id == lastHistoryId) ? callback : undefined;
+
+            console.log(history);
+
+            if (history.labelsAdded) system.storage.addHistoryLabels(history.labelsAdded, callback);
+            else if (history.labelsRemoved) system.storage.removeHistoryLabels(history.labelsRemoved, callback);
+            else if (history.messagesAdded) system.storage.addHistoryMessage(history.messagesAdded, callback);
+            else if (history.messagesDeleted) system.storage.removeHistoryMessage(history.messagesDeleted, callback);
+        }
 
         /* Save history Id */
         system.storage.setHistoryId(response.result.historyId);
@@ -297,7 +308,6 @@ System.prototype.updateRefresh = function (callback, error) {
         /* Save changes */
         //TODO (at the end save threads)
         //system.storage.saveThreads();
-        callback();
     }, error);
 }
 
