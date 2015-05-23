@@ -92,7 +92,8 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
         $scope.safeApply(function() {
             $scope.data.loadingMessage = "Getting new emails...";
         });
-        system.performPartialSync(100, function() { $scope.endLoading(1000); }, $scope.defaultErrorCallback);
+        $scope.endLoading(1000);
+        //system.performPartialSync(100, function() { $scope.endLoading(1000); }, $scope.defaultErrorCallback);
     }
 
     $scope.showThread = function (index, timeout) {

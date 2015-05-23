@@ -296,10 +296,11 @@ System.prototype.updateRefresh = function (callback, error) {
 
             console.log(history);
 
-            if (history.labelsAdded) system.storage.addHistoryLabels(history.labelsAdded, callback);
-            else if (history.labelsRemoved) system.storage.removeHistoryLabels(history.labelsRemoved, callback);
-            else if (history.messagesAdded) system.storage.addHistoryMessage(history.messagesAdded, callback);
+            if (history.labelsAdded) system.addOrRemoveHistoryLabels(history.labelsAdded, true, callback);
+            else if (history.labelsRemoved) system.addOrRemoveHistoryLabels(history.labelsRemoved, false, callback);
+            else if (history.messagesAdded) system.addHistoryMessages(history.messagesAdded, callback);
             else if (history.messagesDeleted) system.storage.removeHistoryMessage(history.messagesDeleted, callback);
+            else if (typeof callback == "function") callback();
         }
 
         /* Save history Id */
@@ -309,6 +310,76 @@ System.prototype.updateRefresh = function (callback, error) {
         //TODO (at the end save threads)
         //system.storage.saveThreads();
     }, error);
+}
+
+//FIXME Aux
+System.prototype.addOrRemoveHistoryLabels = function (labelsModified, add, callback) {
+    var thread, label, index;
+    for (var i in labelsModified) {
+        /* Get thread */
+        thread = system.storage.getThread(labelsModified[i].message.threadId);
+
+        for (var n in labelsModified[i].labelIds) {
+            /* Get each label */
+            label = labelsModified[i].labelIds[n];
+
+            /* Get index */
+            index = thread.labels.indexOf(label);
+
+            if (add && index == -1) {
+                /* If we are adding and it does not exist, add it */
+                thread.labels.push(label);
+                system.addOrRemoveLabel(label, thread, add);
+            } else if (!add && index > -1) {
+                /* If we are removing and it does exist, remove it*/
+                thread.labels.splice(index, 1);
+                system.addOrRemoveLabel(label, thread, add);
+            }
+        }
+    }
+
+    if (typeof callback == "function") callback();
+}
+
+System.prototype.addHistoryMessages = function (messagesAdded, callback) {
+    var thread, threadId, messageId, label;
+    for (var i in messagesAdded) {
+        threadId = messagesAdded[i].message.threadId, thread = system.storage.getThread(threadId);
+
+        /* If thread exist, its easier to remove it and add it updated */
+        if (thread) system.storage.removeThread(thread.id);
+
+        /* We get updated thread */
+        system.network.getSingleThread(threadId, function (response) {
+            if (response.code != 404) {
+                thread = { id: threadId };
+                system.storage.addThread(thread);
+
+                console.log(response);
+                setThreadMetadata(thread, response.result);
+                system.storage.addToAllLabels(thread);
+
+                //TODO This is a callback, added message may not be found if we are updating it when refreshing
+            }
+
+            if (typeof callback == "function") callback();
+        });
+    }
+}
+
+//FIXME Aux
+System.prototype.addOrRemoveLabel = function (label, thread, add) {
+    /* Add or remove */
+    system.storage.addOrRemoveLabel(label, thread, add);
+
+    /* If we are adding Inbox... */
+    if (label == 'INBOX') {
+        var categories = getCategories(thread);
+
+        /* ...and thread has no categories, add to Personal; else to Categories */
+        if (categories.length == 0) system.storage.addOrRemoveLabel('CATEGORY_PERSONAL', thread, add)
+        else for (var i in categories) system.storage.addOrRemoveLabel(categories[i], thread, add);
+    }
 }
 
 System.prototype.endLoading = function () {
