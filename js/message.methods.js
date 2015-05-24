@@ -148,3 +148,22 @@ function roundToPorc(num) {
     return +(Math.round(num + "e+4") + "e-2");
 }
 
+function formatMilliseconds (milli) {
+    var time = [
+        { m: 'minute', t: 60000},
+        { m: 'hour', t: 60},
+        { m: 'day', t: 24},
+        { m: 'month', t: 30.4},
+        { m: 'year', t: 12}
+    ], m = 'a moment ago', first = true;
+
+    for (var i in time) {
+        if (milli < time[i].t) return (first) ? m : (Math.round(milli) + ' ' + ((milli >= 1.5) ? (m+'s') : m) + ' ago');
+        else {
+            milli /= time[i].t
+            m = time[i].m;
+            first = false;
+        }
+    }
+    return (Math.round(milli) + ' ' + ((milli >= 1.5) ? (m+'s') : m) + ' ago');
+}

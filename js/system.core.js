@@ -184,6 +184,9 @@ System.prototype.getThread = function (index, label, unreadMth, callback, error)
         for (var i in response.messages) {
             msg = response.messages[i]; email = { id: msg.id, images: [], attachments: [] };
 
+            email.date = new Date(getMessageDate(response.messages[i]));
+            console.log(response.messages[i]);
+
             // If it is not multipart...
             if (!msg.payload.parts) email.html = ((msg.payload.mimeType == "text/html") ? obtainMainHTML : createMainHTML)(msg.payload.body.data);
             else parsePayload(email, msg.payload);

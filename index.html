@@ -200,7 +200,7 @@
                         <span class="title">{{msg.sender}} <span ng-show="msg.numOfMsgs > 1">({{msg.numOfMsgs}})</span></span>
                     </div>
                     <div class="col col-3 col-xs-2 col-sm-1 col-xl-1">
-                        <div class="date">{{formatDateThread(msg)}}</div> <!-- {{formatDateShort(msg.dates[data.selectedLabel.id])}} -->
+                        <div class="date">{{formatDateThread(msg)}}</div>
                     </div>
                     <div class="col col-2 col-xs-11 col-sm-8 col-xl-9">
                         <div class="subject">
@@ -228,7 +228,7 @@
                 <li ng-repeat="msg in data.activeThread.messages" ng-class="{sent: $even, received: $odd}">
                     <div class="details">
                         <div class="left">You <div class="arrow" ng-class="{orange: $odd}"></div> Scott </div>
-                        <div class="right">March 6, 2014, 20:08 pm</div>
+                        <div class="right">{{formatDateMessage(msg)}}</div>
                     </div>
                     <div class="message">
                         <iframe id="iframe{{$index}}" frameBorder="0" src="about:blank" scrolling="no" ng-email-iframe="{{msg.html}}" height="0"></iframe>

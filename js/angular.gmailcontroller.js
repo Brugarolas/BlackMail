@@ -104,6 +104,7 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
             $scope.$broadcast('rebuild-scrollbar-thread');
             $scope.safeApply(function () {
                 $scope.data.activeThread = thread;
+                $scope.data.actualTime = (new Date()).getTime();
             });
             $timeout(function () {
                 $scope.data.messageActive = index;
@@ -193,6 +194,13 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
         if (today.toString("yyyy") != date.toString("yyyy")) return date.toString("MMMM").substr(0, 3) + date.toString(" yyyy");
         else if (today.add(-1).days() > date) return date.toString("dd MMMM");
         return date.toString("hh:mm tt");
+    }
+
+    $scope.formatDateMessage = function (message) {
+        var time = message.date.getTime(), date = message.date.toString('dd MMMM, yyyy, hh:mm tt');
+
+
+        return date + ' (' + formatMilliseconds($scope.data.actualTime - time) + ')';
     }
 
     $scope.isImportant = function (labels) {
