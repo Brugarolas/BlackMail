@@ -295,8 +295,8 @@ storage.prototype.updateLabels = function (response) {
 
     /* Update labels */
     for (var i in labels) {
-        for (var n in labels[i].toDelete) this.addOrRemoveLabel(labels[i].toDelete[n], labels[i].id, false);
-        for (var n in labels[i].toAdd) this.addOrRemoveLabel(labels[i].toAdd[n], labels[i].id, true);
+        for (var n in labels[i].toDelete) this.addOrRemoveLabel(labels[i].toDelete[n], labels[i], false);
+        for (var n in labels[i].toAdd) this.addOrRemoveLabel(labels[i].toAdd[n], labels[i], true);
     }
 
     /* Save changes */
@@ -314,25 +314,28 @@ storage.prototype.addOrRemoveLabel = function (label, thread, add) {
         if (label == 'CATEGORY_PERSONAL' && isUnread(thread)) this.defaultLabels[0].unread += (add) ? 1 : -1;
 
         /* Check if we are adding or removing labels */
-        if (!add) for (var n in threads) {
+        if (!add) {
             /* Remove labels */
-            if (threads[n] == thread.id) {
-                threads.splice(n, 1);
-                break;
+            for (var n in threads) {
+                if (threads[n] == thread.id) {
+                    threads.splice(parseInt(n), 1);
+                    break;
+                }
             }
-        } else for (var i in threads) {
+        } else {
             /* Add labels */
-            threadAux = this.getThread(threads[i]);
-            if (threadAux.date < thread.date) {
-                threads.splice(i, 0, thread.id);
-                break;
+            for (var i in threads) {
+                threadAux = this.getThread(threads[i]);
+                if (threadAux.date < thread.date) {
+                    threads.splice(parseInt(i), 0, thread.id);
+                    break;
+                }
             }
         }
     }
 }
 
 storage.prototype.addOrRemoveUnread = function (thread, removing) {
-    console.log(thread);
     var isInbox = (thread.labels.indexOf('INBOX') > -1), isPersonal = (thread.labels.indexOf('CATEGORY_PERSONAL') > -1);
     if (isPersonal) this.defaultLabels[0].unread += (removing) ? -1 : 1;
     else if (isInbox) {
@@ -349,7 +352,8 @@ storage.prototype.removeHistoryMessage = function (messagesDeleted, callback) {
         console.log(messagesDeleted[i])
     }
 
-    if (typeof callback == "function") callback();
+    //if (typeof callback == "function") callback();
+    system.syncHistory();
 }
 
 //FIXME AUX
@@ -400,6 +404,7 @@ storage.prototype.removeThread = function (id) {
     this.removeFromAllLabels(thread);
     this.threadIds[id] = undefined;
     this.threadList.splice(index, 1);
+    this.sortThreadIds();
 }
 
 storage.prototype.getThreadByIndex = function (index, labelId) {

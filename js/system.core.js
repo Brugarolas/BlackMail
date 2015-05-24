@@ -14,6 +14,9 @@ function System() {
         this.platform = (typeof require('nw.gui') !== "undefined") ? "Node Webkit" : "Node.js";
     }
 
+    // Variables
+    this.history = [];
+
     //Init sub-systems
     if (typeof notificationSystem == 'function') this.notificationSystem = new notificationSystem();
     if (typeof gmail == 'function') this.network = new gmail('me');
@@ -288,28 +291,43 @@ System.prototype.getFileAttachment = function (attachId, callback, error) {
 }
 
 System.prototype.updateRefresh = function (callback, error) {
+    this.historyCallback = callback;
+
     system.network.getHistoryList(system.storage.getHistoryId(), function (response) {
-        var history, func, lastHistoryId = (response.result.history) ? response.result.history[response.result.history.length - 1].id : callback();
-        for (var i in response.result.history) {
-            history = response.result.history[i];
-            func = (history.id == lastHistoryId) ? callback : undefined;
+        if (!response.result.history) callback();
+        else {
+            // Save history
+            for (var i in response.result.history) system.history.push(response.result.history[i]);
 
-            console.log(history);
+            // Start sync history
+            system.syncHistory();
 
-            if (history.labelsAdded) system.addOrRemoveHistoryLabels(history.labelsAdded, true, callback);
-            else if (history.labelsRemoved) system.addOrRemoveHistoryLabels(history.labelsRemoved, false, callback);
-            else if (history.messagesAdded) system.addHistoryMessages(history.messagesAdded, callback);
-            else if (history.messagesDeleted) system.storage.removeHistoryMessage(history.messagesDeleted, callback);
-            else if (typeof callback == "function") callback();
+            /* Save history Id */
+            system.storage.setHistoryId(response.result.historyId);
         }
+    }, error);
+}
 
-        /* Save history Id */
-        system.storage.setHistoryId(response.result.historyId);
+System.prototype.syncHistory = function () {
+    if (this.history.length == 0) {
+        this.historyCallback();
 
         /* Save changes */
         //TODO (at the end save threads)
         //system.storage.saveThreads();
-    }, error);
+    }
+    else {
+        var history = this.history.shift();
+
+        console.log(history);
+
+        if (history.labelsAdded) system.addOrRemoveHistoryLabels(history.labelsAdded, true);
+        else if (history.labelsRemoved) system.addOrRemoveHistoryLabels(history.labelsRemoved, false);
+        else if (history.messagesAdded) system.addHistoryMessages(history.messagesAdded);
+        else if (history.messagesDeleted) system.storage.removeHistoryMessage(history.messagesDeleted);
+        else system.syncHistory();
+    }
+
 }
 
 //FIXME Aux
@@ -338,7 +356,7 @@ System.prototype.addOrRemoveHistoryLabels = function (labelsModified, add, callb
         }
     }
 
-    if (typeof callback == "function") callback();
+    system.syncHistory();
 }
 
 System.prototype.addHistoryMessages = function (messagesAdded, callback) {
@@ -362,7 +380,7 @@ System.prototype.addHistoryMessages = function (messagesAdded, callback) {
                 //TODO This is a callback, added message may not be found if we are updating it when refreshing
             }
 
-            if (typeof callback == "function") callback();
+            system.syncHistory();
         });
     }
 }
