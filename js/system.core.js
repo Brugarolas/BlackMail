@@ -95,7 +95,15 @@ System.prototype.getLabelList = function (callback, error) {
  * @param callbackInexistant
  */
 System.prototype.retrieveThreads = function (callbackRetrieve, callbackInexistant) {
-    if (system.storage.retrieveThreads()) callbackRetrieve();
+    //TODO
+    this.test();
+
+    if (system.storage.retrieveThreads()) {
+        system.network.getHistoryList(system.storage.getHistoryId(), function (response) {
+            if (response.code == 404) callbackInexistant();
+            else callbackRetrieve();
+        });
+    }
     else callbackInexistant();
 }
 
@@ -130,30 +138,6 @@ System.prototype.getPageThreads = function (threadsPerPage, between, end, error)
         if (actualPage < numOfPages) system.network.getPageThreads(steps[actualPage], next, error); else end();
     }
     system.network.getPageThreads(steps[0], next, error);
-}
-
-/**
- *
- * @param threadsPerPage
- * @param end
- * @param error
- */
-System.prototype.performPartialSync = function (threadsPerPage, end, error) {
-    var newMessages = [], next = function (response) {
-        if (response.resultSizeEstimate != 0) {
-            var nuevos = system.storage.addMessagesToList(response.result.messages);
-            newMessages = newMessages.concat(nuevos);
-
-            if (nuevos.length == response.result.messages.length && response.nextPageToken)
-                system.network.getNewMessages(next, error, system.prototype.getLastDate(), response.nextPageToken);
-            else if (newMessages.length == 0) end();
-            else {
-                system.storage.mergeThreadList(newMessages);
-                system.getNewMessagesData(newMessages, threadsPerPage, end, error);
-            }
-        } else end();
-    }
-    system.network.getNewMessages(next, error, system.storage.getLastDate());
 }
 
 /**
@@ -290,6 +274,13 @@ System.prototype.getFileAttachment = function (attachId, callback, error) {
     }
 }
 
+
+System.prototype.test = function () {
+    system.network.getHistoryList(166965, function (response) {
+        console.log(response);
+    });
+}
+
 System.prototype.updateRefresh = function (callback, error) {
     this.historyCallback = callback;
 
@@ -312,26 +303,23 @@ System.prototype.syncHistory = function () {
     if (this.history.length == 0) {
         this.historyCallback();
 
-        /* Save changes */
-        //TODO (at the end save threads)
-        //system.storage.saveThreads();
+        // Save changes
+        system.storage.saveThreads();
     }
     else {
         var history = this.history.shift();
-
         console.log(history);
 
         if (history.labelsAdded) system.addOrRemoveHistoryLabels(history.labelsAdded, true);
         else if (history.labelsRemoved) system.addOrRemoveHistoryLabels(history.labelsRemoved, false);
-        else if (history.messagesAdded) system.addHistoryMessages(history.messagesAdded);
-        else if (history.messagesDeleted) system.storage.removeHistoryMessage(history.messagesDeleted);
+        else if (history.messagesAdded) system.updateHistoryMessages(history.messagesAdded);
+        else if (history.messagesDeleted) system.updateHistoryMessages(history.messagesDeleted);
         else system.syncHistory();
     }
-
 }
 
 //FIXME Aux
-System.prototype.addOrRemoveHistoryLabels = function (labelsModified, add, callback) {
+System.prototype.addOrRemoveHistoryLabels = function (labelsModified, add) {
     var thread, label, index;
     for (var i in labelsModified) {
         /* Get thread */
@@ -359,10 +347,10 @@ System.prototype.addOrRemoveHistoryLabels = function (labelsModified, add, callb
     system.syncHistory();
 }
 
-System.prototype.addHistoryMessages = function (messagesAdded, callback) {
-    var thread, threadId, messageId, label;
+System.prototype.updateHistoryMessages = function (messagesAdded) {
+    var thread, threadId, lastId = messagesAdded[messagesAdded.length - 1].message.threadId, isLast;
     for (var i in messagesAdded) {
-        threadId = messagesAdded[i].message.threadId, thread = system.storage.getThread(threadId);
+        threadId = messagesAdded[i].message.threadId, thread = system.storage.getThread(threadId), isLast = (threadId == lastId);
 
         /* If thread exist, its easier to remove it and add it updated */
         if (thread) system.storage.removeThread(thread.id);
@@ -376,13 +364,23 @@ System.prototype.addHistoryMessages = function (messagesAdded, callback) {
                 console.log(response);
                 setThreadMetadata(thread, response.result);
                 system.storage.addToAllLabels(thread);
-
-                //TODO This is a callback, added message may not be found if we are updating it when refreshing
             }
 
-            system.syncHistory();
+            if (isLast) system.syncHistory();
         });
     }
+}
+
+System.prototype.removeHistoryMessages = function (messagesRemoved) {
+    var thread, threadId, messageId, label;
+    for (var i in messagesRemoved) {
+        threadId = messagesRemoved[i].message.threadId, thread = system.storage.getThread(threadId);
+
+        /* If thread exist, remove it */
+        if (thread) system.storage.removeThread(thread.id);
+    }
+
+    system.syncHistory();
 }
 
 //FIXME Aux

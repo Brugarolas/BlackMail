@@ -84,6 +84,8 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
                 $scope.data.loadingMessage = "Loading threads (" + porc + "% threads loaded)...";
             });
         }, function() {
+            system.endLoading();
+            $scope.data.categories = system.storage.getCategories();
             $scope.endLoading(1000);
         }, $scope.defaultErrorCallback);
     }
@@ -92,8 +94,10 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
         $scope.safeApply(function() {
             $scope.data.loadingMessage = "Getting new emails...";
         });
-        $scope.endLoading(1000);
-        //system.performPartialSync(100, function() { $scope.endLoading(1000); }, $scope.defaultErrorCallback);
+
+        system.endLoading();
+        $scope.data.categories = system.storage.getCategories();
+        system.updateRefresh(function() { $scope.endLoading(1000); }, $scope.defaultErrorCallback);
     }
 
     $scope.showThread = function (index, timeout) {
@@ -227,8 +231,6 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
     }
 
     $scope.endLoading = function (timeout) {
-        system.endLoading();
-        $scope.data.categories = system.storage.getCategories();
         $scope.safeApply(function () {
             $scope.data.loadingMessage = system.storage.saveThreads();
             $scope.setCategory({'id': "CATEGORY_PERSONAL", 'name': "Personal", 'class': 'fa-envelope-square'});

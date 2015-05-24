@@ -62,29 +62,6 @@ gmail.prototype.getPageThreads = function (threads, callback, error) {
     batchRequest.execute(callback, error);
 }
 
-gmail.prototype.getNewMessages = function (next, error, lastDate, nextPageToken) {
-    gapi.client.gmail.users.messages.list({
-        'userId': this.email,
-        'pageToken': nextPageToken,
-        'includeSpamTrash': true,
-        'q': '!in:chats after:' + lastDate.toString('yyyy/MM/dd')
-    }).execute(next, error);
-}
-
-gmail.prototype.getNewMessagesData = function (messages, callback, error) {
-    var batchRequest = gapi.client.newBatch();
-    for (var i in messages) {
-        batchRequest.add(
-            gapi.client.gmail.users.messages.get({
-                'userId': this.email,
-                'id': messages[i].id,
-                'format': 'metadata'
-            }), {'id': messages[i].id}
-        );
-    }
-    batchRequest.execute(callback, error);
-}
-
 gmail.prototype.getThread = function (id, callback, error) {
     gapi.client.gmail.users.threads.get({
         'userId': this.email,

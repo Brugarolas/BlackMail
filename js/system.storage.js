@@ -49,10 +49,6 @@ storage.prototype.getLabel = function (id) {
     return this.labels[id];
 }
 
-storage.prototype.getLastDate = function () {
-    return new Date(this.getThreadByIndex(0).date).add(-1).days();
-}
-
 storage.prototype.saveThreads = function () {
     var threadList = [], actualThread;
     for (var i in this.threadList) {
@@ -214,22 +210,6 @@ storage.prototype.mergeThreadList = function (messages) {
     if (messages.length > 0) system.notificationSystem.newNotification(messages.length + " new messages.");
 }
 
-storage.prototype.addMessagesToList = function (messages) {
-    var threadsAux = [];
-    for (var i in messages) {
-        if (this.threadIds[messages[i].threadId] === undefined) threadsAux.push({id: messages[i].threadId});
-        else {
-            var threadIndex = this.threadIds[messages[i].threadId];
-            if (threadIndex == 0) break;
-            else {
-                threadsAux.push({id: messages[i].threadId});
-                this.threadList.splice(threadIndex, 1);
-            }
-        }
-    }
-    return threadsAux;
-}
-
 storage.prototype.addOrUpdateThread = function (result) {
     var index = this.threadIds[result.id], thread = { id: result.id };
     if (index !== undefined) this.threadList.splice(index, 1);
@@ -343,17 +323,6 @@ storage.prototype.addOrRemoveUnread = function (thread, removing) {
         for (var i in thread.labels) if (!thread.labels[i].indexOf('CATEGORY_')) { hasCategories = true; break; }
         if (!hasCategories) this.defaultLabels[0].unread += (removing) ? -1 : 1;
     }
-}
-
-//TODO
-storage.prototype.removeHistoryMessage = function (messagesDeleted, callback) {
-    console.log("Messages deleted")
-    for (var i in messagesDeleted) {
-        console.log(messagesDeleted[i])
-    }
-
-    //if (typeof callback == "function") callback();
-    system.syncHistory();
 }
 
 //FIXME AUX
