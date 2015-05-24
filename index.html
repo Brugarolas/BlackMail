@@ -227,7 +227,11 @@
             <ul class="message-container">
                 <li ng-repeat="msg in data.activeThread.messages" ng-class="{sent: $even, received: $odd}">
                     <div class="details">
-                        <div class="left">You <div class="arrow" ng-class="{orange: $odd}"></div> Scott </div>
+                        <div class="left">
+                            {{msg.sender}}
+                            <div class="arrow" ng-class="{orange: $odd}"></div>
+                            <span ng-repeat="receiver in msg.receiver">{{receiver}} </span>
+                        </div>
                         <div class="right">{{formatDateMessage(msg)}}</div>
                     </div>
                     <div class="message">

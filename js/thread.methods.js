@@ -57,10 +57,22 @@ function getMessageDate(message) {
     return "(No date)";
 }
 
+function getMessageReceiver(message) {
+    var headers = message.payload.headers, receivers = [];
+    for (var i in headers) if (headers[i].name.toLowerCase() == "to" || headers[i].name.toLowerCase() == "cc") {
+        var res = headers[i].value.split(", ");
+        for (var n in res) {
+            console.log(res[n]);
+            receivers.push(formatSender(res[n]));
+        }
+    }
+    return receivers;
+}
+
 function getMessageSender(message) {
     var headers = message.payload.headers;
     for (var i in headers) if (headers[i].name.toLowerCase() == "from") return formatSender(headers[i].value);
-    return "(No sender)";
+    return "(No receiver)";
 }
 
 function getThreadLabels(response) {

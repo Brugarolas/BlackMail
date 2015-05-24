@@ -185,6 +185,9 @@ System.prototype.getThread = function (index, label, unreadMth, callback, error)
             msg = response.messages[i]; email = { id: msg.id, images: [], attachments: [] };
 
             email.date = new Date(getMessageDate(response.messages[i]));
+            email.sender = getMessageSender(response.messages[i]);
+            email.receiver = getMessageReceiver(response.messages[i]);
+
             console.log(response.messages[i]);
 
             // If it is not multipart...
