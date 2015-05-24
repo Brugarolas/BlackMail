@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/bootstrap.xl.css"/>
     <link rel="stylesheet" href="css/font-awesome.min.css"/>
     <link rel="stylesheet" href="css/font-awesome-animation.min.css"/>
+    <link rel="stylesheet" href="css/elusive-icons.min.css"/>
     <script src="js/libs/angular.min.js"></script>
 
     <!-- Fonts and reset stylesheet -->
@@ -195,7 +196,7 @@
                             <input type="checkbox" id="chk{{$index}}" ng-model="data.selectedCheckboxes[$index]" ng-click="clickOnCheckbox($event, $index)">
                             <label for="chk{{$index}}" class="toggle"></label>
                         </div>
-                        <span class="star-toggle glyphicon" ng-click="clickOnStar($event, $index)" ng-class="{'glyphicon-star-empty': !isImportant(msg.labels), 'important glyphicon-star': isImportant(msg.labels)}"></span>
+                        <span class="star-toggle el" ng-click="clickOnStar($event, $index)" ng-class="{'el-bookmark-empty': !isImportant(msg.labels), 'important el-bookmark': isImportant(msg.labels)}"></span>
                         <span class="title">{{msg.sender}} <span ng-show="msg.numOfMsgs > 1">({{msg.numOfMsgs}})</span></span>
                     </div>
                     <div class="col col-3 col-xs-2 col-sm-1 col-xl-1">
