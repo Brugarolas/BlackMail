@@ -230,6 +230,12 @@ System.prototype.modifyThreads = function (threads, addLabels, removeLabels, cal
     }, error);
 }
 
+System.prototype.deleteThreads = function (threads, callback, error) {
+    system.network.deleteThreads(threads, function (response) {
+        system.updateRefresh(callback, error);
+    }, error);
+}
+
 System.prototype.updateHistoryId = function (threadId, error) {
     system.network.getSingleThread(threadId, function (response) {
         system.storage.setHistoryId(response.result.historyId);

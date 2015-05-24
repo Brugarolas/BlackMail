@@ -116,6 +116,19 @@ gmail.prototype.modifyThreads = function (threads, addLabels, removeLabels, call
     batchRequest.execute(callback, error);
 }
 
+gmail.prototype.deleteThreads = function (threads, callback, error) {
+    var batchRequest = gapi.client.newBatch();
+    for (var i in threads) {
+        batchRequest.add(
+            gapi.client.gmail.users.threads.delete({
+                'id': threads[i],
+                'userId': this.email
+            }), {'id': i}
+        );
+    }
+    batchRequest.execute(callback, error);
+}
+
 gmail.prototype.getHistoryList = function (historyId, callback, error) {
     console.log("Loading with : " + historyId);
     gapi.client.gmail.users.history.list({

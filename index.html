@@ -82,7 +82,7 @@
         <div class="separator"></div>
 
         <div class="logo-container">
-            <span class="logo glyphicon glyphicon-envelope"></span>Mail
+            <span class="logo el el-envelope"></span>Mail
         </div>
         <a class="compose-button" ng-class="{red: data.showCompose }" ng-click="clickOnCompose()">
             <span ng-hide="data.showCompose"><i class="fa fa-pencil-square-o"> &nbsp; </i>Compose</span>
@@ -163,7 +163,7 @@
                         <li ng-click="modifySelectedThreads([], ['STARRED'])"><i class="fa fa-star-o"> &nbsp; </i> Unstar Message(s)</li>
                         <li ng-click="modifySelectedThreads(['UNREAD'], [])"><i class="fa fa-envelope"> &nbsp; </i> Mark as Unread</li>
                         <li ng-click="modifySelectedThreads([], ['UNREAD'])"><i class="fa fa-envelope-o"> &nbsp; </i> Mark as Read</li>
-                        <li><i class="fa fa-trash "> &nbsp; </i> Completely Delete</li>
+                        <li ng-click="completelyDelete()" ng-hide="data.selectedLabel.id != 'TRASH'"><i class="fa fa-trash "> &nbsp; </i> Completely Delete</li>
                     </ul>
                 </span>
             </li>

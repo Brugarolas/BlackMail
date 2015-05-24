@@ -1,8 +1,6 @@
 var clientId = '845333536022-mgv2v21pvnosl5p7dn3ccvu53hcpt2ga.apps.googleusercontent.com';
 var apiKey = 'AIzaSyBWOyx1Ri2q5TkIwO-lMMzUovgUmunDryE';
-var scopes = ['https://www.googleapis.com/auth/plus.me', 'https://www.googleapis.com/auth/gmail.readonly',
-    'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/gmail.compose',
-	'https://www.googleapis.com/auth/gmail.modify', 'https://www.google.com/m8/feeds'];
+var scopes = ['https://www.googleapis.com/auth/plus.me', 'https://mail.google.com/', 'https://www.google.com/m8/feeds'];
 
 var app = angular.module("app", ["styles"]);
 
@@ -177,6 +175,10 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
 
     $scope.modifySelectedThreads = function (addLabels, removeLabels) {
         system.modifyThreads($scope.getSelectedIds(), addLabels, removeLabels, $scope.safeUpdateMessages, $scope.defaultErrorCallback);
+    }
+
+    $scope.completelyDelete = function () {
+        system.deleteThreads($scope.getSelectedIds(), $scope.safeUpdateMessages, $scope.defaultErrorCallback);
     }
 
     $scope.updateRefresh = function () {
