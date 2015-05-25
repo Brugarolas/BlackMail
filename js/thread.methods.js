@@ -3,7 +3,7 @@
  */
 "use strict";
 
-function setThreadMetadata(thread, result) {
+function setThreadMetadata (thread, result) {
     var firstMessage = result.messages[0];
     var lastMessage = result.messages[result.messages.length - 1];
     var dateLabels = getThreadDateLabels(result);
@@ -19,7 +19,7 @@ function setThreadMetadata(thread, result) {
     thread.messages = [];
 }
 
-function updateThreadMetadata(thread, message) {
+function updateThreadMetadata (thread, message) {
     if (!thread.subject) thread.subject = getMessageSubject(message);
 
     thread.snippet = getMessageSnippet(message);
@@ -40,7 +40,7 @@ function updateThreadMetadata(thread, message) {
     else thread.numOfMsgs += 1;
 }
 
-function getMessageSubject(message) {
+function getMessageSubject (message) {
     var headers = message.payload.headers;
     for (var i in headers) if (headers[i].name.toLowerCase() == "subject") return headers[i].value;
     return "(No subject)";
@@ -51,31 +51,30 @@ function getMessageSnippet(message) {
     return (snippet) ? htmlspecialchars_decode(snippet, 1) : false;
 }
 
-function getMessageDate(message) {
+function getMessageDate (message) {
     var headers = message.payload.headers;
     for (var i in headers) if (headers[i].name.toLowerCase() == "date") return formatDate(headers[i].value);
     return "(No date)";
 }
 
-function getMessageReceiver(message) {
+function getMessageReceiver (message) {
     var headers = message.payload.headers, receivers = [];
     for (var i in headers) if (headers[i].name.toLowerCase() == "to" || headers[i].name.toLowerCase() == "cc") {
         var res = headers[i].value.split(", ");
         for (var n in res) {
-            console.log(res[n]);
-            receivers.push(formatSender(res[n]));
+            receivers.push({ 'name': formatSender(res[n]), 'email': formatEmail(res[n]) });
         }
     }
     return receivers;
 }
 
-function getMessageSender(message) {
+function getMessageSender (message) {
     var headers = message.payload.headers;
     for (var i in headers) if (headers[i].name.toLowerCase() == "from") return formatSender(headers[i].value);
     return "(No receiver)";
 }
 
-function getThreadLabels(response) {
+function getThreadLabels (response) {
     var label, labels = [];
     for (var i in response.messages) {
         for (var n in response.messages[i].labelIds) {
@@ -86,7 +85,7 @@ function getThreadLabels(response) {
     return labels;
 }
 
-function getThreadDateLabels(response) {
+function getThreadDateLabels (response) {
     var dateSent, date, label, labels = [];
     for (var i in response.messages) {
         for (var n in response.messages[i].labelIds) {
@@ -103,10 +102,8 @@ function getThreadDateLabels(response) {
     return [labels, date, dateSent];
 }
 
-function formatSender(sender) {
-    var value = sender.replace(new RegExp('"', "g"), '');
-
-    var x = value.indexOf('<');
+function formatSender (sender) {
+    var value = sender.replace(new RegExp('"', "g"), ''), x = value.indexOf('<');
     if (x > 0) return value.substring(0, x - 1);
     else {
         var y = value.indexOf('@');
@@ -114,7 +111,13 @@ function formatSender(sender) {
     }
 }
 
-function formatDate(date) {
+function formatEmail (sender) {
+    var value = sender.replace(new RegExp('"', "g"), ''), x = value.indexOf('<');
+    if (x > -1) return value.substring(x + 1, value.length - 1);
+    else return value;
+}
+
+function formatDate (date) {
     //Comprobar si tienen la franja horaria definida
     var standardMatch = date.match(/[+-]\d\d\d\d/);
     if (standardMatch) return date;
@@ -152,7 +155,7 @@ function getCategories (thread) {
     return categories;
 }
 
-function htmlspecialchars_decode(string, quote_style) {
+function htmlspecialchars_decode (string, quote_style) {
     // discuss at: http://phpjs.org/functions/htmlspecialchars_decode/
     var optTemp = 0, i = 0, noquotes = false;
     if (typeof quote_style === undefined) quote_style = 2;
@@ -184,7 +187,7 @@ function htmlspecialchars_decode(string, quote_style) {
     return string.replace(/&amp;/g, '&');
 }
 
-function utf8_encode(argString) {
+function utf8_encode (argString) {
     //discuss at: http://phpjs.org/functions/utf8_encode/
     if (argString === null || typeof argString === 'undefined') return '';
 

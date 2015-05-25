@@ -836,6 +836,15 @@ a {
           color: @color-dark-grey;
           transition-duration: .3s;
 
+          .receivers {
+            position: absolute;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            left: 162px;
+            right: 300px;
+          }
+
           .arrow {
             display: inline-block;
             position: relative;
@@ -868,6 +877,7 @@ a {
 
         .right {
           float: right;
+          display: block;
           color: #999;
         }
       }

@@ -230,7 +230,11 @@
                         <div class="left">
                             {{msg.sender}}
                             <div class="arrow" ng-class="{orange: $odd}"></div>
-                            <span ng-repeat="receiver in msg.receiver">{{receiver}} </span>
+                            <span class="receivers">
+                                <span ng-repeat="receiver in msg.receiver">
+                                    {{receiver.email}}<span ng-hide="$last">, </span>
+                                </span>
+                            </span>
                         </div>
                         <div class="right">{{formatDateMessage(msg)}}</div>
                     </div>
