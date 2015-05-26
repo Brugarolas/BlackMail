@@ -834,27 +834,23 @@ a {
           float: left;
           font-weight: 500;
           color: @color-dark-grey;
+          display: block;
           transition-duration: .3s;
 
-          .receivers {
-            position: absolute;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-            left: 162px;
-            right: 300px;
-          }
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
 
           .arrow {
             display: inline-block;
             position: relative;
             height: 2px;
-            width: 20px;
-            background: rgba(0, 0, 0, .15);
+            width: 12px;
+            background: rgba(0, 0, 0, 0.15) none repeat scroll 0 0;
             vertical-align: top;
-            margin: 12px 20px 0 15px;
-            border: 0 solid rgba(0, 0, 0, .15);
-            transition-duration: .3s;
+            margin: 12px 15px 0 10px;
+            border: 0 solid rgba(0, 0, 0, 0.15);
+            transition-duration: 0.3s;
 
             &:after {
               position: absolute;
@@ -879,6 +875,8 @@ a {
           float: right;
           display: block;
           color: #999;
+          font-size: 14px;
+          text-align: right;
         }
       }
 

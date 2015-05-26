@@ -227,16 +227,14 @@
             <ul class="message-container">
                 <li ng-repeat="msg in data.activeThread.messages" ng-class="{sent: $even, received: $odd}">
                     <div class="details">
-                        <div class="left">
+                        <span class="right col-md-4 col-xl-3">{{formatDateMessage(msg)}}</span>
+                        <div class="left col-md-8 col-xl-9">
                             {{msg.sender}}
                             <div class="arrow" ng-class="{orange: $odd}"></div>
-                            <span class="receivers">
-                                <span ng-repeat="receiver in msg.receiver">
-                                    {{receiver.email}}<span ng-hide="$last">, </span>
-                                </span>
+                            <span ng-repeat="receiver in msg.receiver">
+                                {{receiver.email}}<span ng-hide="$last">, </span>
                             </span>
                         </div>
-                        <div class="right">{{formatDateMessage(msg)}}</div>
                     </div>
                     <div class="message">
                         <iframe id="iframe{{$index}}" frameBorder="0" src="about:blank" scrolling="no" ng-email-iframe="{{msg.html}}" height="0"></iframe>
