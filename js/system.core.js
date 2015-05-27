@@ -369,13 +369,16 @@ System.prototype.updateHistoryMessages = function (messagesAdded) {
 
         /* We get updated thread */
         system.network.getSingleThread(threadId, function (response) {
-            if (response.code != 404) {
+            if (response.code != 404 && response.messages[0].labelIds) {
                 thread = { id: threadId };
                 system.storage.addThread(thread);
 
                 console.log(response);
                 setThreadMetadata(thread, response.result);
                 system.storage.addToAllLabels(thread);
+            } else if (!response.messages[0].labelIds) {
+                console.log("Chats...");
+                console.log(response);
             }
 
             if (isLast) system.syncHistory();
