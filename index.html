@@ -86,8 +86,8 @@
             <span class="logo el el-envelope"></span>Mail
         </div>
         <a class="compose-button" ng-class="{red: data.showCompose }" ng-click="clickOnCompose()">
-            <span ng-hide="data.showCompose"><i class="fa fa-pencil-square-o"> &nbsp; </i>Compose</span>
-            <span ng-show="data.showCompose"><i class="fa fa-times-circle"> &nbsp; </i>Close</span>
+            <span ng-if="!data.showCompose"><i class="fa fa-pencil-square-o"> &nbsp; </i>Compose</span>
+            <span ng-if="data.showCompose"><i class="fa fa-times-circle"> &nbsp; </i>Close</span>
         </a>
 
         <menu class="menu-segment">
@@ -95,7 +95,7 @@
                 <li ng-repeat="label in data.labels" ng-click="setLabel(label)" ng-class="{active: isActiveLabel(label)}">
                     <a>
                         <i class="fa" ng-class="label.class"> &nbsp; </i>
-                        {{label.name}}<span ng-show="label.unread"> ({{label.unread}})</span>
+                        {{label.name}}<span ng-if="label.unread"> ({{label.unread}})</span>
                     </a>
                 </li>
             </ul>
@@ -141,10 +141,10 @@
                 <span class="line line-angle2"></span>
             </a>
             <i class="fa" ng-class="data.selectedLabel.class"> &nbsp; </i> {{data.selectedLabel.name}}
-			<span class="menu" ng-show="showCategoryMenu()">
+			<span class="menu" ng-if="showCategoryMenu()">
 				<a ng-click="clickShowMenu()"><span class="icon selectable-menu glyphicon" ng-class="{'glyphicon-chevron-down': !data.showMenu, 'glyphicon-chevron-up': data.showMenu}"></span></a>
 				<ul class="sub-menu" ng-class="{'show-menu': data.showMenu}">
-                    <li ng-repeat="category in data.categories" ng-click="setCategory(category)" ng-hide="category.id == data.selectedLabel.id">
+                    <li ng-repeat="category in data.categories" ng-click="setCategory(category)" ng-if="category.id != data.selectedLabel.id">
                         <i class="fa" ng-class="category.class"> &nbsp; </i>{{category.name}}
                     </li>
                 </ul>
@@ -164,19 +164,19 @@
                         <li ng-click="modifySelectedThreads([], ['STARRED'])"><i class="fa fa-star-o"> &nbsp; </i> Unstar Message(s)</li>
                         <li ng-click="modifySelectedThreads(['UNREAD'], [])"><i class="fa fa-envelope"> &nbsp; </i> Mark as Unread</li>
                         <li ng-click="modifySelectedThreads([], ['UNREAD'])"><i class="fa fa-envelope-o"> &nbsp; </i> Mark as Read</li>
-                        <li ng-click="completelyDelete()" ng-hide="data.selectedLabel.id != 'TRASH'"><i class="fa fa-trash "> &nbsp; </i> Completely Delete</li>
+                        <li ng-click="completelyDelete()" ng-if="data.selectedLabel.id == 'TRASH'"><i class="fa fa-trash "> &nbsp; </i> Completely Delete</li>
                     </ul>
                 </span>
             </li>
             <li><a class="icon circle-icon glyphicon glyphicon-refresh" ng-class="{'faa-spin animated': data.refreshing}" ng-click="updateRefresh()"></a></li>
             <li><a class="icon circle-icon glyphicon glyphicon-share-alt"></a></li>
             <li>
-                <a ng-hide="data.selectedLabel.id == 'TRASH'" class="icon circle-icon red glyphicon glyphicon-remove" ng-click="modifySelectedThreads(['TRASH'], [])"></a>
-                <a ng-show="data.selectedLabel.id == 'TRASH'" class="icon circle-icon red glyphicon glyphicon-open" ng-click="modifySelectedThreads(['INBOX'], ['TRASH'])"></a>
+                <a ng-if="data.selectedLabel.id != 'TRASH'" class="icon circle-icon red glyphicon glyphicon-remove" ng-click="modifySelectedThreads(['TRASH'], [])"></a>
+                <a ng-if="data.selectedLabel.id == 'TRASH'" class="icon circle-icon red glyphicon glyphicon-open" ng-click="modifySelectedThreads(['INBOX'], ['TRASH'])"></a>
             </li>
             <li>
-                <a ng-hide="data.selectedLabel.id == 'SPAM'" class="icon circle-icon red glyphicon glyphicon-flag" ng-click="modifySelectedThreads(['SPAM'], [])"></a>
-                <a ng-show="data.selectedLabel.id == 'SPAM'" class="icon circle-icon red glyphicon glyphicon-ok" ng-click="modifySelectedThreads(['INBOX'], ['SPAM'])"></a>
+                <a ng-if="data.selectedLabel.id != 'SPAM'" class="icon circle-icon red glyphicon glyphicon-flag" ng-click="modifySelectedThreads(['SPAM'], [])"></a>
+                <a ng-if="data.selectedLabel.id == 'SPAM'" class="icon circle-icon red glyphicon glyphicon-ok" ng-click="modifySelectedThreads(['INBOX'], ['SPAM'])"></a>
             </li>
         </ul>
         <ul class="action-pages">
@@ -190,7 +190,7 @@
     <div id="main-nano-wrapper" class="nano">
         <div class="nano-content" perfect-scrollbar="rebuild-scrollbar-list">
             <ul class="message-list">
-                <li class="orange-dot" ng-repeat="msg in data.messageList" ng-class="{unread: isUnread(msg.labels), active: data.messageActive == $index}" ng-click="clickOnThread($event, $index)">
+                <li class="orange-dot" ng-repeat="msg in data.messageList track by msg.id" ng-class="{unread: isUnread(msg.labels), active: data.messageActive == $index}" ng-click="clickOnThread($event, $index)">
                     <div class="col col-1 col-xs-10 col-sm-3 col-xl-2">
                         <span class="dot"></span>
                         <div class="checkbox-wrapper">
@@ -198,14 +198,14 @@
                             <label for="chk{{$index}}" class="toggle"></label>
                         </div>
                         <span class="star-toggle el" ng-click="clickOnStar($event, $index)" ng-class="{'el-bookmark-empty': !isImportant(msg.labels), 'important el-bookmark': isImportant(msg.labels)}"></span>
-                        <span class="title">{{msg.sender}} <span ng-show="msg.numOfMsgs > 1">({{msg.numOfMsgs}})</span></span>
+                        <span class="title">{{msg.sender}} <span ng-if="msg.numOfMsgs > 1">({{msg.numOfMsgs}})</span></span>
                     </div>
                     <div class="col col-3 col-xs-2 col-sm-1 col-xl-1">
                         <div class="date">{{formatDateThread(msg)}}</div>
                     </div>
                     <div class="col col-2 col-xs-11 col-sm-8 col-xl-9">
                         <div class="subject">
-                            {{msg.subject}}<span ng-hide="!msg.snippet"> &nbsp;&ndash;&nbsp; <span class="teaser">{{msg.snippet}}</span></span>
+                            {{msg.subject}}<span ng-if="msg.snippet"> &nbsp;&ndash;&nbsp; <span class="teaser">{{msg.snippet}}</span></span>
                         </div>
                     </div>
                 </li>
@@ -219,7 +219,7 @@
     <div class="header">
         <div class="page-title">
             <a class="icon circle-icon glyphicon glyphicon-chevron-left" ng-click="clickOnHideThread()"></a>
-            {{data.activeThread.subject}} <span class="grey" ng-show="data.activeThread.numOfMsgs > 1">({{data.activeThread.numOfMsgs}})</span>
+            {{data.activeThread.subject}} <span class="grey" ng-if="data.activeThread.numOfMsgs > 1">({{data.activeThread.numOfMsgs}})</span>
         </div>
         <p>From <a>You</a> to <a>Scott Waite</a>, started on <a>March 2, 2014</a> at 2:14 pm est.</p>
     </div>
@@ -233,7 +233,7 @@
                             {{msg.sender}}
                             <div class="arrow" ng-class="{orange: $odd}"></div>
                             <span ng-repeat="receiver in msg.receiver">
-                                {{receiver.email}}<span ng-hide="$last">, </span>
+                                {{receiver.email}}<span ng-if="!$last">, </span>
                             </span>
                         </div>
                     </div>
@@ -267,7 +267,7 @@
             <form class="form-email">
                 <div class="form-group">
                     <div class="input-group">
-                        <input type="email" class="form-control" placeholder="To" ng-model="data.newMessage.email" ng-change="checkValidNewEmail()">
+                        <input type="email" class="form-control" placeholder="To" ng-model="data.newMessage.email" ng-model-options="{ debounce: 500 }" ng-change="checkValidNewEmail()">
                         <div class="input-group-btn">
                             <button type="button" class="btn btn-default dropdown-toggle" ng-click="toggleDropdown()"
                                     off-click="toggleDropdown()" off-click-if="data.showDropdown"
@@ -275,10 +275,10 @@
                                 <i class="fa fa-cog"></i> <span class="caret"></span>
                             </button>
                             <ul class="pull-right dropdown-menu" ng-class="{active: data.showDropdown}">
-                                <li ng-hide="data.showCc"><a ng-click="toggleCc()">Add Cc</a></li>
-                                <li ng-show="data.showCc"><a ng-click="toggleCc()">Hide Cc</a></li>
-                                <li ng-hide="data.showBcc"><a ng-click="toggleBcc()">Add Bcc</a></li>
-                                <li ng-show="data.showBcc"><a ng-click="toggleBcc()">Hide Bcc</a></li>
+                                <li ng-if="!data.showCc"><a ng-click="toggleCc()">Add Cc</a></li>
+                                <li ng-if="data.showCc"><a ng-click="toggleCc()">Hide Cc</a></li>
+                                <li ng-if="!data.showBcc"><a ng-click="toggleBcc()">Add Bcc</a></li>
+                                <li ng-if="data.showBcc"><a ng-click="toggleBcc()">Hide Bcc</a></li>
                             </ul>
                         </div>
                     </div>
@@ -296,7 +296,7 @@
                 </div>
 
                 <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Subject" ng-model="data.newMessage.subject" ng-change="checkValidNewEmail()">
+                    <input type="text" class="form-control" placeholder="Subject" ng-model="data.newMessage.subject" ng-model-options="{ debounce: 500 }" ng-change="checkValidNewEmail()">
                 </div>
 
                 <ul class="nav nav-tabs">
@@ -313,7 +313,7 @@
 
                 <div class="tab-content">
                     <div class="tab-pane" id="write" ng-class="{active: !data.active || data.active == 'write'}">
-                        <textarea class="form-control" rows="10" ng-model="data.newMessage.message" ng-change="checkValidNewEmail()" msd-elastic></textarea>
+                        <textarea class="form-control" rows="10" ng-model="data.newMessage.message" ng-model-options="{ debounce: 500 }" ng-change="checkValidNewEmail()" msd-elastic></textarea>
 
                         <div class="attachment">
                             <small>Attach files or images by dragging & dropping, <a>selecting them</a>, or pasting from the clipboard.</small>

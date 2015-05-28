@@ -14,7 +14,9 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
 		newMessage: {},
 		selectedCheckboxes: [],
 		sendingEmail: false,
-        newMailValid: false
+        newMailValid: false,
+        messageExists: true,
+        composeExists: true
     };
 
     $scope.handleClientLoad = function () {
@@ -243,12 +245,19 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
 
     $scope.endLoading = function (timeout) {
         $scope.safeApply(function () {
+            $scope.data.composeExists = false;
+            $scope.data.messageExists = false;
             $scope.data.loadingMessage = system.storage.saveThreads();
             $scope.setCategory({'id': "CATEGORY_PERSONAL", 'name': "Personal", 'class': 'fa-envelope-square'});
         });
 
         $scope.data.labels = system.storage.getDefaultLabels();
         $timeout(function () { $scope.data.loading = false; }, (!timeout) ? 0 : timeout);
+
+        // TODO Remove this when fully optimized
+        console.time('$scope.$digest');
+        $scope.$digest();
+        console.timeEnd('$scope.$digest');
     }
 
     $scope.safeUpdateMessages = function() {
