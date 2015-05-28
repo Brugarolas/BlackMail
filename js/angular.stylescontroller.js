@@ -4,7 +4,7 @@
 "use strict";
 
 angular.module("styles", ['scrollbar', 'email'])
-    .controller('StylesController', function ($scope, $controller) {
+    .controller('StylesController', function ($scope, $controller, $timeout) {
         $controller('EmailTemplateController', {$scope: $scope});
         $scope.data = {
             messageActive: -1,
@@ -45,10 +45,14 @@ angular.module("styles", ['scrollbar', 'email'])
 
         $scope.unselectThread = function () {
             $scope.data.messageActive = -1;
+            $timeout(function () {
+                $scope.data.messageExists = false;
+            }, 500);
             $scope.data.showOverlay = false;
         }
 
         $scope.showThread = function (index) {
+            $scope.data.messageExists = true;
             $scope.data.messageActive = index;
             $scope.data.showOverlay = true;
         }
@@ -66,10 +70,18 @@ angular.module("styles", ['scrollbar', 'email'])
         $scope.clickOnOverlay = function () {
             $scope.data.showOverlay = false;
             $scope.data.messageActive = -1;
+            $timeout(function () {
+                $scope.data.messageExists = false;
+            }, 500);
             $scope.data.showSidebar = false;
         }
 
         $scope.clickOnCompose = function () {
+            if (!$scope.data.showCompose) $scope.data.composeExists = true;
+            else $timeout(function () {
+                $scope.data.composeExists = false;
+            }, 500);
+
             $scope.data.showCompose = !$scope.data.showCompose;
         }
 

@@ -107,6 +107,7 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
                 $scope.data.actualTime = (new Date()).getTime();
             });
             $timeout(function () {
+                $scope.data.messageExists = true;
                 $scope.data.messageActive = index;
                 $scope.data.showOverlay = true;
             }, (!timeout) ? 0 : timeout);
@@ -260,6 +261,10 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
             $scope.data.newMessage = {};
             $scope.data.sendingEmail = false;
             $scope.data.showCompose = false;
+
+            $timeout(function () {
+                $scope.data.composeExists = false;
+            }, 500);
         });
     }
 

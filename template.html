@@ -527,7 +527,7 @@
 </main>
 
 <!-- Message right menu -->
-<div id="message">
+<div id="message" ng-if="data.messageExists">
     <div class="header">
         <h1 class="page-title"><a class="icon circle-icon glyphicon glyphicon-chevron-left trigger-message-close"
                                   ng-click="clickOnHideThread()"></a>Process<span class="grey">(6)</span></h1>
@@ -749,7 +749,7 @@
     </div>
 </div>
 
-<div id="compose" perfect-scrollbar>
+<div id="compose" ng-if="data.composeExists" perfect-scrollbar>
     <div class="header">
         <h1 class="page-title">
             <a class="icon circle-icon glyphicon glyphicon-chevron-left" ng-click="clickOnCompose()"></a>

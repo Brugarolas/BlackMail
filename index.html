@@ -215,7 +215,7 @@
 </main>
 
 <!-- Message right menu -->
-<div id="message">
+<div id="message" ng-if="data.messageExists">
     <div class="header">
         <div class="page-title">
             <a class="icon circle-icon glyphicon glyphicon-chevron-left" ng-click="clickOnHideThread()"></a>
@@ -254,7 +254,7 @@
 </div>
 
 <!-- Compose message -->
-<div id="compose" perfect-scrollbar>
+<div id="compose" ng-if="data.composeExists" perfect-scrollbar>
     <div class="header">
         <h1 class="page-title">
             <a class="icon circle-icon glyphicon glyphicon-chevron-left" ng-click="clickOnCompose()"></a>
@@ -336,7 +336,7 @@
 </div>
 
 <!-- Loading -->
-<div id="loading-page" ng-show="data.loading">
+<div id="loading-page" ng-if="data.loading">
     <div class="seq-preloader">
         <div id="loader"></div>
         <svg height="16" width="42" class="seq-preload-indicator">
