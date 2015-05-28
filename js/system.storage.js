@@ -50,9 +50,8 @@ storage.prototype.getLabel = function (id) {
 }
 
 storage.prototype.saveThreads = function () {
-    var threadList = [], actualThread;
-    for (var i in this.threadList) {
-        actualThread = this.threadList[i];
+    var threadList = [];
+    _.forEach(this.threadList, function (actualThread) {
         threadList.push({
             id: actualThread.id,
             subject: actualThread.subject,
@@ -63,22 +62,21 @@ storage.prototype.saveThreads = function () {
             dateSent: actualThread.dateSent,
             numOfMsgs: actualThread.numOfMsgs
         });
-    }
+    });
 
     var compressed = LZString.compress(JSON.stringify({ list: threadList, history: this.historyId }));
     localStorage.setItem(this.getEmail(), compressed);
 
-    for (var i in this.threadList) {
-        if (this.threadList[i].date) this.threadList[i].date = new Date(this.threadList[i].date);
-        if (this.threadList[i].dateSent) this.threadList[i].dateSent = new Date(this.threadList[i].dateSent);
-    }
+    _.forEach(this.threadList, function (actualThread) {
+        if (actualThread.date) actualThread.date = new Date(actualThread.date);
+        if (actualThread.dateSent) actualThread.dateSent = new Date(actualThread.dateSent);
+    })
 
     return "Saving " + getSizeBytes(compressed.length * 16) + " of data...";
 }
 
 storage.prototype.getCategories = function () {
-    var labels = [], categories = [], category = "CATEGORY_";
-    for (var i in this.labels) if (this.labels[i].id.indexOf(category) == 0) labels.push(this.labels[i].id);
+    var labels = _.pluck(this.labels, 'id'), categories = [], category = "CATEGORY_";
 
     var sortedLabels = [
         {'id': "CATEGORY_PERSONAL", 'name': "Personal", 'class': 'fa-envelope-square'},
@@ -88,7 +86,9 @@ storage.prototype.getCategories = function () {
         {'id': "CATEGORY_FORUMS", 'name': "Forums", 'class': 'fa-comments'}
     ];
 
-    for (i in sortedLabels) if (labels.indexOf(sortedLabels[i].id) > -1) categories.push(sortedLabels[i]);
+    _.forEach(sortedLabels, function (actualLabel) {
+        if (labels.indexOf(actualLabel.id) > -1) categories.push(actualLabel);
+    });
     return categories;
 }
 
@@ -101,39 +101,50 @@ storage.prototype.retrieveThreads = function () {
 
     this.threadList = item.list;
     this.setHistoryId(item.history);
-    for (var i in this.threadList) this.threadList[i].messages = [];
+    _.forEach(this.threadList, function (thread) {
+        thread.messages = [];
+    })
     this.sortThreadIds();
     return true;
 }
 
 storage.prototype.classifyAllThreads = function () {
     /* First, we classify only default labels */
-    var defaultLabels = this.getDefaultLabels(), thread, categories = this.getCategories();
-    for (var i in defaultLabels) this.threadLabels[defaultLabels[i].id] = [];
+    var defaultLabels = this.getDefaultLabels(), categories = this.getCategories();
+    _.forEach(defaultLabels, function (actualLabel) {
+        this.threadLabels[actualLabel.id] = [];
+    }, this);
 
-    for (var i in this.threadList) {
-        thread = this.threadList[i];
-
-        if (thread.labels.indexOf('TRASH') > -1) { if (!isAttachment(thread)) this.threadLabels['TRASH'].push(thread.id); else console.log(thread); }
-        else if (thread.labels.indexOf('SPAM') > -1) this.threadLabels['SPAM'].push(thread.id);
-        else for (n in thread.labels) if (thread.labels[n] in this.threadLabels) this.threadLabels[thread.labels[n]].push(thread.id);
-    }
+    _.forEach(this.threadList, function (actualThread) {
+        if (actualThread.labels == 'TRASH') {
+            if (!isAttachment(actualThread)) this.threadLabels['TRASH'].push(actualThread.id);
+            else console.log(actualThread);
+        }
+        else if (actualThread.labels == 'SPAM') this.threadLabels['SPAM'].push(actualThread.id);
+        else _.forEach(actualThread.labels, function (actualLabel) {
+            if (this.threadLabels[actualLabel]) this.threadLabels[actualLabel].push(actualThread.id);
+        }, this);
+    }, this);
 
     /* Then, we classify categories from Inbox threads (so we don't see a deleted thread) */
-    for (var i in categories) this.threadLabels[categories[i].id] = [];
+    _.forEach(categories, function (category) {
+        this.threadLabels[category.id] = [];
+    }, this);
 
-    var inboxLabels = this.threadLabels['INBOX'], hasCategories;
-    for (var i in inboxLabels) {
-        hasCategories = false; thread = this.getThread(inboxLabels[i]);
+    var inboxLabels = this.threadLabels['INBOX'], hasCategories, thread;
+    _.forEach(inboxLabels, function (actualThreadId) {
+        thread = this.threadList[this.threadIds[actualThreadId]];
+        hasCategories = false;
 
-        for (var n in thread.labels) if (thread.labels[n].indexOf('CATEGORY_') == 0) {
-            hasCategories = true;
-            this.threadLabels[thread.labels[n]].push(inboxLabels[i]);
-        }
+        _.forEach(thread.labels, function (actualLabel) {
+            if (_.includes(actualLabel, 'CATEGORY_')) {
+                hasCategories = true;
+                this.threadLabels[actualLabel].push(actualThreadId);
+            }
+        }, this);
 
-        /* If message don't have a category, it will be in personal category */
-        if (!hasCategories) this.threadLabels['CATEGORY_PERSONAL'].push(inboxLabels[i]);
-    }
+        if (!hasCategories) this.threadLabels['CATEGORY_PERSONAL'].push(actualThreadId);
+    }, this);
 
     /* Sort array of sent messages */
     this.sortMessages('SENT');
@@ -148,14 +159,13 @@ storage.prototype.sortMessages = function(label) {
     });
 }
 
-storage.prototype.countUnread = function() {
-    /* Count unread personal messages */
-    var personal = this.threadLabels['CATEGORY_PERSONAL'], thread;
+storage.prototype.countUnread = function () {
+    var thread;
     this.defaultLabels[0].unread = 0;
-    for (var i in personal) {
-        thread = this.getThread(personal[i]);
+    _.forEach(this.threadLabels['CATEGORY_PERSONAL'], function (threadId) {
+        thread = this.getThread(threadId);
         if (thread.labels.indexOf('UNREAD') > -1) this.defaultLabels[0].unread += 1;
-    }
+    }, system.storage);
 }
 
 storage.prototype.getDefaultLabels = function () {
@@ -177,10 +187,10 @@ storage.prototype.getDefaultLabels = function () {
 }
 
 storage.prototype.addNewThreadsToList = function (threads) {
-    for (var i in threads) {
-        this.threadList.push({id: threads[i].id});
-        this.threadIds[threads[i].id] = this.threadList.length - 1;
-    }
+    _.forEach(threads, function (newThread) {
+        this.threadList.push({id: newThread.id});
+        this.threadIds[newThread.id] = this.threadList.length - 1;
+    }, this);
 }
 
 storage.prototype.addThread = function (thread) {
@@ -204,15 +214,14 @@ storage.prototype.sortThreadIds = function () {
 storage.prototype.mergeThreadList = function (messages) {
     this.threadList = messages.concat(this.threadList);
     this.threadIds = {};
-
-    for (var i in this.threadList) this.threadIds[this.threadList[i].id] = i;
+    this.sortThreadIds();
 
     if (messages.length > 0) system.notificationSystem.newNotification(messages.length + " new messages.");
 }
 
 storage.prototype.addOrUpdateThread = function (result) {
     var index = this.threadIds[result.id], thread = { id: result.id };
-    if (index !== undefined) this.threadList.splice(index, 1);
+    if (index !== undefined) _.pullAt(this.threadList, index);
 
     /* Set metadata */
     setThreadMetadata(thread, result);
@@ -223,12 +232,13 @@ storage.prototype.addOrUpdateThread = function (result) {
 
     /* Add thread to labels */
     var isInbox = false, hasCategories = false;
-    for (var i in thread.labels) {
-        if (!thread.labels[i].indexOf('INBOX')) isInbox = true;
-        if (!thread.labels[i].indexOf('CATEGORY_')) hasCategories = true;
+    _.forEach(thread.labels, function (actualLabel) {
+        if (actualLabel == 'INBOX') isInbox = true;
+        else if (!actualLabel.indexOf('CATEGORY_')) hasCategories = true;
 
         this.addToLabel(thread.labels[i], thread.id);
-    }
+    }, this);
+
     if (isInbox && !hasCategories) this.addToLabel('CATEGORY_PERSONAL', thread.id);
 
     /* Save changes */
@@ -237,47 +247,60 @@ storage.prototype.addOrUpdateThread = function (result) {
 
 storage.prototype.updateLabels = function (response) {
     var thread, label, labels = [];
-    for (var i in response) {
-        /* Get old labels */
-        thread = this.threadList[this.threadIds[response[i].result.id]];
+    console.log(response);
+
+    _.forEach(response, function (part) {
+        // Get old labels
+        thread = this.getThread(part.result.id);
         label = { old: thread.labels };
 
-        /* Get new labels */
-        thread.labels = getThreadLabels(response[i].result);
+        // Get new labels
+        thread.labels = getThreadLabels(part.result);
         label.new = thread.labels;
 
-        /* Get the difference between old and new labels */
+        // Get the difference between old and new labels
         labels.push({
-            id: thread.id,
-            toAdd: label.new.filter( function (el) { return label.old.indexOf( el ) < 0; }),
-            toDelete: label.old.filter( function (el) { return label.new.indexOf( el ) < 0; })
+            thread: thread,
+            toAdd: _.difference(label.new, label.old),
+            toDelete: _.difference(label.old, label.new)
         });
         var lastDifference = labels[labels.length - 1], hasCategories;
 
-        /* If we are going to remove Inbox label, remove Categories too */
+        // If we are going to remove Inbox label, remove Categories too
         if (lastDifference.toDelete.indexOf('INBOX') > -1) {
             hasCategories = false;
-            for (var n in thread.labels) {
-                if (!thread.labels[n].indexOf('CATEGORY_')) { lastDifference.toDelete.push(thread.labels[n]); hasCategories = true; }
-            }
+            _.forEach(thread.labels, function (label) {
+                if (!label.indexOf('CATEGORY_')) {
+                    lastDifference.toDelete.push(label);
+                    hasCategories = true;
+                }
+            });
             if (!hasCategories) lastDifference.toDelete.push('CATEGORY_PERSONAL');
         }
 
-        /* If we are going to add Inbox label, add Categories too */
+        // If we are going to add Inbox label, add Categories too
         if (lastDifference.toAdd.indexOf('INBOX') > -1) {
             hasCategories = false;
-            for (var i in thread.labels) {
-                if (!thread.labels[i].indexOf('CATEGORY_')) { lastDifference.toAdd.push(thread.labels[i]); hasCategories = true; }
-            }
+            _.forEach(thread.labels, function (label) {
+                if (!label.indexOf('CATEGORY_')) {
+                    lastDifference.toAdd.push(label);
+                    hasCategories = true;
+                }
+            });
             if (!hasCategories) lastDifference.toAdd.push('CATEGORY_PERSONAL');
         }
-    }
+    }, this);
 
-    /* Update labels */
-    for (var i in labels) {
-        for (var n in labels[i].toDelete) this.addOrRemoveLabel(labels[i].toDelete[n], labels[i], false);
-        for (var n in labels[i].toAdd) this.addOrRemoveLabel(labels[i].toAdd[n], labels[i], true);
-    }
+    // Update labels
+    _.forEach(labels, function (actualLabel) {
+        _.forEach(actualLabel.toDelete, function (label) {
+            this.addOrRemoveLabel(label, actualLabel.thread, false);
+        }, this);
+
+        _.forEach(actualLabel.toAdd, function (label) {
+            this.addOrRemoveLabel(label, actualLabel.thread, true);
+        }, this);
+    }, this);
 
     /* Save changes */
     this.saveThreads();
@@ -298,7 +321,7 @@ storage.prototype.addOrRemoveLabel = function (label, thread, add) {
             /* Remove labels */
             for (var n in threads) {
                 if (threads[n] == thread.id) {
-                    threads.splice(parseInt(n), 1);
+                    _.pullAt(threads, parseInt(n));
                     break;
                 }
             }
@@ -316,11 +339,16 @@ storage.prototype.addOrRemoveLabel = function (label, thread, add) {
 }
 
 storage.prototype.addOrRemoveUnread = function (thread, removing) {
-    var isInbox = (thread.labels.indexOf('INBOX') > -1), isPersonal = (thread.labels.indexOf('CATEGORY_PERSONAL') > -1);
+    var isInbox = (thread.labels == 'INBOX'), isPersonal = (thread.labels == 'CATEGORY_PERSONAL');
     if (isPersonal) this.defaultLabels[0].unread += (removing) ? -1 : 1;
     else if (isInbox) {
         var hasCategories = false;
-        for (var i in thread.labels) if (!thread.labels[i].indexOf('CATEGORY_')) { hasCategories = true; break; }
+        _.forEach(thread.labels, function (actualThread) {
+            if (!actualThread.indexOf('CATEGORY_')) {
+                hasCategories = true;
+                return false;
+            }
+        });
         if (!hasCategories) this.defaultLabels[0].unread += (removing) ? -1 : 1;
     }
 }
@@ -338,14 +366,12 @@ storage.prototype.removeFromAllLabels = function (thread) {
 //FIXME AUX
 storage.prototype.addOrRemoveAllLabels = function (thread, add) {
     var hasInbox, hasCategories, label;
-    for (var i in thread.labels) {
-        label = thread.labels[i];
-
+    _.forEach(thread.labels, function (label) {
         if (label == 'INBOX') hasInbox = true;
         else if (!label.indexOf('CATEGORY_')) hasCategories = true;
 
         this.addOrRemoveLabel(label, thread, add);
-    }
+    });
     if (hasInbox && !hasCategories) this.addOrRemoveLabel('CATEGORY_PERSONAL', thread, add);
 }
 
@@ -354,8 +380,7 @@ storage.prototype.addMetadataToThreads = function (response) {
 }
 
 storage.prototype.addMessageToThread = function (message) {
-    var thread = this.threadList[this.threadIds[message.threadId]];
-    updateThreadMetadata(thread, message);
+    updateThreadMetadata(this.getThread(message.threadId), message);
 }
 
 storage.prototype.getNumOfThreads = function (labelId) {
@@ -372,7 +397,7 @@ storage.prototype.removeThread = function (id) {
 
     this.removeFromAllLabels(thread);
     this.threadIds[id] = undefined;
-    this.threadList.splice(index, 1);
+    _.pullAt(this.threadList, index);
     this.sortThreadIds();
 }
 
@@ -383,9 +408,9 @@ storage.prototype.getThreadByIndex = function (index, labelId) {
 
 storage.prototype.getThreads = function (page, num, labelId) {
     var startingThread = page * num;
-    if (!labelId) return this.threadList.slice(startingThread, startingThread + num);
+    if (!labelId) return _.slice(this.threadList, startingThread, startingThread + num);
     else {
-        var threads = [], threadLabels = this.threadLabels[labelId].slice(startingThread, startingThread + num);
+        var threads = [], threadLabels = _.slice(this.threadLabels[labelId], startingThread, startingThread + num);
         for (var i in threadLabels) threads.push(this.getThread(threadLabels[i]));
         return threads;
     }
@@ -393,21 +418,21 @@ storage.prototype.getThreads = function (page, num, labelId) {
 
 storage.prototype.addAttachments = function (messageId, attachments) {
     var attachment, header;
-    for (var i in attachments) {
+    _.forEach(attachments, function (actualAttach) {
         attachment = {
-            id: attachments[i].body.attachmentId,
+            id: actualAttach.body.attachmentId,
             msgId: messageId,
-            name: attachments[i].filename,
-            mime: attachments[i].mimeType
+            name: actualAttach.filename,
+            mime: actualAttach.mimeType
         };
-        for (var n in attachments[i].headers) {
-            header = attachments[i].headers[n];
+
+        _.forEach(actualAttach.headers, function (header) {
             if (header.name == 'Content-Transfer-Encoding') attachment.encoding = header.value;
-        }
+        })
 
         this.attachmentList.push(attachment);
         this.attachmentIds[attachment.id] = this.attachmentList.length - 1;
-    }
+    }, this);
 }
 
 storage.prototype.getAttachment = function (attachId) {

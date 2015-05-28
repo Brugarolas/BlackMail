@@ -225,8 +225,8 @@ System.prototype.getThread = function (index, label, unreadMth, callback, error)
  * @param callback
  * @param error
  */
-System.prototype.modifyThreads = function (threads, addLabels, removeLabels, callback, error) {
-    system.network.modifyThreads(threads, addLabels, removeLabels, function (response) {
+System.prototype.modifyThreads = function (threadsIds, addLabels, removeLabels, callback, error) {
+    system.network.modifyThreads(threadsIds, addLabels, removeLabels, function (response) {
         /* Get and update last history Id */
         system.updateHistoryId(response[Object.keys(response).length - 1].result.id, error);
 

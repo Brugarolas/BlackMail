@@ -101,12 +101,12 @@ gmail.prototype.sendMessage = function(content, callback, error) {
     }).execute(callback, error);
 }
 
-gmail.prototype.modifyThreads = function (threads, addLabels, removeLabels, callback, error) {
+gmail.prototype.modifyThreads = function (threadsIds, addLabels, removeLabels, callback, error) {
     var batchRequest = gapi.client.newBatch();
-    for (var i in threads) {
+    for (var i in threadsIds) {
         batchRequest.add(
             gapi.client.gmail.users.threads.modify({
-                'id': threads[i],
+                'id': threadsIds[i],
                 'userId': this.email,
                 'addLabelIds': addLabels,
                 'removeLabelIds': removeLabels
