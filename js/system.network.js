@@ -129,10 +129,19 @@ gmail.prototype.deleteThreads = function (threads, callback, error) {
     batchRequest.execute(callback, error);
 }
 
-gmail.prototype.getHistoryList = function (historyId, callback, error) {
+gmail.prototype.getHistoryList = function (historyId, nextPage, callback, error) {
     console.log("Loading with : " + historyId);
     gapi.client.gmail.users.history.list({
         'userId': this.email,
-        'startHistoryId': historyId
+        'startHistoryId': historyId,
+        'pageToken': nextPage
+    }).execute(callback, error);
+}
+
+gmail.prototype.getFirstHistory = function (historyId, callback, error) {
+    gapi.client.gmail.users.history.list({
+        'userId': this.email,
+        'startHistoryId': historyId,
+        'maxResults': 2
     }).execute(callback, error);
 }

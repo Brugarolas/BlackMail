@@ -95,11 +95,8 @@ System.prototype.getLabelList = function (callback, error) {
  * @param callbackInexistant
  */
 System.prototype.retrieveThreads = function (callbackRetrieve, callbackInexistant) {
-    //TODO
-    this.test();
-
     if (system.storage.retrieveThreads()) {
-        system.network.getHistoryList(system.storage.getHistoryId(), function (response) {
+        system.network.getFirstHistory(system.storage.getHistoryId(), function (response) {
             if (response.code == 404) callbackInexistant();
             else callbackRetrieve();
         });
@@ -286,29 +283,26 @@ System.prototype.getFileAttachment = function (attachId, callback, error) {
     }
 }
 
-
-System.prototype.test = function () {
-    system.network.getHistoryList(166965, function (response) {
-        console.log(response);
-    });
-}
-
 System.prototype.updateRefresh = function (callback, error) {
     this.historyCallback = callback;
+    this.lastHistoryId = system.storage.getHistoryId();
 
-    system.network.getHistoryList(system.storage.getHistoryId(), function (response) {
+    var next = function (response) {
         if (!response.result.history) callback();
         else {
+            // Save history Id
+            if (system.history.length == 0) system.storage.setHistoryId(response.result.historyId);
+
             // Save history
             for (var i in response.result.history) system.history.push(response.result.history[i]);
 
-            // Start sync history
-            system.syncHistory();
-
-            /* Save history Id */
-            system.storage.setHistoryId(response.result.historyId);
+            // Start sync history or continue getting history list
+            if (!response.result.nextPageToken) system.syncHistory();
+            else system.network.getHistoryList(system.lastHistoryId, response.result.nextPageToken, next, error);
         }
-    }, error);
+    }
+
+    system.network.getHistoryList(system.storage.getHistoryId(), undefined, next, error);
 }
 
 System.prototype.syncHistory = function () {

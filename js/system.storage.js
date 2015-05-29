@@ -371,7 +371,7 @@ storage.prototype.addOrRemoveAllLabels = function (thread, add) {
         else if (!label.indexOf('CATEGORY_')) hasCategories = true;
 
         this.addOrRemoveLabel(label, thread, add);
-    });
+    }, this);
     if (hasInbox && !hasCategories) this.addOrRemoveLabel('CATEGORY_PERSONAL', thread, add);
 }
 
