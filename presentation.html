@@ -28,6 +28,75 @@
         link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
         document.getElementsByTagName( 'head' )[0].appendChild( link );
     </script>
+</head>
+<body>
+    <div class="reveal">
+        <!-- Any section element inside of this container is displayed as a slide -->
+        <div class="slides">
+            <section>
+                <h1>BlackMail</h1>
+                <h3>Un cliente de Google Mail.</h3>
+                <p>
+                    <small>Hecho por <a href="https://github.com/Brugarolas">Andrés Brugarolas Martínez</a> / <a href="mailto:brugarolas.92@gmail.com">brugarolas.92@gmail.com</a>. </small>
+                    <small>Presentación hecha con reveal.js.</small>
+                </p>
+            </section>
+
+            <section>
+                <h2>BlackMail</h2>
+                <p>
+                    BlackMail es un cliente de Gmail creado únicamente con tecnologías web (HTML, CSS y Javascript) y la API de Google.
+                    Para tener una aplicación de escritorio independiente del navegador se ha utilizado node-webkit (más recientemente
+                    renombrado NW.js).
+                </p>
+            </section>
+
+            <section>
+                <h2>¿Por qué tecnologías web?</h2>
+                <section>
+                    <p>
+                        No es extraño preguntarse por qué se han utilizado tecnologías web en lugar de otras alternativas, ya que éstas cuentan
+                        con numerosas desventajas, entre las que destaca el poco rendimiento que ofrecen. A continuación veremos algunos de los
+                        motivos por los que se decidió así.
+                    </p>
+                </section>
+
+                <section>
+                    <h4>Independencia de la plataforma</h4>
+                    <p>
+                        El combo HTML, CSS y JS es completamente independiente de la plataforma, y por tanto goza de una excelente portabilidad,
+                        siendo el único factor limitante que la plataforma cuente con un navegador web.
+                    </p>
+                </section>
+
+                <section>
+                    <h4>Excelentes herramientas</h4>
+                    <p>
+                        Se cuenta con excelentes herramientas para diseñar y depurar aplicaciones web, empezando por los propios navegadores.
+                        El diseño de aplicaciones es muy rápido y sencillo, no hace falta compilar nada, sino que basta con refrescar la vista.
+                    </p>
+                </section>
+
+                <section>
+                    <h4>Diseño de interfaz</h4>
+                    <p>
+                        Con HTML y CSS se pueden diseñar interfaces bonitas que se adaptan a cualquier tipo de pantalla, ofreciendo una gran
+                        versatilidad y flexibilidad en cuanto al diseño. Esto se puede hacer de forma muy sencilla utilizando las propias
+                        herramientas que los navegadores de escritorio nos ofrecen, como el Inspector o el Editor de estilos.
+                    </p>
+                </section>
+
+                <section>
+                    <h4>Librerías y frameworks</h4>
+                    <p>
+                        Al tratarse de una tecnología relativamente madura, existen numerosos frameworks y librerías para ayudarnos en el
+                        desarrollo. Algunos ejemplos que hemos utilizado con AngularJS, Bootstrap, o Less.js.
+                    </p>
+                </section>
+            </section>
+
+        </div>
+    </div>
 
     <script src="js/head.min.js"></script>
     <script src="js/reveal.js"></script>
@@ -54,8 +123,5 @@
             ]
         });
     </script>
-</head>
-<body>
-
 </body>
 </html>
