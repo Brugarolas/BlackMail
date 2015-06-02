@@ -74,6 +74,7 @@
                     <p>
                         Se cuenta con excelentes herramientas para diseñar y depurar aplicaciones web, empezando por los propios navegadores.
                         El diseño de aplicaciones es muy rápido y sencillo, no hace falta compilar nada, sino que basta con refrescar la vista.
+						La programación es, en general, más productiva que con otros lenguajes.
                     </p>
                 </section>
 
@@ -107,14 +108,76 @@
                     <h4>Escaso rendimiento</h4>
                     <p>
                         El principal motivo es que, al ser una aplicación que hace un uso intensivo de JavaScript, el rendimiento en dispositivos móviles
-                        es bastante pobre. Y aunque en terminales de gama alta funciona a la perfección, en terminales más modestos es inusable.
+                        es bastante pobre. Y aunque en terminales de gama alta funciona a la perfección, en terminales más modestos es inutilizable.
                     </p>
                 </section>
                 <section>
-                    <h4>Librerías y frameworks</h4>
+                    <h4>Falta de alternativas</h4>
                     <p>
                         Además, para dispositivos móviles existen otras alternativas gratuitas, mientras que para PC no hay ningún cliente que aproveche
                         las características que nos ofrece la API de Google, sino que suelen protocolos más generales como IMAP o POP3.
+                    </p>
+                </section>
+            </section>
+
+            <section>
+                <h2>¿Por qué la API de Google?</h2>
+                <section>
+                    <p>
+                        ¿Por qué se ha utilizado la API de Google y no otros protocolos específicos para el correo como POP3 o IMAP? A continuación
+                        veremos algunas de las razones que me han llevado a tomar esa decisión en el diseño.
+                    </p>
+                </section>
+                <section>
+                    <h4>Demasiadas alternativas</h4>
+                    <p>
+                        Actualmente existen muchísimas alternativas de escritorio que se decantan por los protocolos de correo tradicionales. Sin embargo,
+                        no hay ni una sola alternativa que utilize la API de Google.
+                    </p>
+                </section>
+                <section>
+                    <h4>Sencillez</h4>
+                    <p>
+                        Utilizar la API de Google es realmente sencillo. Con una simple función haces llamadas al servidor pidiendo datos, y la respuesta
+                        es tratada automáticamente por la API para convertirla en un JSON con el que es muy fácil trabajar.
+                    </p>
+                </section>
+                <section>
+                    <h4>Integración con otros servicios</h4>
+                    <p>
+                        Al utilizar la API de Google, es muy sencillo integrar nuestro cliente de Gmail con otros servicios de Google como Google Drive, Google+,
+                        Google Calendar o Hangouts para generar valor añadido.
+                    </p>
+                </section>
+            </section>
+
+            <section>
+                <h4>Pero también tiene sus desventajas...</h4>
+                <section>
+                    <p>
+                        La API de Google también tiene sus desventajas. Las principales las comentaremos a continuación:
+                    </p>
+                </section>
+                <section>
+                    <h4>Inestabilidad</h4>
+                    <p>
+                        La API de Google todavía se encuentra en alpha, una fase de desarrollo temprana. Por tanto es propensa a tener diversos
+                        errores siendo, en general, inestable. Además una parte de la funcionalidad todavía está por implementar.
+                    </p>
+                </section>
+                <section>
+                    <h4>Cuotas</h4>
+                    <p>
+                        La API de Google tiene cuotas de uso, a no ser que el desarrollador las aumente pagando, tanto en términos generales como en
+                        número de peticiones por segundo. Es por tanto necesario tener esto en cuenta cuando desarrollamos nuestra aplicación.
+                    </p>
+                </section>
+                <section>
+                    <h4>Código ofuscado</h4>
+                    <p>
+                        El código está ofuscado y por tanto es muy difícil para un desarrollador comprenderlo, extenderlo, corregir sus errores o en general
+                        modificarlo a su gusto. Esto puede jugar un papel muy negativo, pues el no comprender la librería que estamos utilizando
+                        puede llevarnos a cometer errores de diseño.
                     </p>
                 </section>
             </section>
