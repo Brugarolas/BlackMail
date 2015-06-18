@@ -73,8 +73,7 @@
                     <h4>Excelentes herramientas</h4>
                     <p>
                         Se cuenta con excelentes herramientas para diseñar y depurar aplicaciones web, empezando por los propios navegadores.
-                        El diseño de aplicaciones es muy rápido y sencillo, no hace falta compilar nada, sino que basta con refrescar la vista.
-						La programación es, en general, más productiva que con otros lenguajes.
+                        El diseño de aplicaciones es muy rápido y sencillo. La programación es, en general, más productiva que con otros lenguajes.
                     </p>
                 </section>
 
@@ -152,7 +151,7 @@
             </section>
 
             <section>
-                <h4>Pero también tiene sus desventajas...</h4>
+                <h2>Pero también tiene sus desventajas...</h2>
                 <section>
                     <p>
                         La API de Google también tiene sus desventajas. Las principales las comentaremos a continuación:
@@ -178,6 +177,174 @@
                         El código está ofuscado y por tanto es muy difícil para un desarrollador comprenderlo, extenderlo, corregir sus errores o en general
                         modificarlo a su gusto. Esto puede jugar un papel muy negativo, pues el no comprender la librería que estamos utilizando
                         puede llevarnos a cometer errores de diseño.
+                    </p>
+                </section>
+            </section>
+
+            <section>
+                <h2>Cómo funciona la API de Google</h2>
+                <section>
+                    <p>Creamos la petición con:</p>
+                    <p>func = gapi.client.<strong>nombreAPI</strong>.users.<strong>nombreRecurso</strong>.<strong>funcion</strong></p>
+                </section>
+                <section>
+                    <p>Ejecutamos la petición:</p>
+                    <p>func.execute(<strong>nombreFuncionCallback</strong>)</p>
+                </section>
+                <section>
+                    <p>
+                        La petición se convertirá en una objeto XMLHttpRequest, añadiendo automáticamente todos los metadatos necesarios como la
+                        autenticación, y se enviará al servidor de Google.
+                    </p>
+                </section>
+                <section>
+                    <p>
+                        El servidor de Google procesará la petición, y nos enviará la respuesta de vuelta. La API tratará la respuesta y la convertirá
+                        en un objeto JSON con los datos solicitados.
+                    </p>
+                </section>
+                <section>
+                    <p>
+                        La API de Google ejecutará entonces la función callback pasada como parámetro, pasando como parámetro la respuesta
+                        del servidor ya tratada y convertida a JSON.
+                    </p>
+                </section>
+                <section>
+                    <p>Un ejemplo sencillo:</p>
+                    <pre><code data-trim contenteditable>
+gapi.client.gmail.users.threads.get({
+    'userId': this.email,
+    'id': id,
+    'format': 'full'
+}).execute(callback);
+                    </code></pre>
+                </section>
+                <section>
+                    <p>
+                        Es posible agrupar hasta 100 solicitudes, así como especificar qué campos
+                        no queremos obtener con el atributo 'fields' para conseguir un rendimiento mejor.
+                    </p>
+                    <pre><code data-trim contenteditable>
+var batchRequest = gapi.client.newBatch();
+for (var i in threadIds) {
+    batchRequest.add(
+        gapi.client.gmail.users.threads.get({
+            'userId': this.email,
+            'id': threadIds[i],
+            'format': 'metadata'
+        }), {'id': threadIds[i]}
+    );
+}
+batchRequest.execute(callback, error);
+                    </code></pre>
+                </section>
+            </section>
+
+            <section>
+                <h2>Recursos de Gmail</h2>
+                <section>
+                    <p>
+                        La API de Gmail tiene una serie de recursos de los cuales ofrece una serie de funciones tales como
+                        listar todos sus elementos, obtener un elemento concreto, eliminarlo, o modificarlo. A continuación
+                        veremos cuáles son estos recursos con los que podemos trabajar.
+                    </p>
+                </section>
+                <section>
+                    <h4>Hilos (<span style="font-style: italic;">threads</span>)</h4>
+                    <p>
+                        Es el elemento principal con el que trabajaremos. Un hilo engloba todos los mensajes de un
+                        mismo asunto.
+                    </p>
+                </section>
+                <section>
+                    <h4>Mensajes (<span style="font-style: italic;">messages</span>)</h4>
+                    <p>Su nombre lo indica todo. Un mensaje es un correo electrónico enviado a uno o más destinatarios.</p>
+                </section>
+                <section>
+                    <h4>Borradores (<span style="font-style: italic;">drafts</span>)</h4>
+                    <p>Es un mensaje que aún no ha sido enviado, probablemente se encuentre a medio escribir.</p>
+                </section>
+                <section>
+                    <h4>Adjunto (<span style="font-style: italic;">attachment</span>)</h4>
+                    <p>
+                        Es un fichero de hasta 25MB que se envía junto a un mensaje. Para que no se necesiten tantos recursos
+                        al visualizar un mensaje con adjuntos, estos cuentan con su propio recurso.
+                    </p>
+                </section>
+                <section>
+                    <h4>Etiquetas (<span style="font-style: italic;">labels</span>)</h4>
+                    <p>
+                        Metainformación de un hilo que determina a las categorías a las que pertenece (enviados, recibidos, social,
+                        notificaciones, etcétera).
+                    </p>
+                </section>
+                <section>
+                    <h4>Historia (<span style="font-style: italic;">attachment</span>)</h4>
+                    <p>
+                        Recurso asociado a las últimas actividades que has efectuado (leer un hilo, enviar un mensaje, etcétera).
+                        Cada elemento de historia tiene un tiempo de vida de entre unas horas y dos o tres semanas.
+                    </p>
+                </section>
+            </section>
+
+            <section>
+                <h2>Cómo funciona BlackMail</h2>
+                <section>
+                    <p>A continuación veremos, de forma muy resumida, cómo funciona nuestra aplicación. Se ha tratado de
+                    hacer un diseño por capas.</p>
+                </section>
+                <section>
+                    <h4>Plantilla HTML y CSS</h4>
+                    <p>
+                        Lo principal es señalar que la interfaz de la aplicación está realizada utilizando un fichero HTML
+                        y su hoja de estilos CSS. En realidad, para facilitar el desarrollo de los estilos se ha utilizado
+                        LESS.
+                    </p>
+                </section>
+                <section>
+                    <h4>Controllador con Angular.js</h4>
+                    <p>
+                        Para rellenar la plantilla con datos útiles hemos utilizado Angular.js, el cual solicita datos a la
+                        capa inferior, que hemos denominado 'sistema', y los actualiza en la interfaz cuando es necesario.
+                    </p>
+                </section>
+                <section>
+                    <h4>Capa de sistema</h4>
+                    <p>
+                        Consta de dos subsistemas: almacenamiento y red. Su objeto es gestionar ambas capas de forma invisible
+                        al controlador a la hora de gestionar los diversos recursos.
+                    </p>
+                </section>
+                <section>
+                    <h4>Sistema: ejemplo</h4>
+                    <p>
+                        Por ejemplo, si queremos leer un hilo concreto, llamaremos a la capa 'sistema' preguntándole por ese hilo.
+                        La capa sistema comprobará si se encuentra almacenado, y si lo está lo devolverá desde la capa de almacenamiento.
+                        Si no lo está, hará una llamada utilizando la capa de red, y antes de devolver los datos al controlador,
+                        los almacenará.
+                    </p>
+                </section>
+                <section>
+                    <h4>Sistema: otro ejemplo</h4>
+                    <p>
+                        Otro ejemplo: si queremos eliminar o modificar un hilo, la capa sistema hará la petición por medio de la capa de red,
+                        y si se recibe una respuesta positiva del servidor, entonces el elemento se eliminará o modificará también
+                        en la capa de almacenamiento.
+                    </p>
+                </section>
+                <section>
+                    <h4>Capa de red</h4>
+                    <p>
+                        Encapsula las llamadas con la API de Google para hacerlas más sencillas de utilizar desde la capa de
+                        sistema.
+                    </p>
+                </section>
+                <section>
+                    <h4>Capa de almacenamiento</h4>
+                    <p>
+                        Ofrece estructuras de datos eficientes para almacenar y gestionar en memoria la mayoría de datos de la aplicación,
+                        así como métodos para persistir la información necesaria y no tener que sincronizar el cliente con cada
+                        ejecución.
                     </p>
                 </section>
             </section>
