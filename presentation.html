@@ -43,6 +43,21 @@
             </section>
 
             <section>
+                <h2>Índice</h2>
+                <ul>
+                    <li><a href="#/2">BlackMail</a></li>
+                    <li><a href="#/3">¿Por qué tecnologías web?</a></li>
+                    <li><a href="#/4">Centrado en el escritorio</a></li>
+                    <li><a href="#/5">¿Por qué la API de Google?</a></li>
+                    <li><a href="#/6">Desventajas de la API de Google</a></li>
+                    <li><a href="#/7">Funcionamiento API de Google</a></li>
+                    <li><a href="#/8">Recursos de Gmail</a></li>
+                    <li><a href="#/9">Funcionamiento de BlackMail</a></li>
+                    <li><a href="#/10">Otras librerías utilizadas</a></li>
+                </ul>
+            </section>
+
+            <section>
                 <h2>BlackMail</h2>
                 <p>
                     BlackMail es un cliente de Gmail creado únicamente con tecnologías web (HTML, CSS y Javascript) y la API de Google.
@@ -158,14 +173,14 @@
                     </p>
                 </section>
                 <section>
-                    <h4>Inestabilidad</h4>
+                    <h4>Desarrollo temprano e inestabilidad</h4>
                     <p>
                         La API de Google todavía se encuentra en alpha, una fase de desarrollo temprana. Por tanto es propensa a tener diversos
                         errores siendo, en general, inestable. Además una parte de la funcionalidad todavía está por implementar.
                     </p>
                 </section>
                 <section>
-                    <h4>Cuotas</h4>
+                    <h4>Cuotas de uso</h4>
                     <p>
                         La API de Google tiene cuotas de uso, a no ser que el desarrollador las aumente pagando, tanto en términos generales como en
                         número de peticiones por segundo. Es por tanto necesario tener esto en cuenta cuando desarrollamos nuestra aplicación.
@@ -216,7 +231,9 @@ gapi.client.gmail.users.threads.get({
     'userId': this.email,
     'id': id,
     'format': 'full'
-}).execute(callback);
+}).execute(function (response) {
+    console.log(response);
+});
                     </code></pre>
                 </section>
                 <section>
