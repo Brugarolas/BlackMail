@@ -172,7 +172,10 @@ System.prototype.getThread = function (index, label, unreadMth, callback, error)
     if (thread.messages.length > 0) callback(thread);
     else system.network.getThread(thread.id, function (response) {
         //Mark message as read if needed
-        if (thread.labels.indexOf('UNREAD') > -1) system.modifyThreads([thread.id], [], ['UNREAD'], unreadMth, error);
+        if (thread.labels.indexOf('UNREAD') > -1) {
+            system.modifyThreads([thread.id], [], ['UNREAD'], unreadMth, error);
+            system.storage.countUnread(); //TODO Dirty fix
+        }
 
         console.log(response);
 
@@ -229,6 +232,8 @@ System.prototype.modifyThreads = function (threadsIds, addLabels, removeLabels, 
 
         /* Update labels and execute callback */
         system.storage.updateLabels(response);
+
+        system.storage.countUnread(); //TODO Dirty fix
         callback();
     }, error);
 }
@@ -288,6 +293,8 @@ System.prototype.updateRefresh = function (callback, error) {
     this.lastHistoryId = system.storage.getHistoryId();
 
     var next = function (response) {
+        console.log(response);
+
         if (!response.result.history) callback();
         else {
             // Save history Id
@@ -370,6 +377,10 @@ System.prototype.updateHistoryMessages = function (messagesAdded) {
                 console.log(response);
                 setThreadMetadata(thread, response.result);
                 system.storage.addToAllLabels(thread);
+
+            } else if (response.code == 404) {
+                console.log("Not found...");
+                console.log(response);
             } else if (!response.messages[0].labelIds) {
                 console.log("Chats...");
                 console.log(response);
@@ -380,17 +391,17 @@ System.prototype.updateHistoryMessages = function (messagesAdded) {
     }
 }
 
-System.prototype.removeHistoryMessages = function (messagesRemoved) {
+/*System.prototype.removeHistoryMessages = function (messagesRemoved) {
     var thread, threadId, messageId, label;
     for (var i in messagesRemoved) {
         threadId = messagesRemoved[i].message.threadId, thread = system.storage.getThread(threadId);
 
-        /* If thread exist, remove it */
+        // If thread exist, remove it
         if (thread) system.storage.removeThread(thread.id);
     }
 
     system.syncHistory();
-}
+}*/
 
 //FIXME Aux
 System.prototype.addOrRemoveLabel = function (label, thread, add) {

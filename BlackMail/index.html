@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+    <meta charset="UTF-8">
+    <title>BlackMail</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+
+    <!-- Icon -->
+    <link rel="shortcut icon" href="images/favicon.ico"/>
+
+    <!-- Bootstrap and AngularJS-->
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/bootstrap.xl.css"/>
+    <link rel="stylesheet" href="css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="css/font-awesome-animation.min.css"/>
+    <link rel="stylesheet" href="css/elusive-icons.min.css"/>
+    <script src="js/libs/angular.min.js"></script>
+
+    <!-- Fonts and reset stylesheet -->
+    <link rel="stylesheet" href="css/reset.css"/>
+    <link rel="stylesheet" href="css/roboto-fonts.css"/>
+
+    <!-- Perfect scrollbar -->
+    <link rel='stylesheet' href='css/perfect-scrollbar.min.css'/>
+    <link rel="stylesheet" href="css/nanoscroller.css"/>
+    <script src='js/libs/perfect-scrollbar.min.js'></script>
+    <script src='js/angular.perfectscrollbar.js'></script>
+
+    <!-- Custom stylesheet With Less -->
+	<link rel='stylesheet' href='css/main-style.css'/>
+    <!--link rel="stylesheet/less" type="text/css" href="less/mail_main_style.less"/>
+    <script src="js/less.config.js"></script>
+    <script src="js/libs/less.min.js"></script-->
+    <link rel="stylesheet" href="css/floating-bars.css"/>
+    <link rel="stylesheet" href="css/style.email.css"/>
+
+    <!-- Async and Lodash -->
+    <script src='js/libs/async.js'></script>
+    <script src='js/libs/lodash.min.js'></script>
+
+    <!-- Updated Date.js from https://github.com/abritinthebay/datejs -->
+    <script src="js/libs/date-es-ES.min.js"></script>
+
+    <!-- Decode plugin -->
+    <script src="js/libs/base64.min.js"></script>
+    <script src="js/libs/lz-string.min.js"></script>
+
+    <!-- Prefix Free plugin -->
+    <script src="js/libs/prefixfree.min.js"></script>
+
+    <!-- Our aux scripts-->
+    <script src="js/message.methods.js"></script>
+    <script src="js/thread.methods.js"></script>
+    <script src="js/methods.iframe.js"></script>
+
+    <!-- Our system methodss -->
+    <script src="js/system.notifications.js"></script>
+    <script src="js/system.network.js"></script>
+    <script src="js/system.storage.js"></script>
+    <script src="js/system.core.js"></script>
+
+    <!-- Our Angular plugins -->
+    <script src='js/angular.perfectscrollbar.js'></script>
+    <script src='js/angular.stylescontroller.js'></script>
+    <script src="js/libs/angular.off-click.js"></script>
+    <script src="js/libs/angular.elastic.js"></script>
+    <script src="js/angular.emailtemplate.js"></script>
+    <script src="js/angular.gmailcontroller.js"></script>
+
+    <!-- JavaScript Google API client library -->
+    <script src="js/libs/google.api.min.js"></script>
+</head>
+<body id="mainBody" ng-controller="GmailMainController" ng-class="{'show-message': data.messageActive >= 0,
+	'show-main-overlay': data.showOverlay, 'show-sidebar': data.showSidebar, 'show-compose': data.showCompose }"
+     onload="handleLoad()">
+
+<!-- Left lateral bar -->
+<aside id="sidebar" class="nano">
+    <div class="nano-content" perfect-scrollbar>
+        <div class="personal-container">
+            <img id="personalPhoto" ng-src="{{data.personal.photo}}"/>
+            <div id="personalName">{{data.personal.name}}</div>
+        </div>
+        <div class="separator"></div>
+
+        <div class="logo-container">
+            <span class="logo el el-envelope"></span>Mail
+        </div>
+        <a class="compose-button" ng-class="{red: data.showCompose }" ng-click="clickOnCompose()">
+            <span ng-if="!data.showCompose"><i class="fa fa-pencil-square-o"> &nbsp; </i>Compose</span>
+            <span ng-if="data.showCompose"><i class="fa fa-times-circle"> &nbsp; </i>Close</span>
+        </a>
+
+        <menu class="menu-segment">
+            <ul>
+                <li ng-repeat="label in data.labels" ng-click="setLabel(label)" ng-class="{active: isActiveLabel(label)}">
+                    <a>
+                        <i class="fa" ng-class="label.class"> &nbsp; </i>
+                        {{label.name}}<span ng-if="label.unread"> ({{label.unread}})</span>
+                    </a>
+                </li>
+            </ul>
+        </menu>
+        <div class="separator"></div>
+        <div class="menu-segment">
+            <ul class="labels">
+                <li class="title">Labels <span class="icon">+</span></li>
+                <li><a>Dribbble <span class="ball pink"></span></a></li>
+                <li><a>Roommates <span class="ball green"></span></a></li>
+                <li><a>Bills <span class="ball blue"></span></a></li>
+            </ul>
+        </div>
+        <div class="separator"></div>
+        <div class="menu-segment">
+            <ul class="chat">
+                <li class="title">Chat <span class="icon">+</span></li>
+                <li><a><span class="ball green"></span>Laura Turner</a></li> <!--style="border-color: white;"-->
+                <li><a><span class="ball green"></span>Kevin Jones</a></li>
+                <li><a><span class="ball blue"></span>John King</a></li>
+                <li><a><span class="ball blue"></span>Jenny Parker</a></li>
+                <li><a><span class="ball blue"></span>Paul Green</a></li>
+                <li><a class="italic-link">See offline list</a></li>
+            </ul>
+        </div>
+        <div class="bottom-padding"></div>
+    </div>
+</aside>
+
+<!-- Main centered mail list -->
+<main id="main">
+    <div class="overlay" ng-click="clickOnOverlay()"></div>
+    <header class="header">
+        <div class="search-box">
+            <input placeholder="Search..."><span class="icon glyphicon glyphicon-search"></span>
+        </div>
+        <h1 class="page-title">
+            <a class="sidebar-toggle-btn" ng-click="clickOnToggleSidebar()">
+                <span class="line"></span>
+                <span class="line"></span>
+                <span class="line"></span>
+                <span class="line line-angle1"></span>
+                <span class="line line-angle2"></span>
+            </a>
+            <i class="fa" ng-class="data.selectedLabel.class"> &nbsp; </i> {{data.selectedLabel.name}}
+			<span class="menu" ng-if="showCategoryMenu()">
+				<a ng-click="clickShowMenu()"><span class="icon selectable-menu glyphicon" ng-class="{'glyphicon-chevron-down': !data.showMenu, 'glyphicon-chevron-up': data.showMenu}"></span></a>
+				<ul class="sub-menu" ng-class="{'show-menu': data.showMenu}">
+                    <li ng-repeat="category in data.categories" ng-click="setCategory(category)" ng-if="category.id != data.selectedLabel.id">
+                        <i class="fa" ng-class="category.class"> &nbsp; </i>{{category.name}}
+                    </li>
+                </ul>
+			</span>
+        </h1>
+    </header>
+    <div class="action-bar">
+        <ul class="action-threads">
+            <li>
+                <span class="list">
+                    <a class="icon circle-icon glyphicon glyphicon-chevron-down"></a>
+                    <ul class="sub-list">
+                        <li><i class="fa fa-inbox"> &nbsp; </i> Archive Message(s)</li>
+                        <li ng-click="modifySelectedThreads(['IMPORTANT'], [])"><i class="fa fa-bookmark"> &nbsp; </i> Mark as Important</li>
+                        <li ng-click="modifySelectedThreads([], ['IMPORTANT'])"><i class="fa fa-bookmark-o"> &nbsp; </i> Mark as Not Important</li>
+                        <li ng-click="modifySelectedThreads(['STARRED'], [])"><i class="fa fa-star"> &nbsp; </i> Star Message(s)</li>
+                        <li ng-click="modifySelectedThreads([], ['STARRED'])"><i class="fa fa-star-o"> &nbsp; </i> Unstar Message(s)</li>
+                        <li ng-click="modifySelectedThreads(['UNREAD'], [])"><i class="fa fa-envelope"> &nbsp; </i> Mark as Unread</li>
+                        <li ng-click="modifySelectedThreads([], ['UNREAD'])"><i class="fa fa-envelope-o"> &nbsp; </i> Mark as Read</li>
+                        <li ng-click="completelyDelete()" ng-if="data.selectedLabel.id == 'TRASH'"><i class="fa fa-trash "> &nbsp; </i> Completely Delete</li>
+                    </ul>
+                </span>
+            </li>
+            <li><a class="icon circle-icon glyphicon glyphicon-refresh" ng-class="{'faa-spin animated': data.refreshing}" ng-click="updateRefresh()"></a></li>
+            <li><a class="icon circle-icon glyphicon glyphicon-share-alt"></a></li>
+            <li>
+                <a ng-if="data.selectedLabel.id != 'TRASH'" class="icon circle-icon red glyphicon glyphicon-remove" ng-click="modifySelectedThreads(['TRASH'], [])"></a>
+                <a ng-if="data.selectedLabel.id == 'TRASH'" class="icon circle-icon red glyphicon glyphicon-open" ng-click="modifySelectedThreads(['INBOX'], ['TRASH'])"></a>
+            </li>
+            <li>
+                <a ng-if="data.selectedLabel.id != 'SPAM'" class="icon circle-icon red glyphicon glyphicon-flag" ng-click="modifySelectedThreads(['SPAM'], [])"></a>
+                <a ng-if="data.selectedLabel.id == 'SPAM'" class="icon circle-icon red glyphicon glyphicon-ok" ng-click="modifySelectedThreads(['INBOX'], ['SPAM'])"></a>
+            </li>
+        </ul>
+        <ul class="action-pages">
+            <li><a class="icon circle-icon glyphicon glyphicon-chevron-right" ng-class="{disabled: (data.currentPage + 1) == data.numOfPages}" ng-click="clickNextPage()"></a></li>
+            <li><a class="text message-big">&nbsp; {{getActualPageTextBig()}} &nbsp;</a></li>
+            <li><a class="text message-small"> {{getActualPageTextSmall()}} </a></li>
+            <li><a class="icon circle-icon glyphicon glyphicon-chevron-left" ng-class="{disabled: data.currentPage <= 0}" ng-click="clickPreviousPage()"></a></li>
+        </ul>
+    </div>
+
+    <div id="main-nano-wrapper" class="nano">
+        <div class="nano-content" perfect-scrollbar="rebuild-scrollbar-list">
+            <ul class="message-list">
+                <li class="orange-dot" ng-repeat="msg in data.messageList track by msg.id" ng-class="{unread: isUnread(msg.labels), active: data.messageActive == $index}" ng-click="clickOnThread($event, $index)">
+                    <div class="col col-1 col-xs-10 col-sm-3 col-xl-2">
+                        <span class="dot"></span>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="chk{{$index}}" ng-model="data.selectedCheckboxes[$index]" ng-click="clickOnCheckbox($event, $index)">
+                            <label for="chk{{$index}}" class="toggle"></label>
+                        </div>
+                        <span class="star-toggle el" ng-click="clickOnStar($event, $index)" ng-class="{'el-bookmark-empty': !isImportant(msg.labels), 'important el-bookmark': isImportant(msg.labels)}"></span>
+                        <span class="title">{{msg.sender}} <span ng-if="msg.numOfMsgs > 1">({{msg.numOfMsgs}})</span></span>
+                    </div>
+                    <div class="col col-3 col-xs-2 col-sm-1 col-xl-1">
+                        <div class="date">{{formatDateThread(msg)}}</div>
+                    </div>
+                    <div class="col col-2 col-xs-11 col-sm-8 col-xl-9">
+                        <div class="subject">
+                            {{msg.subject}}<span ng-if="msg.snippet"> &nbsp;&ndash;&nbsp; <span class="teaser">{{msg.snippet}}</span></span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</main>
+
+<!-- Message right menu -->
+<div id="message" ng-if="data.messageExists">
+    <div class="header">
+        <div class="page-title">
+            <a class="icon circle-icon glyphicon glyphicon-chevron-left" ng-click="clickOnHideThread()"></a>
+            {{data.activeThread.subject}} <span class="grey" ng-if="data.activeThread.numOfMsgs > 1">({{data.activeThread.numOfMsgs}})</span>
+        </div>
+        <p>From <a>You</a> to <a>Scott Waite</a>, started on <a>March 2, 2014</a> at 2:14 pm est.</p>
+    </div>
+    <div id="message-nano-wrapper" class="nano">
+        <div class="nano-content" perfect-scrollbar="rebuild-scrollbar-thread">
+            <ul class="message-container">
+                <li ng-repeat="msg in data.activeThread.messages" ng-class="{sent: $even, received: $odd}">
+                    <div class="details">
+                        <span class="right col-md-4 col-xl-3">{{formatDateMessage(msg)}}</span>
+                        <div class="left col-md-8 col-xl-9">
+                            {{msg.sender}}
+                            <div class="arrow" ng-class="{orange: $odd}"></div>
+                            <span ng-repeat="receiver in msg.receiver">
+                                {{receiver.email}}<span ng-if="!$last">, </span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="message">
+                        <iframe id="iframe{{$index}}" frameBorder="0" src="about:blank" scrolling="no" ng-email-iframe="{{msg.html}}" height="0"></iframe>
+                        <a ng-download-button="{{msg.html}}" download-name="{{msg.id}}">Download Email</a>
+                        <a ng-repeat="file in msg.attachments" ng-download-file="{{file.body.attachmentId}}">Not ready yet</a>
+                    </div>
+                    <div class="tool-box">
+                        <a class="circle-icon small glyphicon glyphicon-share-alt"></a>
+                        <a class="circle-icon small red-hover glyphicon glyphicon-remove"></a>
+                        <a class="circle-icon small red-hover glyphicon glyphicon-flag"></a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Compose message -->
+<div id="compose" ng-if="data.composeExists" perfect-scrollbar>
+    <div class="header">
+        <h1 class="page-title">
+            <a class="icon circle-icon glyphicon glyphicon-chevron-left" ng-click="clickOnCompose()"></a>
+            Write a<span class="grey">new</span> email
+        </h1>
+        <p>At the moment you can only write and send <a>simple emails</a>. Attachments, multiple email addresses, Cc and Bcc do not work.</p>
+    </div>
+    <div class="container">
+        <div class="container-inner">
+            <form class="form-email">
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="email" class="form-control" placeholder="To" ng-model="data.newMessage.email" ng-model-options="{ debounce: 500 }" ng-change="checkValidNewEmail()">
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-default dropdown-toggle" ng-click="toggleDropdown()"
+                                    off-click="toggleDropdown()" off-click-if="data.showDropdown"
+                                    off-click-filter="'.dropdown-menu'">
+                                <i class="fa fa-cog"></i> <span class="caret"></span>
+                            </button>
+                            <ul class="pull-right dropdown-menu" ng-class="{active: data.showDropdown}">
+                                <li ng-if="!data.showCc"><a ng-click="toggleCc()">Add Cc</a></li>
+                                <li ng-if="data.showCc"><a ng-click="toggleCc()">Hide Cc</a></li>
+                                <li ng-if="!data.showBcc"><a ng-click="toggleBcc()">Add Bcc</a></li>
+                                <li ng-if="data.showBcc"><a ng-click="toggleBcc()">Hide Bcc</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <small class="help-block text-muted">You may add multiple email addresses and separate them with a comma.</small>
+                </div>
+
+                <div class="form-group" ng-class="{active: data.showCc}" id="cc">
+                    <input type="text" class="form-control" placeholder="Cc">
+                    <button class="remove" ng-click="toggleCc()">&times;</button>
+                </div>
+
+                <div class="form-group" ng-class="{active: data.showBcc}" id="bcc">
+                    <input type="text" class="form-control" placeholder="Bcc">
+                    <button class="remove" ng-click="toggleBcc()">&times;</button>
+                </div>
+
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Subject" ng-model="data.newMessage.subject" ng-model-options="{ debounce: 500 }" ng-change="checkValidNewEmail()">
+                </div>
+
+                <ul class="nav nav-tabs">
+                    <li ng-class="{active: !data.active || data.active == 'write'}">
+                        <a ng-click="setActive('write')">Write</a>
+                    </li>
+                    <li ng-class="{active: data.active == 'preview'}">
+                        <a ng-click="setActive('preview'); updatePreview()">Preview</a>
+                    </li>
+                    <li class="pull-right">
+                        <a><small><i class="fa fa-code"></i> Style</small></a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane" id="write" ng-class="{active: !data.active || data.active == 'write'}">
+                        <textarea class="form-control" rows="10" ng-model="data.newMessage.message" ng-model-options="{ debounce: 500 }" ng-change="checkValidNewEmail()" msd-elastic></textarea>
+
+                        <div class="attachment">
+                            <small>Attach files or images by dragging & dropping, <a>selecting them</a>, or pasting from the clipboard.</small>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="preview" ng-class="{active: data.active == 'preview'}">
+                        <iframe id="iframePreview" frameBorder="0" src="about:blank" scrolling="no" ng-email-iframe="{{data.newMessage.message}}" ng-update-on="updatePreview"></iframe>
+                    </div>
+                </div>
+
+                <div class="text-right">
+                    <button class="btn btn-success" type="submit" ng-disabled="!data.newMailValid || data.sendingEmail" ng-click="sendEmail()">
+                        <i class="fa" ng-class="{'fa-send': !data.sendingEmail, 'fa-spinner faa-spin animated': data.sendingEmail}"></i> &nbsp; Send
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Loading -->
+<div id="loading-page" ng-if="data.loading">
+    <div class="seq-preloader">
+        <div id="loader"></div>
+        <svg height="16" width="42" class="seq-preload-indicator">
+            <circle class="seq-preload-circle seq-preload-circle-1" cx="4" cy="8" r="4"></circle>
+            <circle class="seq-preload-circle seq-preload-circle-2" cx="17" cy="8" r="6"></circle>
+            <circle class="seq-preload-circle seq-preload-circle-3" cx="34" cy="8" r="8"></circle>
+        </svg>
+        <div class="seq-text-indicator" ng-bind="data.loadingMessage"></div>
+    </div>
+</div>
+</body>
+
+</html>

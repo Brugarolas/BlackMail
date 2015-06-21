@@ -1,0 +1,29 @@
+{
+  "main": "index.html",
+  "name": "BlackMail",
+  "description": "A Gmail client using Google API",
+  "version": "0.1.0",
+  "node-remote": "localhost",
+  "single-instance": false,
+  "window": {
+    "title": "BlackMail",
+    "toolbar": false,
+	"icon": "icon.png",
+	"resizable": true,
+    "frame": true,
+    "width": 1280,
+    "height": 720,
+    "position": "center",
+    "min_width": 640,
+    "min_height": 480
+  },
+  "webkit": {
+    "plugin": true,
+	"page-cache": true
+  },
+  "dependencies": {
+    "connect": "*",
+	"serve-static": "*",
+	"express": "^4.10.2"
+  }
+}
