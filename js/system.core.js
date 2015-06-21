@@ -172,7 +172,10 @@ System.prototype.getThread = function (index, label, unreadMth, callback, error)
     if (thread.messages.length > 0) callback(thread);
     else system.network.getThread(thread.id, function (response) {
         //Mark message as read if needed
-        if (thread.labels.indexOf('UNREAD') > -1) system.modifyThreads([thread.id], [], ['UNREAD'], unreadMth, error);
+        if (thread.labels.indexOf('UNREAD') > -1) {
+            system.modifyThreads([thread.id], [], ['UNREAD'], unreadMth, error);
+            system.storage.countUnread(); //TODO Dirty fix
+        }
 
         console.log(response);
 
@@ -229,6 +232,8 @@ System.prototype.modifyThreads = function (threadsIds, addLabels, removeLabels, 
 
         /* Update labels and execute callback */
         system.storage.updateLabels(response);
+
+        system.storage.countUnread(); //TODO Dirty fix
         callback();
     }, error);
 }
