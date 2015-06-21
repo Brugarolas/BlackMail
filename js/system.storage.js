@@ -13,8 +13,9 @@ function storage () {
 }
 
 storage.prototype.savePersonalData = function (result, imageSize) {
+    console.log(result);
     this.personal = {
-        email: result.emails[0].value,
+        email: (result.emails) ? result.emails[0].value : 'me',
         realName: result.displayName,
         name: result.displayName || result.emails[0].value.substring(0, result.emails[0].value.indexOf('@')),
         photo: result.image.url.slice(0, result.image.url.indexOf('?sz')) + '?sz=' + imageSize

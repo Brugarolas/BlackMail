@@ -288,6 +288,8 @@ System.prototype.updateRefresh = function (callback, error) {
     this.lastHistoryId = system.storage.getHistoryId();
 
     var next = function (response) {
+        console.log(response);
+
         if (!response.result.history) callback();
         else {
             // Save history Id
@@ -370,6 +372,10 @@ System.prototype.updateHistoryMessages = function (messagesAdded) {
                 console.log(response);
                 setThreadMetadata(thread, response.result);
                 system.storage.addToAllLabels(thread);
+
+            } else if (response.code == 404) {
+                console.log("Not found...");
+                console.log(response);
             } else if (!response.messages[0].labelIds) {
                 console.log("Chats...");
                 console.log(response);
@@ -380,17 +386,17 @@ System.prototype.updateHistoryMessages = function (messagesAdded) {
     }
 }
 
-System.prototype.removeHistoryMessages = function (messagesRemoved) {
+/*System.prototype.removeHistoryMessages = function (messagesRemoved) {
     var thread, threadId, messageId, label;
     for (var i in messagesRemoved) {
         threadId = messagesRemoved[i].message.threadId, thread = system.storage.getThread(threadId);
 
-        /* If thread exist, remove it */
+        // If thread exist, remove it
         if (thread) system.storage.removeThread(thread.id);
     }
 
     system.syncHistory();
-}
+}*/
 
 //FIXME Aux
 System.prototype.addOrRemoveLabel = function (label, thread, add) {

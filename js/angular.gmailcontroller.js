@@ -4,7 +4,7 @@ var scopes = ['https://www.googleapis.com/auth/plus.me', 'https://mail.google.co
 
 var app = angular.module("app", ["styles"]);
 
-app.controller('GmailMainController', function ($scope, $controller, $timeout) {
+app.controller('GmailMainController', function ($scope, $controller, $timeout, $interval) {
     $controller('StylesController', {$scope: $scope});
     $scope.data = {
         loading: true,
@@ -186,7 +186,7 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
     }
 
     $scope.updateRefresh = function () {
-       $scope.data.refreshing = true;
+        $scope.data.refreshing = true;
        system.updateRefresh($scope.safeUpdateMessages, $scope.defaultErrorCallback);
     }
 
@@ -201,8 +201,6 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
 
     $scope.formatDateMessage = function (message) {
         var time = message.date.getTime(), date = message.date.toString('dd MMMM, yyyy, hh:mm tt');
-
-
         return date + ' (' + formatMilliseconds($scope.data.actualTime - time) + ')';
     }
 
@@ -254,10 +252,14 @@ app.controller('GmailMainController', function ($scope, $controller, $timeout) {
         $scope.data.labels = system.storage.getDefaultLabels();
         $timeout(function () { $scope.data.loading = false; }, (!timeout) ? 0 : timeout);
 
+        $interval(function () {
+            system.updateRefresh($scope.safeUpdateMessages, $scope.defaultErrorCallback);
+        }, 5000);
+
         // TODO Remove this when fully optimized
-        console.time('$scope.$digest');
+        /*console.time('$scope.$digest');
         $scope.$digest();
-        console.timeEnd('$scope.$digest');
+        console.timeEnd('$scope.$digest');*/
     }
 
     $scope.safeUpdateMessages = function() {
