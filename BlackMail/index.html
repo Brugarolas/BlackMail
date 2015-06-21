@@ -222,7 +222,11 @@
             <a class="icon circle-icon glyphicon glyphicon-chevron-left" ng-click="clickOnHideThread()"></a>
             {{data.activeThread.subject}} <span class="grey" ng-if="data.activeThread.numOfMsgs > 1">({{data.activeThread.numOfMsgs}})</span>
         </div>
-        <p>From <a>You</a> to <a>Scott Waite</a>, started on <a>March 2, 2014</a> at 2:14 pm est.</p>
+        <p>
+            From <a>{{data.activeThread.messages[0].sender}}</a> to
+            <a>{{data.activeThread.messages[0].receiver[0].name}}</a>,
+            started on <a>{{formatDateMessage(data.activeThread.messages[0])}}</a>.
+        </p>
     </div>
     <div id="message-nano-wrapper" class="nano">
         <div class="nano-content" perfect-scrollbar="rebuild-scrollbar-thread">
